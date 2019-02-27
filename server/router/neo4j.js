@@ -211,7 +211,7 @@ router.post('/getDetailInfo', (req, res, next) => {
 
 
 /**
- * 获取所有Gdufs_Teacher, Visitor, Visit_Dept节点的数据
+ * 获取所有Gdufs_Teacher, Visitor, Visitor_Dept节点的数据
  */
 router.post('/getAllFillData', (req, res, next) => {
 
@@ -226,7 +226,7 @@ router.post('/getAllFillData', (req, res, next) => {
         res.send({
             'gdufs_teacher': result1,
             'visitor': result2,
-            'visit_dept': result3
+            'visitor_dept': result3
         })
     });
 });
@@ -240,21 +240,28 @@ router.post('/updateNodeInfo', (req, res, next) => {
     let driver = data.dbPool['neo4j'];
     let session = driver.session();
     let bodyData = req['body'];
-    let cqlStr = "";
-    if(bodyData['nodeName']=='Visitor'){
-        cqlStr="match"
+    let cqlStr = '';
+
+    //Visitor节点
+    if (bodyData['type'] == 'visitor') {
+        cqlStr = 'match (n:Visitor) where n.unique_id=$unique_id set n.profile=$profile, n.en_name=$en_name, n.cn_name=$cn_name, n.title=$title';
     }
-    session.run('match (n:Gdufs_Teacher) return properties(n) as result')
+    //Visitor_Dept节点
+    else if (bodyData['type'] == 'visitor_dept') {
+        cqlStr = 'match (n:Visitor_Dept) where n.unique_id=$unique_id set n.introduction=$introduction, n.nation=$nation, n.en_name=$en_name, n.cn_name=$cn_name';
+    }
+    console.log('data', bodyData['value']);
+    //执行cql语句进行数据更新操作
+    session.run(cqlStr, bodyData['value'])
         .subscribe({
             onCompleted: () => {
-                resolve(gdufsTeacherNodes);
+                res.sendStatus(200);
             },
             onError: error => {
-                resolve([]);
+                console.log('error', error);
+                res.sendStatus(400);
             }
         });
-
-
 });
 
 

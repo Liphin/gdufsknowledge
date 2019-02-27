@@ -17,7 +17,7 @@ overallModule.config(function ($routeProvider, $httpProvider, $sceDelegateProvid
             controller: 'EditCtrl',
             controllerAs: 'edit',
         })
-        .otherwise({redirectTo: '/edit/add'});
+        .otherwise({redirectTo: '/edit/modify'});
 
     //部署拦截器，每次http请求，会经过拦截器方法后再往下传
     $httpProvider.interceptors.push('interceptHttp');

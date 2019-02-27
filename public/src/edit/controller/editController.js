@@ -42,33 +42,35 @@ editModule.controller('EditCtrl', function ($location, $routeParams, EditDataSer
 
 
     //修改实体数据*************************************************************************************
-
     if ($routeParams['option'] == 'modify') {
         //1、显示modify页面，隐藏add页面
-        EditDataSer.modifyData['pageShow']['modify'] = true;
-        EditDataSer.modifyData['pageShow']['add'] = false;
+        EditDataSer.supportData['pageShow']['modify'] = true;
+        EditDataSer.supportData['pageShow']['add'] = false;
 
         //2、获取所有人物、单位数据
         OverallGeneralSer.httpPostData3([], OverallDataSer.urlData['frontEndHttp']['getAllFillData'], function (result) {
             //返回的数据页面初始化赋值
             EditDataSer.modifyData['gdufs_teacher']['data'] = result['gdufs_teacher'];
             EditDataSer.modifyData['visitor']['data'] = result['visitor'];
-            EditDataSer.modifyData['visit_dept']['data'] = result['visit_dept'];
+            EditDataSer.modifyData['visitor_dept']['data'] = result['visitor_dept'];
 
             //对返回数据进行标签设置，标识哪些尚未设置完全其属性的
             for (let i in EditDataSer.modifyData) {
                 for (let j in EditDataSer.modifyData[i]['data']) {
                     //先赋值标识状态为已满
                     EditDataSer.modifyData[i]['data'][j]['isFull'] = true;
+                    EditDataSer.modifyData[i]['data'][j]['extend'] = false;
                     //检查每个字段是否均填充完毕，若有字段尚未填充则未满状态，设置为false
                     for (let k in EditDataSer.modifyData[i]['instanceProperties']) {
-                        if (!OverallGeneralSer.checkDataNotEmpty(EditDataSer.modifyData[i]['data'][j][k])) {
+                        let value = EditDataSer.modifyData[i]['instanceProperties'][k];
+                        if (!OverallGeneralSer.checkDataNotEmpty(EditDataSer.modifyData[i]['data'][j][value])) {
                             EditDataSer.modifyData[i]['data'][j]['isFull'] = false;
-                            break;
+                            EditDataSer.modifyData[i]['data'][j][value] = '';
                         }
                     }
                 }
             }
+            console.log('实体数据', EditDataSer.modifyData);
         });
     }
 
@@ -78,26 +80,33 @@ editModule.controller('EditCtrl', function ($location, $routeParams, EditDataSer
      * @param type
      */
     edit.switchChoiceItem = function (type) {
-
+        //全部设置隐藏状态
+        for (let i in EditDataSer.modifyData) {
+            EditDataSer.modifyData[i]['status'] = false;
+        }
+        //单独设置显示状态
+        EditDataSer.modifyData[type]['status'] = true;
+        console.log(EditDataSer.modifyData['visitor_dept']['status'])
     };
 
 
     /**
      * 更新该节点数据
-     * @param nodeName
-     * @param unique_id
+     * @param type
+     * @param index
      * @param value
      */
-    edit.submitNodeData = function (nodeName, unique_id, value) {
+    edit.submitNodeData = function (type, index, value) {
         let data = {
-            nodeName: nodeName,
-            unique_id: unique_id,
+            type: type,
             value: value
         };
         OverallGeneralSer.httpPostData3(data, OverallDataSer.urlData['frontEndHttp']['updateNodeInfo'], function (result) {
-
+            if (result == 'OK') {
+                EditDataSer.modifyData[type]['data'][index]['isFull'] = true;
+                EditDataSer.modifyData[type]['data'][index]['extend'] = false;
+            }
         })
-
     }
 
 

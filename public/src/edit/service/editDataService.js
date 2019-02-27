@@ -55,12 +55,12 @@ editModule.factory('EditDataSer', function () {
         visitor: {
             status: true,
             data: [],
-            instanceProperties: ['unique_id', 'profile', 'portrait', 'academic', 'en_name', 'cn_name', 'title', 'email', 'phone', 'papers']
+            instanceProperties: ['unique_id', 'en_name', 'cn_name', 'title', 'profile']
         },
-        visit_dept: {
+        visitor_dept: {
             status: false,
             data: [],
-            instanceProperties: ['unique_id', 'en_name', 'cn_name', 'official_url', 'introduction', 'nation']
+            instanceProperties: ['unique_id', 'en_name', 'cn_name', 'introduction', 'nation']
         }
     };
 
