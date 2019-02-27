@@ -1,0 +1,47 @@
+/* project 右侧导航条目 */
+.projectLeftItem:hover {
+    background: #829cb3;
+}
+
+/*编辑菜单鼠标放上去时样式变化*/
+.listOptMenu span:hover {
+    background: #78a1bf;
+    cursor: pointer;
+}
+/*List分页*/
+.listPagination .active a{
+    background-color: #4d88bb;
+    border-color: #4d88bb;
+}
+.listPagination li a{
+    padding: 6px 16px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+
+
+/* remove top and bottom padding */
+.note-color .dropdown-menu {
+    min-width: 168px !important;
+    padding: 0;
+}
+/* hide background color picker */
+.note-color .note-palette:first-child {
+    display: none !important;
+}
+/* remove palette title */
+.note-color .note-palette-title {
+    display: none;
+}
+.note-color button {
+    height: 30px;
+}
+
+/*鼠标放上去后，子元素才显示出来*/
+.removeCoverImgShow{
+    visibility: hidden;
+}
+.coverImgShow:hover .removeCoverImgShow{
+    visibility: visible;
+}

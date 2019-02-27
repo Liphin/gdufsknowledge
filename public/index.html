@@ -1,0 +1,43 @@
+<!--<!DOCTYPE html>-->
+<html ng-app="Angular" ng-controller="OverallCtrl">
+<head>
+    <!--<link rel="shortcut icon" type="image/png" href="favicon.png"/>-->
+    <link rel="shortcut icon" type="image/png" href="assets/img/report/checker_logo.png"/>
+    <link rel="stylesheet" href="assets/css/bootstrap/bootstrap.min.css" media="none" onload="if(media!='all')media='all'">
+    <link rel="stylesheet" href="assets/css/font-awesome/font-awesome.min.css" >
+    <link rel="stylesheet" href="assets/css/others/laydate.css">
+    <!--本地css-->
+    <link rel="stylesheet" href="assets/css/overall/shadows.css" media="none" onload="if(media!='all')media='all'">
+    <link rel="stylesheet" href="assets/css/overall/overall.css" media="none" onload="if(media!='all')media='all'">
+    <!--javascript 加载-->
+    <script src="assets/js/boot/head.load.min.js"></script>
+    <script src="assets/js/boot/boot.js"></script>
+
+    <!--头部-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>广外外事知识图谱系统</title>
+
+</head>
+<body style="overflow-y: auto;" class="scrollBar-1">
+<!--loading加载动画-->
+<div ng-if="loading" align="center" style="background: rgba(255,255,255,0.5);position: fixed;left: 0;right: 0;
+            top: 0;bottom: 0; z-index:{{zIndexHelper['loading']}};text-align: center;">
+    <img src="assets/img/load/loader1.gif" style="margin-top: 100px;">
+</div>
+<!--获取数据动画-->
+<div ng-if="overallData['loadingData']" style="background: rgba(255,255,255,0.5);position: fixed;left: 0;right: 0; top: 0;bottom: 0;z-index:{{zIndexHelper['loading']}};text-align: center;">
+    <div style="vertical-align: middle;display: inline-block">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+            </svg>
+        </div>
+    </div>
+    <div style="vertical-align: middle;width: 0;height: 100%;background: black;display: inline-block"></div>
+</div>
+
+<!--具体渲染页面-->
+<div ng-view=""></div>
+</body>
+</html>

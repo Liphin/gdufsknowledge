@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<script src="https://cdn.staticfile.org/angular.js/1.4.6/angular.min.js"></script>
+
+<body>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+
+    测试易简网
+    <input type="file" file-proxy/>
+
+    <div>{{}}</div>
+
+</div>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function ($scope, $http, myData) {
+        $scope.content = myData.overallData['content']
+
+    });
+    app.factory('myData', function () {
+        var overallData={
+            content:'',
+        };
+
+        return{
+            overallData: overallData,
+        }
+
+    });
+
+
+    app.directive('fileProxy', ['$http', function ($http) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                element.bind('change', function (evt) {
+                    //对文件名验证操作
+                    var fullName = element[0].files[0]['name'];
+
+                    console.log('come to 1', fullName);
+
+                    //文件上传到server
+                    var reader = new FileReader();
+                    reader.readAsDataURL(element[0].files[0]);
+                    reader.onload = function () {
+
+                        var formData = {
+                            'operaterType': encodeURIComponent('申请方'),
+                            'operater': encodeURIComponent('管理员'),
+                            'fileName': encodeURIComponent(fullName),
+                            'fileBody': reader.result
+                        };
+                        //上传到易简网server
+                        var url = 'https://14.23.88.138:7777/api/1.0/file';
+                        var headers = {
+                            'Content-Type': undefined,
+                            "Accept": "application/json",
+                            'Authorization': 'Bearer 987b2847-3a78-3a49-970b-264fbaa3ec7c'
+                        };
+                        var fd = new FormData();
+                        //动态装载数据
+                        for (var i in formData) {
+                            fd.append(i, formData[i]);
+                        }
+                        console.log('come to 2',formData);
+
+                        $http({
+                            method: 'POST',
+                            url: url,
+                            headers: headers,
+                            data: formData,
+                            rejectUnauthorized: false
+
+                        }).then(function successCallback(response) {
+                            console.log('易简网返回', response)
+                            // this callback will be called asynchronously
+                            // when the response is available
+                        }, function errorCallback(err) {
+                            console.log(err);
+                            // called asynchronously if an error occurs
+                            // or server returns response with an error status.
+                        });
+
+
+//                        $http.post(url, fd, {
+//                            transformRequest: angular.identity,
+//                            headers: headers,
+//                            rejectUnauthorized: false
+//
+//                        }).success(function (response) {
+//                            console.log('易简网返回', response)
+//
+//                        }).error(function (err) {
+//                            console.log(err);
+//                            //alert(OverallDataSer.overallData['requestDataErrorMsg'] + ",");
+//
+//                        });
+                    };
+                    reader.onerror = function (error) {
+                        alert("很抱歉，上传文件出错，请稍后重试");
+                    };
+                    // //上传到阿里云服务器server
+                    // OverallGeneralSer.uploadResource(element[0].files[0], fullName, nameArray[1], function (responseData) {
+                    //
+                    // });
+
+
+                    //附件支持：doc/docx/pdf/xls/xlsx/png/jpeg/jpg/gif/pfx/zip 格式
+                    //上传到前台server服务器，再传到易简网服务器，最后回传意见网的fileKey
+                    // var timestamp = OverallGeneralSer.getTimeStamp()+element[0].files[0];
+                    // OverallGeneralSer.uploadResource(element[0].files[0], timestamp, function (responseData) {
+                    //
+                    // });
+                    //清空该target file则下次选择相同的file也可以上传
+                    //evt.target.value = "";
+                })
+            }
+        }
+    }]);
+
+
+</script>
+
+</body>
+</html>
