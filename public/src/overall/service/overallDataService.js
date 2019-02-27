@@ -35,6 +35,8 @@ overallModule.factory('OverallDataSer', function ($rootScope) {
 
 
             'addVisitNewsData': baseUrlData['frontEndHttp'] + 'addVisitNewsData',
+            'getAllFillData': baseUrlData['frontEndHttp'] + 'getAllFillData',
+            'updateNodeInfo': baseUrlData['frontEndHttp'] + 'updateNodeInfo',
 
         }
     };

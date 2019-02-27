@@ -124,7 +124,7 @@ router.post('/searchVisitData', (req, res, next) => {
         //人物搜索
         case '1': {
             Promise.all([
-                gdufsTeacher.searchTeacherVisitNode(visitData,driver),
+                gdufsTeacher.searchTeacherVisitNode(visitData, driver),
                 visitor.searchVisitorNode(visitData, driver)
             ]).then(([result1, result2]) => {
                 //直接返回结果到前端，若无数据或则结果状态为400，前端进行渲染解析
@@ -160,17 +160,16 @@ router.post('/searchVisitData', (req, res, next) => {
 });
 
 
-
 /**
  * 获取搜索出来的详情数据
  */
-router.post('/getDetailInfo', (req, res, next) =>  {
+router.post('/getDetailInfo', (req, res, next) => {
     //获取初始化neo图数据库句柄
     let driver = data.dbPool['neo4j'];
 
     //从前台获取创建的请求数据
     let bodyData = req['body']; //unique_id、type
-    console.log('getDetailInfo bodyData',bodyData);
+    console.log('getDetailInfo bodyData', bodyData);
     let uniqueId = bodyData['unique_id'];
     switch (bodyData['type']) {
         //人物搜索
@@ -208,6 +207,54 @@ router.post('/getDetailInfo', (req, res, next) =>  {
             break;
         }
     }
+});
+
+
+/**
+ * 获取所有Gdufs_Teacher, Visitor, Visit_Dept节点的数据
+ */
+router.post('/getAllFillData', (req, res, next) => {
+
+    //获取初始化neo图数据库句柄
+    let driver = data.dbPool['neo4j'];
+
+    Promise.all([
+        gdufsTeacher.getAllGdufsTeacherNode(driver), //广外接待领导和教师节点
+        visitor.getAllVisitorNode(driver),//来访者节点
+        visitorDept.getAllVisitDeptNode(driver)] //来访单位节点
+    ).then(([result1, result2, result3]) => {
+        res.send({
+            'gdufs_teacher': result1,
+            'visitor': result2,
+            'visit_dept': result3
+        })
+    });
+});
+
+
+/**
+ * 更新节点信息数据
+ */
+router.post('/updateNodeInfo', (req, res, next) => {
+
+    let driver = data.dbPool['neo4j'];
+    let session = driver.session();
+    let bodyData = req['body'];
+    let cqlStr = "";
+    if(bodyData['nodeName']=='Visitor'){
+        cqlStr="match"
+    }
+    session.run('match (n:Gdufs_Teacher) return properties(n) as result')
+        .subscribe({
+            onCompleted: () => {
+                resolve(gdufsTeacherNodes);
+            },
+            onError: error => {
+                resolve([]);
+            }
+        });
+
+
 });
 
 

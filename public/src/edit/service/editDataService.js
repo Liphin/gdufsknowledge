@@ -15,7 +15,7 @@ editModule.factory('EditDataSer', function () {
         theme: '', //会议主题
         origin_url: '', //广外新闻原网址
         abstract: '', //广外外事管理内容摘要
-        unique_id:'',//来访事件唯一标识
+        unique_id: '',//来访事件唯一标识
 
         //广外接待会见人员
         gdufs_teacher: [
@@ -24,7 +24,7 @@ editModule.factory('EditDataSer', function () {
 
         //来访人
         visitor: [
-            {'cn_name': '', 'en_name': '', 'role': '1', 'title':'' } //1：主出访人；2：陪同出访
+            {'cn_name': '', 'en_name': '', 'role': '1', 'title': ''} //1：主出访人；2：陪同出访
         ],
 
         //来访人/出访的机构、部门、学校信息
@@ -35,9 +35,9 @@ editModule.factory('EditDataSer', function () {
     };
 
     let supportData = {
-        pageShow:{
+        pageShow: {
             modify: false,
-            edit: false
+            add: false
         },
         addPerson: {
             gdufs_teacher: {'name': '', 'role': '1'},
@@ -45,8 +45,29 @@ editModule.factory('EditDataSer', function () {
         }
     };
 
+    //编辑或修改人物或单位数据
+    let modifyData = {
+        gdufs_teacher: {
+            status: false, //标识是否选中进行编辑状态
+            data: [], //填充neo4j数据库中数据
+            instanceProperties: ['unique_id', 'account', 'cn_name', 'en_name', 'title', 'post', 'profile', 'portrait', 'phone', 'email', 'open_id_mini'] //所有非空的字段
+        },
+        visitor: {
+            status: true,
+            data: [],
+            instanceProperties: ['unique_id', 'profile', 'portrait', 'academic', 'en_name', 'cn_name', 'title', 'email', 'phone', 'papers']
+        },
+        visit_dept: {
+            status: false,
+            data: [],
+            instanceProperties: ['unique_id', 'en_name', 'cn_name', 'official_url', 'introduction', 'nation']
+        }
+    };
+
+
     return {
         visitData: visitData,
         supportData: supportData,
+        modifyData: modifyData,
     }
 });

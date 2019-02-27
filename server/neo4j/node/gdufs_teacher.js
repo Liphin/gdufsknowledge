@@ -138,10 +138,35 @@ let getGdufsTeacherEvent = function (uniqueId, driver) {
 };
 
 
+/**
+ * 获取所有广外领导教师节点数据
+ * @param driver
+ */
+let getAllGdufsTeacherNode = function (driver) {
+    return new Promise(resolve => {
+        const session = driver.session();
+        let gdufsTeacherNodes = [];
+        session.run('match (n:Gdufs_Teacher) return properties(n) as result')
+            .subscribe({
+                onNext: record => {
+                    gdufsTeacherNodes.push(record.get('result'));
+                },
+                onCompleted: () => {
+                    resolve(gdufsTeacherNodes);
+                },
+                onError: error => {
+                    resolve([]);
+                }
+            });
+    });
+};
+
+
 module.exports = {
     gdufsTeachInitCheck: gdufsTeachInitCheck,
     searchTeacherVisitNode: searchTeacherVisitNode,
     getGdufsTeacherEvent: getGdufsTeacherEvent,
+    getAllGdufsTeacherNode:getAllGdufsTeacherNode,
 };
 
 

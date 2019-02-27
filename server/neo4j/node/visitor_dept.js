@@ -121,10 +121,35 @@ let getVisitorDeptEvent = function (uniqueId, driver) {
 };
 
 
+/**
+ * 获取所有来访合作机构节点数据
+ * @param driver
+ */
+let getAllVisitDeptNode = function (driver) {
+    return new Promise(resolve => {
+        const session = driver.session();
+        let visitDeptNodes = [];
+        session.run('match (n:Visit_Dept) return properties(n) as result')
+            .subscribe({
+                onNext: record => {
+                    visitDeptNodes.push(record.get('result'));
+                },
+                onCompleted: () => {
+                    resolve(visitDeptNodes);
+                },
+                onError: error => {
+                    resolve([]);
+                }
+            });
+    });
+};
+
+
 module.exports = {
     deptInitCheck: deptInitCheck,
     searchVisitDeptNode: searchVisitDeptNode,
     getVisitorDeptEvent: getVisitorDeptEvent,
+    getAllVisitDeptNode:getAllVisitDeptNode,
 };
 
 

@@ -168,10 +168,35 @@ let getVisitorEvent = function (uniqueId, driver) {
 };
 
 
+/**
+ * 获取所有来访者节点数据
+ * @param driver
+ */
+let getAllVisitorNode = function (driver) {
+    return new Promise(resolve => {
+        const session = driver.session();
+        let visitNodes = [];
+        session.run('match (n:Visitor) return properties(n) as result')
+            .subscribe({
+                onNext: record => {
+                    visitNodes.push(record.get('result'));
+                },
+                onCompleted: () => {
+                    resolve(visitNodes);
+                },
+                onError: error => {
+                    resolve([]);
+                }
+            });
+    });
+};
+
+
 module.exports = {
     visitorInitCheck: visitorInitCheck,
     searchVisitorNode: searchVisitorNode,
     getVisitorEvent: getVisitorEvent,
+    getAllVisitorNode:getAllVisitorNode,
 };
 
 

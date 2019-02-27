@@ -260,7 +260,6 @@ overallModule.factory('OverallGeneralSer', function ($http, OverallDataSer, $tim
 
         }).error(function (err) {
             OverallGeneralSer.alertHttpRequestError("请求出错: ", 600, err);
-
         });
     };
 
