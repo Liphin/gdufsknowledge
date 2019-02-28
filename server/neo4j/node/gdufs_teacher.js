@@ -155,6 +155,7 @@ let getAllGdufsTeacherNode = function (driver) {
                     resolve(gdufsTeacherNodes);
                 },
                 onError: error => {
+                    console.error('getAllGdufsTeacherNode error', error);
                     resolve([]);
                 }
             });

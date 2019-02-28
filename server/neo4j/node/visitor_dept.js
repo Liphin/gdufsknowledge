@@ -138,6 +138,7 @@ let getAllVisitDeptNode = function (driver) {
                     resolve(visitDeptNodes);
                 },
                 onError: error => {
+                    console.error('getAllVisitDeptNode error', error);
                     resolve([]);
                 }
             });

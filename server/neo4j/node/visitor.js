@@ -185,6 +185,7 @@ let getAllVisitorNode = function (driver) {
                     resolve(visitNodes);
                 },
                 onError: error => {
+                    console.error('getAllVisitorNode error', error);
                     resolve([]);
                 }
             });
