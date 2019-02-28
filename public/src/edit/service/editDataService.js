@@ -10,7 +10,7 @@ editModule.factory('EditDataSer', function () {
         type: '1', //1：来访交流、2：出访交流
         title: '', //会议标题
         cover: '', //封面url
-        time: '', //会议时间
+        time: '2018年', //会议时间
         place: '', //会议地址
         theme: '', //会议主题
         origin_url: '', //广外新闻原网址
@@ -19,7 +19,7 @@ editModule.factory('EditDataSer', function () {
 
         //广外接待会见人员
         gdufs_teacher: [
-            {'cn_name': '', 'role': '1'}, //1：主接待人； 2：陪同接待
+            {'cn_name': '', 'role': '1', 'title':''}, //1：主接待人； 2：陪同接待
         ],
 
         //来访人
@@ -40,7 +40,7 @@ editModule.factory('EditDataSer', function () {
             add: false
         },
         addPerson: {
-            gdufs_teacher: {'name': '', 'role': '1'},
+            gdufs_teacher: {'name': '', 'role': '1', 'title':''},
             visitor: {'cn_name': '', 'en_name': '', 'role': '1', 'dept': ''}
         }
     };

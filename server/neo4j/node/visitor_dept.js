@@ -5,56 +5,89 @@
 const uuidv1 = require('uuid/v1');
 const utilTool = require('../../service/utilTool');
 
+
+let initDeptNode = function (nodeName, deptArray, resolve, driver) {
+    //分别准备中文或英文名字数组，用于CQL语句中的IN操作
+    let tempDept = [], tempCnName = [];
+    for (let i in deptArray) {
+        tempCnName.push(deptArray[i]['cn_name']);
+    }
+
+    //查看是否有相关机构，若无则进行创建
+    const session = driver.session();
+    session.run('match (v:' + nodeName + ') where v.cn_name in $cn_name return v.cn_name as cn_name', {cn_name: tempCnName})
+        .subscribe({
+            onNext: record => {
+                //装载已创建的单位节点数据到临时数组
+                tempDept.push(record.get('cn_name'));
+            },
+            onCompleted: () => {
+                //通过filter方法获取尚未创建的单位数组数据
+                let newDept = deptArray.filter((item) => {
+                    return !tempDept.includes(item['cn_name'])
+                });
+
+                //若未创建的单位数量大于0则创建
+                if (newDept.length > 0) {
+                    //准备创建CQL拼接语句
+                    let concatStr = 'create ';
+                    for (let i in newDept) {
+                        concatStr += "(:" + nodeName + "{cn_name:'" + newDept[i]['cn_name']  +
+                            "', nation: '" + newDept[i]['nation'] + "', unique_id: '" + uuidv1() + "'})";
+                        if (i < newDept.length - 1) {
+                            concatStr += ","
+                        }
+                    }
+
+                    //执行创建新单位节点操作
+                    console.log('run create dept script: \n' + concatStr);
+                    session.run(concatStr)
+                        .subscribe({
+                            //成功返回
+                            onCompleted: () => {
+                                console.log("create new dept complete");
+                                session.close();
+                                resolve(200);
+                            },
+                            //失败返回
+                            onError: error => {
+                                console.error(error, '6', utilTool.getCurrentDataTime());
+                                resolve('创建新的单位节点出错' + utilTool.getCurrentDataTime());
+                            }
+                        })
+
+                } else {
+                    //若无新单位需创建则直接返回成功
+                    session.close();
+                    resolve(200);
+                }
+            },
+            onError: error => {
+                console.error(error, '7', utilTool.getCurrentDataTime());
+                resolve('查看单位节点出错' + utilTool.getCurrentDataTime());
+            }
+        });
+};
+
+
+
 /**
- * 初始化来访机构/部门/学校节点的创建
+ * 初始化来访单位机构/部门/学校节点的创建
  * @param bodyData
  * @param driver
  * @returns {Promise}
  */
 let deptInitCheck = function (bodyData, driver) {
-    //返回异步Promise回调
     return new Promise(resolve => {
-
-        //检查该机构节点是否已存在
-        const session = driver.session();
-        session.run('match (vd:Visitor_Dept) where vd.cn_name=$cn_name return vd.cn_name as cn_name', {cn_name: bodyData['visitor_dept']['cn_name']})
-            .then(result => {
-                //如果该机构节点不存在则新建该节点
-                if (result.records.length <= 0) {
-                    //分别准备创建该机构的CQL查询语句及数据
-                    let queryStr = 'create (:Visitor_Dept{ cn_name:$cn_name, nation:$nation, unique_id:$unique_id })';
-                    let queryData = {
-                        cn_name: bodyData['visitor_dept']['cn_name'],
-                        nation: bodyData['visitor_dept']['nation'],
-                        unique_id: uuidv1() //唯一标识符
-                    };
-
-                    //执行新建机构节点
-                    session.run(queryStr, queryData)
-                        .subscribe({
-                            //完成后关闭连接并返回success
-                            onCompleted: () => {
-                                console.log('create new dept complete');
-                                session.close();
-                                resolve(200);
-                            },
-                            //出现错误返回failure
-                            onError: error => {
-                                console.error(error, '4', utilTool.getCurrentDataTime());
-                                resolve('创建新的来访机构出错' + utilTool.getCurrentDataTime());
-                            }
-                        })
-                }
-                //如果该机构已存在则返回成功
-                else {
-                    session.close();
-                    resolve(200);
-                }
-            })
-            .catch(error => {
-                console.error(error, '3', utilTool.getCurrentDataTime());
-                resolve('查看是否有已有来访机构出错' + utilTool.getCurrentDataTime());
+        //分别获取单位的国别和中文名称
+        let deptArray = [];
+        for (let i in bodyData['visitor']) {
+            deptArray.push({
+                'cn_name': bodyData['visitor'][i]['dept_cn_name'],
+                'nation': bodyData['visitor'][i]['nation']
             });
+        }
+        initDeptNode('Visitor_Dept', deptArray, resolve, driver)
     });
 };
 

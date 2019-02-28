@@ -18,7 +18,7 @@ let relationIterator = function (bodyData, index, session, resolve) {
     let searchStr = 'match (v:Visitor)-[n:Visitor_Visitor_Dept]->(vd:Visitor_Dept) where v.cn_name=$cn_name_1 and vd.cn_name=$cn_name_2 return n';
     let searchData = {
         cn_name_1: bodyData['visitor'][index]['cn_name'],
-        cn_name_2: bodyData['visitor_dept']['cn_name']
+        cn_name_2: bodyData['visitor'][index]['dept_cn_name']
     };
     session.run(searchStr, searchData)
         .then(result => {
@@ -29,7 +29,7 @@ let relationIterator = function (bodyData, index, session, resolve) {
                 queryStr += 'create (v)-[:Visitor_Visitor_Dept{ unique_id:$unique_id }]->(vd)';
                 let queryData = {
                     cn_name_1: bodyData['visitor'][index]['cn_name'],
-                    cn_name_2: bodyData['visitor_dept']['cn_name'],
+                    cn_name_2: bodyData['visitor'][index]['dept_cn_name'],
                     unique_id: uuidv1() //每个关系均有唯一标识符属性字段
                 };
 

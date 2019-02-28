@@ -14,9 +14,13 @@ const utilTool = require('../../service/utilTool');
  */
 let initCheckNode = (nodeName, bodyData, resolve, driver) => {
     //获取全部广外教师名称数据，用于查询图数据库中已存在的节点
-    let gdufsTeachArray = [], tempGdufsTeach = [];
+    let teacherInfo = [], gdufsTeachArray = [], tempGdufsTeach = [];
     for (let i in bodyData['gdufs_teacher']) {
         gdufsTeachArray.push(bodyData['gdufs_teacher'][i]['cn_name']);
+        teacherInfo.push({
+            'cn_name': bodyData['gdufs_teacher'][i]['cn_name'],
+            'title': bodyData['gdufs_teacher'][i]['title'],
+        })
     }
 
     //查看是否有已有该教师节点
@@ -29,15 +33,16 @@ let initCheckNode = (nodeName, bodyData, resolve, driver) => {
             },
             onCompleted: () => {
                 //通过比较临时数组和目标数组，获取尚未创建的广外教师数组数据
-                let newGdufsTeach = gdufsTeachArray.filter((item) => {
-                    return !tempGdufsTeach.includes(item);
+                let newGdufsTeach = teacherInfo.filter((item) => {
+                    return !tempGdufsTeach.includes(item['cn_name']);
                 });
 
                 //如果有尚未创建的广外教师则进行创建
                 if (newGdufsTeach.length > 0) {
                     let concatStr = 'create ';
                     for (let i in newGdufsTeach) {
-                        concatStr += "(:" + nodeName + "{cn_name:'" + newGdufsTeach[i] + "', unique_id:'" + uuidv1() + "'})";
+                        concatStr += "(:" + nodeName + "{cn_name:'" + newGdufsTeach[i]['cn_name'] + "', title: '" + newGdufsTeach[i]['title']
+                            + "', unique_id:'" + uuidv1() + "'})";
                         if (i < newGdufsTeach.length - 1) concatStr += ",";
                     }
 
@@ -167,7 +172,7 @@ module.exports = {
     gdufsTeachInitCheck: gdufsTeachInitCheck,
     searchTeacherVisitNode: searchTeacherVisitNode,
     getGdufsTeacherEvent: getGdufsTeacherEvent,
-    getAllGdufsTeacherNode:getAllGdufsTeacherNode,
+    getAllGdufsTeacherNode: getAllGdufsTeacherNode,
 };
 
 

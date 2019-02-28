@@ -73,6 +73,11 @@ editModule.controller('EditCtrl', function ($location, $routeParams, EditDataSer
             console.log('实体数据', EditDataSer.modifyData);
         });
     }
+    //添加新闻数据
+    else if($routeParams['option'] == 'add'){
+        EditDataSer.supportData['pageShow']['modify'] = false;
+        EditDataSer.supportData['pageShow']['add'] = true;
+    }
 
 
     /**

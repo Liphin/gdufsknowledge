@@ -23,24 +23,6 @@
         </div>
     </div>
 
-
-    <div style="margin-top: 20px">
-        <!--来访或出访的机构、部门、学校-->
-        <div style="display: inline-block; ">
-            <span>到访名称：</span>
-            <input placeholder="来访或出访的机构、部门、学校的中文名称" ng-model="edit.visitData['visitor_dept']['cn_name']" style="width: 200px"/>
-        </div>
-
-
-        <!--来访或出访的机构、部门、学校的国别-->
-        <div style="margin-left: 100px;display: inline-block">
-            <span>到访国别：</span>
-            <input placeholder="来访或出访的机构、部门、学校的国别" ng-model="edit.visitData['visitor_dept']['nation']" style="width: 200px"/>
-        </div>
-    </div>
-
-
-
     <div style="margin-top: 20px">
         <!--封面-->
         <div style="display: inline-block">
@@ -57,7 +39,7 @@
         <!--会谈主题-->
         <div style="margin-left: 100px;display: inline-block">
             <span>会谈主题：</span>
-            <input placeholder="请输入地点" ng-model="edit.visitData['theme']" style="width: 200px"/>
+            <input placeholder="请输入会议主题" ng-model="edit.visitData['theme']" style="width: 200px"/>
         </div>
     </div>
 
@@ -91,6 +73,11 @@
             </div>
 
             <div style="display: inline-block; margin-left: 20px">
+                <span>职务：</span>
+                <input placeholder="请输入来访方职称" ng-model="value['title']" style="width: 150px; margin-left: 26px"/>
+            </div>
+
+            <div style="display: inline-block; margin-left: 20px">
                 <span>出访身份：</span>
                 <select ng-model="value['role']">
                     <option value="1">主会谈人</option>
@@ -106,7 +93,7 @@
 
 
     <!--来访方代表，人员、身份（接待，陪同） array-->
-    <div style="margin-top: 20px">
+    <div style="margin-top: 40px">
         <div >
             <!--来访方-->
             <span>来访方：&nbsp;</span>
@@ -114,7 +101,8 @@
             <span class="fa fa-plus" style="color: grey; cursor: pointer" ng-click="edit.addMeetingPerson('visitor')">&nbsp;添加</span>
         </div>
 
-        <div ng-repeat="value in edit.visitData['visitor'] track by $index" style="margin-top: 5px; ">
+        <div ng-repeat="value in edit.visitData['visitor'] track by $index" style="width: 720px;;margin-top: 15px;border: 1px solid darkgrey; border-width: 0 0 1px 0 ">
+
             <div style="display: inline-block; ">
                 <span>中文姓名：</span>
                 <input placeholder="请输入来访方中文姓名" ng-model="value['cn_name']" style="width: 150px"/>
@@ -130,16 +118,28 @@
                 <input placeholder="请输入来访方职称" ng-model="value['title']" style="width: 150px"/>
             </div>
 
-            <div style="display: inline-block; margin-left: 20px">
-                <span>出访身份：</span>
-                <select ng-model="value['role']">
-                    <option value="1">主会谈人</option>
-                    <option value="2">陪同出访</option>
-                </select>
-            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px">
+                <div style="display: inline-block;">
+                    <span>单位名称：</span>
+                    <input placeholder="所在单位中文名称" ng-model="value['dept_cn_name']" style="width: 150px"/>
+                </div>
 
-            <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingPerson('visitor', $index)">
-                <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
+                <div style="display: inline-block; margin-left: 20px">
+                    <span>单位国别：</span>
+                    <input placeholder="来访单位国别" ng-model="value['nation']" style="width: 150px"/>
+                </div>
+
+                <div style="display: inline-block; margin-left: 20px">
+                    <span>出访身份：</span>
+                    <select ng-model="value['role']">
+                        <option value="1">主会谈人</option>
+                        <option value="2">陪同出访</option>
+                    </select>
+                </div>
+
+                <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingPerson('visitor', $index)">
+                    <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
+                </div>
             </div>
         </div>
     </div>
