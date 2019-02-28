@@ -29,7 +29,7 @@
   },
   "base": "/root/gdufs/knowledge/front/output/",
   "https":{
-    "port":445,
+    "port":3066,
     "key":"/root/ca/https/node/gdufs_knowledge_cert/Nginx/2_gdufsknowledge.liphin.com.key",
     "cert":"/root/ca/https/node/gdufs_knowledge_cert/Nginx/1_gdufsknowledge.liphin.com_bundle.crt"
   }
