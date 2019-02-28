@@ -27,7 +27,7 @@
     "accessKeySecret": "BXJ4Fg5svbtiNh1TyxSO37ehdMpSnJ",
     "bucket": "output-service"
   },
-  "base": "G:/SoftwareOutSourcing/GDUFS/knowledge/back/",
+  "base": "/root/gdufs/knowledge/front/output/",
   "https":{
     "port":445,
     "key":"/root/ca/https/node/gdufs_knowledge_cert/Nginx/2_gdufsknowledge.liphin.com.key",
