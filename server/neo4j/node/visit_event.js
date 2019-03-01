@@ -15,12 +15,13 @@ let visitEventInitCheck = function (bodyData, driver) {
     return new Promise(resolve => {
 
         //分别准备创建来访事件节点CQL和数据数组
-        let queryStr = 'create (:Visit_Event{ type:$type, time:$time, place:$place, origin_url:$origin_url, title:$title, theme:$theme, abstract:$abstract, unique_id:$unique_id })';
+        let queryStr = 'create (:Visit_Event{ type:$type, cover:$cover, time:$time, timestamp:$timestamp, place:$place, origin_url:$origin_url, title:$title, theme:$theme, abstract:$abstract, unique_id:$unique_id })';
         let queryArray = {
             type: bodyData['type'],
             cover: bodyData['cover'],
             title: bodyData['title'],
             time: bodyData['time'],
+            timestamp: bodyData['timestamp'],
             place: bodyData['place'],
             origin_url: bodyData['origin_url'],
             theme: bodyData['theme'],
@@ -57,14 +58,14 @@ let searchVisitEventNode = function (visitData, driver) {
     return new Promise(resolve => {
         const session = driver.session();
         let visitEventData = [];
-        session.run('match (n:Visit_Event) where n.theme=~$theme or n.abstract=~$abstract return properties(n) as result',
+        session.run('match (n:Visit_Event) where n.theme=~$theme or n.abstract=~$abstract return distinct properties(n) as result',
             {theme: '.*' + visitData + '.*', abstract: '.*' + visitData + '.*'})
             .subscribe({
                 onNext: record => {
                     visitEventData.push(record.get('result'));
                 },
                 onCompleted: () => {
-                    resolve(visitEventData);
+                    resolve(visitEventData.sort(utilTool.neo4jSortDate));
                 },
                 onError: error => {
                     resolve({

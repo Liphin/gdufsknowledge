@@ -23,16 +23,29 @@ let initDeptNode = function (nodeName, deptArray, resolve, driver) {
             },
             onCompleted: () => {
                 //通过filter方法获取尚未创建的单位数组数据
-                let newDept = deptArray.filter((item) => {
+                let deptData = deptArray.filter((item) => {
                     return !tempDept.includes(item['cn_name'])
                 });
+
+                //去重，去除数组中原有的重复名称的部门数据
+                let newDept = [];
+                for (let i in deptData) {
+                    let toAdd = true;
+                    for (let j in newDept) {
+                        if (newDept[j]['cn_name'] == deptData[i]['cn_name']) {
+                            toAdd = false;
+                            break;
+                        }
+                    }
+                    if (toAdd) newDept.push(deptData[i])
+                }
 
                 //若未创建的单位数量大于0则创建
                 if (newDept.length > 0) {
                     //准备创建CQL拼接语句
                     let concatStr = 'create ';
                     for (let i in newDept) {
-                        concatStr += "(:" + nodeName + "{cn_name:'" + newDept[i]['cn_name']  +
+                        concatStr += "(:" + nodeName + "{cn_name:'" + newDept[i]['cn_name'] +
                             "', nation: '" + newDept[i]['nation'] + "', unique_id: '" + uuidv1() + "'})";
                         if (i < newDept.length - 1) {
                             concatStr += ","
@@ -70,7 +83,6 @@ let initDeptNode = function (nodeName, deptArray, resolve, driver) {
 };
 
 
-
 /**
  * 初始化来访单位机构/部门/学校节点的创建
  * @param bodyData
@@ -101,7 +113,7 @@ let searchVisitDeptNode = function (visitData, driver) {
     return new Promise(resolve => {
         const session = driver.session();
         let visitorDeptData = [];
-        session.run('match (n:Visitor_Dept) where n.cn_name=~$cn_name or n.en_name=~$en_name or n.nation=~$nation return properties(n) as result',
+        session.run('match (n:Visitor_Dept) where n.cn_name=~$cn_name or n.en_name=~$en_name or n.nation=~$nation return distinct properties(n) as result',
             {cn_name: '.*' + visitData + '.*', en_name: '.*' + visitData + '.*', nation: '.*' + visitData + '.*'})
             .subscribe({
                 onNext: record => {
@@ -141,7 +153,7 @@ let getVisitorDeptEvent = function (uniqueId, driver) {
                     visitEvents.push(record.get('result'));
                 },
                 onCompleted: () => {
-                    resolve(visitEvents);
+                    resolve(visitEvents.sort(utilTool.neo4jSortDate));
                 },
                 onError: error => {
                     resolve({
@@ -183,7 +195,7 @@ module.exports = {
     deptInitCheck: deptInitCheck,
     searchVisitDeptNode: searchVisitDeptNode,
     getVisitorDeptEvent: getVisitorDeptEvent,
-    getAllVisitDeptNode:getAllVisitDeptNode,
+    getAllVisitDeptNode: getAllVisitDeptNode,
 };
 
 

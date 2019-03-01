@@ -115,7 +115,7 @@ let searchVisitorNode = function (visitData, driver) {
     return new Promise(resolve => {
         const session = driver.session();
         let visitorData = [];
-        session.run('match (n:Visitor) where n.cn_name=~$cn_name or n.en_name=~$en_name return properties(n) as result',
+        session.run('match (n:Visitor) where n.cn_name=~$cn_name or n.en_name=~$en_name return distinct properties(n) as result',
             {cn_name: '.*' + visitData + '.*', en_name: '.*' + visitData + '.*'})
             .subscribe({
                 onNext: record => {
@@ -155,7 +155,7 @@ let getVisitorEvent = function (uniqueId, driver) {
                     visitEvents.push(record.get('result'));
                 },
                 onCompleted: () => {
-                    resolve(visitEvents);
+                    resolve(visitEvents.sort(utilTool.neo4jSortDate));
                 },
                 onError: error => {
                     resolve({

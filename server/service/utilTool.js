@@ -13,6 +13,17 @@ let getCurrentDataTime = function () {
         date.getMinutes() + ":" + date.getSeconds();
 };
 
+/**
+ * 时间排序，倒序排列，时间最晚排最前
+ * @param a
+ * @param b
+ * @returns {number}
+ */
+let neo4jSortDate = function (a, b) {
+    return new Date(b['timestamp']) - new Date(a['timestamp'])
+};
+
 module.exports = {
+    neo4jSortDate: neo4jSortDate,
     getCurrentDataTime: getCurrentDataTime,
 };

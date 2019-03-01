@@ -34,6 +34,14 @@ editModule.controller('EditCtrl', function ($location, $routeParams, EditDataSer
     };
 
     edit.addNewVisitData = function () {
+        //单独设置时间戳数据
+        let datePattern = new RegExp("\\d+年\\d+月\\d+日", "g");
+        let dateTime = EditDataSer.visitData['time'].match(datePattern);
+        if (dateTime.length <= 0) {
+            alert("填写时间按照****年**月**日； 或 ****年**月**日至****年**月**日");
+            return
+        }
+        EditDataSer.visitData['timestamp'] = dateTime[0].replace('年', '-').replace('月', '-').replace('日', '');
         OverallGeneralSer.httpPostData3(EditDataSer.visitData, OverallDataSer.urlData['frontEndHttp']['addVisitNewsData'],
             function (result) {
                 console.log('result', result)
@@ -74,7 +82,7 @@ editModule.controller('EditCtrl', function ($location, $routeParams, EditDataSer
         });
     }
     //添加新闻数据
-    else if($routeParams['option'] == 'add'){
+    else if ($routeParams['option'] == 'add') {
         EditDataSer.supportData['pageShow']['modify'] = false;
         EditDataSer.supportData['pageShow']['add'] = true;
     }
