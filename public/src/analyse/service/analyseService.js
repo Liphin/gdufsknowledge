@@ -21,6 +21,20 @@ analyseModule.factory('AnalyseSer', function ($rootScope, OverallDataSer, $cooki
 
             //初始化后显示外事出访数据分析 “各学院——出访人” 数柱状图
             chooseAnalyseGraph('visit_general_list', 'gdufs_dept');
+
+            //赋值公派出访数据填充
+            AnalyseDataSer.analyseData['abroad_back_people']['factor']['back_plan']['data'].length = 0;
+            for (let i = 0; i < AnalyseDataSer.knowData['abroad_back_people'].length; i++) {
+                let info = {
+                    'name1': AnalyseDataSer.knowData['abroad_back_people'][i]['name'],
+                    'back_plan1': AnalyseDataSer.knowData['abroad_back_people'][i]['back_plan'],
+                };
+                if (++i < AnalyseDataSer.knowData['abroad_back_people'].length) {
+                    info['name2'] = AnalyseDataSer.knowData['abroad_back_people'][i]['name'];
+                    info['back_plan2'] = AnalyseDataSer.knowData['abroad_back_people'][i]['back_plan'];
+                }
+                AnalyseDataSer.analyseData['abroad_back_people']['factor']['back_plan']['data'].push(info);
+            }
         })
     }
 
@@ -188,7 +202,7 @@ analyseModule.factory('AnalyseSer', function ($rootScope, OverallDataSer, $cooki
      */
     function parseTimePeriod(str1, str2, dateObj) {
         let timePeriodMonths = (new Date(str2) - new Date(str1)) / 2592000000;
-        console.log(str2, str1,timePeriodMonths )
+        //console.log(str2, str1, timePeriodMonths)
         //一个月内
         if (timePeriodMonths <= 1) {
             dateObj[1]['num']++;

@@ -215,6 +215,11 @@ analyseModule.factory('AnalyseDataSer', function () {
                 //类型
                 'type': {
                     'status': false,
+                },
+                //公派回国考察内容
+                'back_plan': {
+                    'data':[],
+                    'status': false,
                 }
             }
         },
