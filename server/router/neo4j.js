@@ -83,14 +83,65 @@ router.post('/addVisitNewsData', (req, res, next) => {
 // let driver = data.dbPool['neo4j'];
 // const session = driver.session();
 // let visitEvents = [];
-// session.run('match (vd:Visitor_Dept)<-[:Visitor_Visitor_Dept]-(:Visitor)-[:Visitor_Visit_Event]->(n:Visit_Event) where vd.unique_id=$unique_id return distinct properties(n) as result',
-//     {unique_id: '0114bb90-3335-11e9-b570-4b19d3f9054f'})
+// let nodeUniqueId = 'de996b40-4411-11e9-a85c-f9d7c56311d4';
+// let nodeUniqueIdNewFrom = 'ea155211-43dd-11e9-a85c-f9d7c56311d4';
+// session.run("MATCH (n1:Gdufs_Dept)-[r1:Gdufs_Dept_Visit_Event]->(n2:Visit_Event) WHERE n1.unique_id=$unique_id return properties(r1) as result, n2.unique_id as unique_idEV", {unique_id: nodeUniqueId})
 //     .subscribe({
 //         onNext: record => {
-//             visitEvents.push(record.get('result'));
+//             let result = record.get('result');//relationship联系
+//             result['unique_id2'] = nodeUniqueId; //目标删除的节点unique_id
+//             result['unique_idEV'] = record.get('unique_idEV');//事件unique_id
+//             visitEvents.push(result);
 //         },
+//
 //         onCompleted: () => {
-//             console.log(visitEvents)
+//
+//             //console.log(visitEvents)
+//             for (let i in visitEvents) {
+//                 console.log(visitEvents[i]);
+//
+//                 //console.log(visitEvents[i])
+//                 session.run("MATCH (n1:Gdufs_Dept),(n2:Visit_Event) " +
+//                     "WHERE n1.unique_id='" + nodeUniqueIdNewFrom + "' and n2.unique_id=$unique_idEV " +
+//                     "CREATE (n1)-[r1:Gdufs_Dept_Visit_Event{unique_id:'" + uuidv1() + "', attend:$attend}]->(n2)", visitEvents[i])
+//                     .subscribe({
+//                         onNext: record => {
+//                             //visitEvents.push(record.get('result'));
+//                         },
+//                         onCompleted: () => {
+//                             console.log('success1')
+//                         },
+//                         onError: error => {
+//                             console.log(error)
+//                         }
+//                     });
+//
+//                 session.run("match ()-[n1:Gdufs_Dept_Visit_Event]->() where n1.unique_id=$unique_id delete n1", visitEvents[i])
+//                     .subscribe({
+//                         onNext: record => {
+//                             //visitEvents.push(record.get('result'));
+//                         },
+//                         onCompleted: () => {
+//                             console.log('success2');
+//
+//                             session.run("match (n2:Gdufs_Dept) where n2.unique_id=$unique_id2 delete n2", visitEvents[i])
+//                                 .subscribe({
+//                                     onNext: record => {
+//                                         //visitEvents.push(record.get('result'));
+//                                     },
+//                                     onCompleted: () => {
+//                                         console.log('success3')
+//                                     },
+//                                     onError: error => {
+//                                         console.log(error)
+//                                     }
+//                                 });
+//                         },
+//                         onError: error => {
+//                             console.log(error)
+//                         }
+//                     });
+//             }
 //         },
 //         onError: error => {
 //             console.log(error)
