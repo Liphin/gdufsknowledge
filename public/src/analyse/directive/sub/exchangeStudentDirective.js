@@ -24,7 +24,7 @@ analyseModule.directive('exchangeStudentBarInstituteNew', function (AnalyseDataS
                     if (deptObj.hasOwnProperty(key)) {
                         deptObj[key]++;
                     } else {
-                        deptObj[key] = 0;
+                        deptObj[key] = 1;
                     }
                 }
                 for (let j in deptObj) {
@@ -134,7 +134,7 @@ analyseModule.directive('exchangeStudentBarExchangePeriod', function (AnalyseDat
                         height: 500
                     },
                     title: {
-                        text: '2018年广外学生出国境 时长——人次数 统计图表'
+                        text: '2018年广外学生出国境时长——人次数统计图表'
                     },
                     xAxis: {
                         type: 'category',

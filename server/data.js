@@ -25,6 +25,7 @@ let gdufsKnowledgeTableData = {
     'exchange_student_list':'',
     'agreements': '',
     'school_level_reception': '',
+    'abroad_back_people': '',
 };
 
 module.exports = {

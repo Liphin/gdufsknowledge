@@ -153,23 +153,23 @@ analyseModule.factory('AnalyseSer', function ($rootScope, OverallDataSer, $cooki
             //获取交换时间跨度（月份）
             let timePeriodMonths = (new Date(periodArray[1]) - new Date(periodArray[0])) / 2592000000;
             //一个月内
-            if(timePeriodMonths<=1){
+            if (timePeriodMonths <= 1) {
                 dateObj[1]['num']++;
             }
             //三个月内
-            else if(timePeriodMonths<=3){
+            else if (timePeriodMonths <= 3) {
                 dateObj[3]['num']++;
             }
             //半年内
-            else if(timePeriodMonths<=6){
+            else if (timePeriodMonths <= 6) {
                 dateObj[6]['num']++;
             }
             //一年内
-            else if(timePeriodMonths<=12){
+            else if (timePeriodMonths <= 12) {
                 dateObj[12]['num']++;
             }
             //两年内
-            else if(timePeriodMonths<=24){
+            else if (timePeriodMonths <= 24) {
                 dateObj[24]['num']++;
             }
             //三年及以上
@@ -177,13 +177,53 @@ analyseModule.factory('AnalyseSer', function ($rootScope, OverallDataSer, $cooki
                 dateObj[36]['num']++;
             }
         }
+    }
 
+
+    /**
+     * 时间段比较设置
+     * @param str1
+     * @param str2
+     * @param dateObj
+     */
+    function parseTimePeriod(str1, str2, dateObj) {
+        let timePeriodMonths = (new Date(str2) - new Date(str1)) / 2592000000;
+        console.log(str2, str1,timePeriodMonths )
+        //一个月内
+        if (timePeriodMonths <= 1) {
+            dateObj[1]['num']++;
+        }
+        //三个月内
+        else if (timePeriodMonths <= 3) {
+            dateObj[3]['num']++;
+        }
+        //半年内
+        else if (timePeriodMonths <= 6) {
+            dateObj[6]['num']++;
+        }
+        //九个月
+        else if (timePeriodMonths <= 9) {
+            dateObj[9]['num']++;
+        }
+        //一年内
+        else if (timePeriodMonths <= 12) {
+            dateObj[12]['num']++;
+        }
+        //两年内
+        else if (timePeriodMonths <= 24) {
+            dateObj[24]['num']++;
+        }
+        //三年及以上
+        else {
+            dateObj[36]['num']++;
+        }
 
     }
 
 
     return {
         initData: initData,
+        parseTimePeriod: parseTimePeriod,
         parseTargetTimeToMonth: parseTargetTimeToMonth,
         chooseAnalyseGraph: chooseAnalyseGraph,
         parseTargetDateTime: parseTargetDateTime,

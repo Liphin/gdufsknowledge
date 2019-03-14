@@ -26,7 +26,7 @@ analyseModule.directive('expertLongVisitBarGdufsDept', function (AnalyseDataSer)
                         if (deptObj.hasOwnProperty(tempArray[j])) {
                             deptObj[tempArray[j]]++;
                         } else {
-                            deptObj[tempArray[j]] = 0;
+                            deptObj[tempArray[j]] = 1;
                         }
                     }
                 }

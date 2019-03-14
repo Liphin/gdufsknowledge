@@ -77,5 +77,16 @@ analyseModule.directive('deptActivityApply', ['$document', function ($document) 
 }]);
 
 
+/**
+ * 2018年学校公派回国人员
+ */
+analyseModule.directive('abroadBackPeople', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/analyse/tmpl/sub/abroadBackPeople.html'
+    };
+}]);
+
+
 
 

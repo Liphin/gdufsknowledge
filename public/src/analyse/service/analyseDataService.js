@@ -188,6 +188,36 @@ analyseModule.factory('AnalyseDataSer', function () {
                 }
             }
         },
+
+
+        //---2018年广外公派回国人员---
+        'abroad_back_people': {
+            'status': false,
+            'text': '2018年学校公派回国人员数据统计分析',
+            'selected':'gdufs_dept',
+            'file':'assets/resource/2018年学校公派回国人员名单.xls',
+
+            'factor':{
+                //所属学院
+                'gdufs_dept': {
+                    'status': false,
+                    'minPeopleNum': 1,
+                },
+                //访问国家、大学
+                'destination': {
+                    'status': false,
+                    'minPeopleNum': 1,
+                },
+                //时间段
+                'time_period': {
+                    'status': false,
+                },
+                //类型
+                'type': {
+                    'status': false,
+                }
+            }
+        },
     };
 
     return {

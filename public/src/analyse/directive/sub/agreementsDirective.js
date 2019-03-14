@@ -24,7 +24,7 @@ analyseModule.directive('agreementBarNation', function (AnalyseDataSer) {
                     if (nationObj.hasOwnProperty(key)) {
                         nationObj[key]++;
                     } else {
-                        nationObj[key] = 0;
+                        nationObj[key] = 1;
                     }
                 }
                 for (let j in nationObj) {
