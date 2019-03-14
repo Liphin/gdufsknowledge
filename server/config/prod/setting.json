@@ -8,7 +8,7 @@
     "useNewUrlParser": true
   },
   "mysql": {
-    "toConnect": false,
+    "toConnect": true,
     "connectionLimit": 10,
     "host": "rm-2ze7293154b3khhn2i.mysql.rds.aliyuncs.com",
     "user": "beanson",
