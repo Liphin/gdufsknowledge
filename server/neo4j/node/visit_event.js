@@ -15,17 +15,15 @@ let visitEventInitCheck = function (bodyData, driver) {
     return new Promise(resolve => {
 
         //分别准备创建来访事件节点CQL和数据数组
-        let queryStr = 'create (:Visit_Event{ type:$type, cover:$cover, time:$time, timestamp:$timestamp, place:$place, origin_url:$origin_url, title:$title, theme:$theme, abstract:$abstract, unique_id:$unique_id })';
+        let queryStr = 'create (:Visit_Event{ type:$type, cover:$cover, time:$time, timestamp:$timestamp, origin_url:$origin_url, title:$title, key_word:$key_word, unique_id:$unique_id })';
         let queryArray = {
             type: bodyData['type'],
             cover: bodyData['cover'],
             title: bodyData['title'],
             time: bodyData['time'],
             timestamp: bodyData['timestamp'],
-            place: bodyData['place'],
             origin_url: bodyData['origin_url'],
-            theme: bodyData['theme'],
-            abstract: bodyData['abstract'],
+            key_word: bodyData['key_word'],
             unique_id: bodyData['unique_id']
         };
 
@@ -78,9 +76,37 @@ let searchVisitEventNode = function (visitData, driver) {
 };
 
 
+/**
+ * 获取所有来访合作机构节点数据
+ * @param driver
+ */
+let getAllVisitEventNode = function (driver) {
+    return new Promise(resolve => {
+        const session = driver.session();
+        let visitEventNodes = [];
+        session.run('match (n:Visit_Event) return properties(n) as result')
+            .subscribe({
+                onNext: record => {
+                    let result = record.get('result');
+                    result['label_name']='visit_event';
+                    visitEventNodes.push(result);
+                },
+                onCompleted: () => {
+                    resolve(visitEventNodes);
+                },
+                onError: error => {
+                    console.error('getAllVisitEventNode error', error);
+                    resolve([]);
+                }
+            });
+    });
+};
+
+
 module.exports = {
     visitEventInitCheck: visitEventInitCheck,
-    searchVisitEventNode: searchVisitEventNode
+    searchVisitEventNode: searchVisitEventNode,
+    getAllVisitEventNode: getAllVisitEventNode,
 };
 
 

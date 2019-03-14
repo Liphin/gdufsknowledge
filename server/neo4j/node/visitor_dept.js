@@ -7,7 +7,7 @@ const utilTool = require('../../service/utilTool');
 
 
 let initDeptNode = function (nodeName, deptArray, resolve, driver) {
-    //分别准备中文或英文名字数组，用于CQL语句中的IN操作
+    //准备中文名字数组，用于CQL语句中的IN操作
     let tempDept = [], tempCnName = [];
     for (let i in deptArray) {
         tempCnName.push(deptArray[i]['cn_name']);
@@ -91,15 +91,7 @@ let initDeptNode = function (nodeName, deptArray, resolve, driver) {
  */
 let deptInitCheck = function (bodyData, driver) {
     return new Promise(resolve => {
-        //分别获取单位的国别和中文名称
-        let deptArray = [];
-        for (let i in bodyData['visitor']) {
-            deptArray.push({
-                'cn_name': bodyData['visitor'][i]['dept_cn_name'],
-                'nation': bodyData['visitor'][i]['nation']
-            });
-        }
-        initDeptNode('Visitor_Dept', deptArray, resolve, driver)
+        initDeptNode('Visitor_Dept', bodyData['visitor_dept'], resolve, driver)
     });
 };
 
@@ -177,7 +169,9 @@ let getAllVisitDeptNode = function (driver) {
         session.run('match (n:Visitor_Dept) return properties(n) as result')
             .subscribe({
                 onNext: record => {
-                    visitDeptNodes.push(record.get('result'));
+                    let result = record.get('result');
+                    result['label_name']='visitor_dept';
+                    visitDeptNodes.push(result);
                 },
                 onCompleted: () => {
                     resolve(visitDeptNodes);

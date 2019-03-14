@@ -1,0 +1,75 @@
+<!--highchart结构图展示-->
+<div style="">
+
+    <!--各学院邀请外事人员来访人数比较：柱形图-->
+    <expert-short-visit-bar-gdufs-dept min-people-num="{{analyse.analyseData['expert_short_visit']['factor']['gdufs_dept']['minPeopleNum']}}"
+                                       ng-if="analyse.analyseData['expert_short_visit']['factor']['gdufs_dept']['status']"></expert-short-visit-bar-gdufs-dept>
+
+    <!--外事专家短期来访各国家/地区——人数：柱状图-->
+    <expert-short-visit-bar-visit-nation min-people_num="{{analyse.analyseData['expert_short_visit']['factor']['visit_nation']['minPeopleNum']}}"
+                                         ng-if="analyse.analyseData['expert_short_visit']['factor']['visit_nation']['status']"></expert-short-visit-bar-visit-nation>
+
+    <!--外事人员短期应邀来访时间——人数：折线图-->
+    <expert-short-visit-line-visit-time ng-if="analyse.analyseData['expert_short_visit']['factor']['visit_time']['status']"></expert-short-visit-line-visit-time>
+
+
+
+    <!--参数设置-->
+    <div style="position: absolute; top: 20px; left: 1000px; padding-right: 40px;; margin:0 0 0 40px;">
+        <!--数据分析图选择-->
+        <div>
+            <div><span style="color: #1c70af; font-size: 16px">数据源</span></div>
+            <div style="width: 280px; cursor: pointer;margin-top: 10px">
+                <div ng-repeat="(key, value) in analyse.analyseData" ng-click="analyse.chooseAnalyseGraph(key, null)" style="padding: 10px;" ng-class="{'analyseSelected':value['status']}">
+                    <span>{{value['text']}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!--具体数据-->
+        <div style="margin: 30px 0 0 10px">
+            <div><span style="color: #1c70af; font-size: 16px">相关操作</span></div>
+            <!--各学院邀请外事人员来访人数设置-->
+            <div style="margin-top: 10px" ng-if="analyse.analyseData['expert_short_visit']['factor']['gdufs_dept']['status']">
+                <span style="">最低人次数： </span>
+                <input type="number" min="1" class="inputStyle" style="width: 47px; padding: 2px 0px 2px 6px;margin-left: 5px; border-width: 0 0 1px 0" ng-model="analyse.analyseData['expert_short_visit']['factor']['gdufs_dept']['minPeopleNum']"/>
+                <span>（人次）</span>
+            </div>
+            <!--各学院邀请外事人员来访国家/地区最低占比显示设置-->
+            <div style="margin-top: 10px" ng-if="analyse.analyseData['expert_short_visit']['factor']['visit_nation']['status']">
+                <span style="">最低人次数： </span>
+                <input type="number" min="0" class="inputStyle" style="width: 47px; padding: 2px 0px 2px 6px;margin-left: 5px; border-width: 0 0 1px 0" ng-model="analyse.analyseData['expert_short_visit']['factor']['visit_nation']['minPeopleNum']"/>
+                <span>（人次）</span>
+            </div>
+            <!--原始数据文件下载-->
+            <div style="margin-top: 10px">
+                <span>原始数据文件下载：<a href="{{analyse.analyseData['expert_short_visit']['file']}}">下载</a></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div style="margin: 20px 0 50px 20px;">
+    <span style="color: #19626b; font-size: 16px">分析变量选择：</span>
+    <!--柱状图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('expert_short_visit', 'gdufs_dept')" ng-model="analyse.analyseData['expert_short_visit']['selected']" value="gdufs_dept">
+        <span>学院部门 </span><i class="fa fa-bar-chart" style="color: #ff5500"></i>
+    </label>
+
+    <!--柱状图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('expert_short_visit', 'visit_nation')" ng-model="analyse.analyseData['expert_short_visit']['selected']" value="visit_nation">
+        <span>来访国家/地区 </span><i class="fa fa-bar-chart" style="color: #ff5500"></i>
+    </label>
+
+    <!--折线图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('expert_short_visit', 'visit_time')" ng-model="analyse.analyseData['expert_short_visit']['selected']" value="visit_time">
+        <span>来访时间 </span><i class="fa fa-line-chart" style="color: #00ce23"></i>
+    </label>
+</div>
+
+</div>

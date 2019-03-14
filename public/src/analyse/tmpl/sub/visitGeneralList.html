@@ -1,0 +1,96 @@
+<!--highchart结构图展示-->
+<div style="">
+
+    <!--各学院因公出访数据柱形图表-->
+    <visit-general-list-bar-gdufs-dept min-people-num="{{analyse.analyseData['visit_general_list']['factor']['gdufs_dept']['minPeopleNum']}}"
+                                       ng-if="analyse.analyseData['visit_general_list']['factor']['gdufs_dept']['status']"></visit-general-list-bar-gdufs-dept>
+
+    <!--全年出访国家/地区——人次数：柱状图-->
+    <visit-general-list-bar-visit-nation min-people-num="{{analyse.analyseData['visit_general_list']['factor']['visit_nation']['minPeopleNum']}}"
+                                         ng-if="analyse.analyseData['visit_general_list']['factor']['visit_nation']['status']"></visit-general-list-bar-visit-nation>
+
+    <!--全年出访时间比较-->
+    <visit-general-list-line-visit-time ng-if="analyse.analyseData['visit_general_list']['factor']['visit_time']['status']"></visit-general-list-line-visit-time>
+
+    <!--全年出访类型饼状图-->
+    <visit-general-list-pie-visit-type ng-if="analyse.analyseData['visit_general_list']['factor']['visit_type']['status']"></visit-general-list-pie-visit-type>
+
+    <!--全年出访性质饼状图-->
+    <visit-general-list-pie-visit-reason ng-if="analyse.analyseData['visit_general_list']['factor']['visit_reason']['status']"></visit-general-list-pie-visit-reason>
+
+
+    <!--参数设置-->
+    <div style="position: absolute; top: 20px; left: 1000px; padding-right: 40px;; margin:0 0 0 40px;">
+        <!--数据分析图选择-->
+        <div>
+            <div><span style="color: #1c70af; font-size: 16px">数据源</span></div>
+            <div style="width: 280px; cursor: pointer;margin-top: 10px">
+                <div ng-repeat="(key, value) in analyse.analyseData" ng-click="analyse.chooseAnalyseGraph(key, null)" style="padding: 10px;" ng-class="{'analyseSelected':value['status']}">
+                    <span>{{value['text']}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!--具体数据-->
+        <div style="margin: 30px 0 0 10px">
+            <div><span style="color: #1c70af; font-size: 16px">相关操作</span></div>
+            <!--学院因公出访数据编辑-->
+            <div style="margin-top: 10px" ng-if="analyse.analyseData['visit_general_list']['factor']['gdufs_dept']['status']">
+                <span style="">最低人次数： </span>
+                <input type="number" min="1" class="inputStyle" style="width: 47px; padding: 2px 0px 2px 6px;margin-left: 5px; border-width: 0 0 1px 0" ng-model="analyse.analyseData['visit_general_list']['factor']['gdufs_dept']['minPeopleNum']"/>
+                <span>（人次）</span>
+            </div>
+
+            <!--出访各国最低学生数-->
+            <div style="margin-top: 10px" ng-if="analyse.analyseData['visit_general_list']['factor']['visit_nation']['status']">
+                <span style="">最低人次数： </span>
+                <input type="number" min="1" class="inputStyle" style="width: 47px; padding: 2px 0px 2px 6px;margin-left: 5px; border-width: 0 0 1px 0" ng-model="analyse.analyseData['visit_general_list']['factor']['visit_nation']['minPeopleNum']"/>
+                <span>（人次）</span>
+            </div>
+            <!--原始数据文件下载-->
+            <div style="margin-top: 10px">
+                <span>原始数据文件下载：<a href="{{analyse.analyseData['visit_general_list']['file']}}">下载</a></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div style="margin: 20px 0 30px 20px;">
+    <span style="color: #19626b; font-size: 16px">分析变量选择：</span>
+    <!--柱状图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('visit_general_list','gdufs_dept')" ng-model="analyse.analyseData['visit_general_list']['selected']" value="gdufs_dept">
+        <span>学院部门 </span><i class="fa fa-bar-chart" style="color: #ff5500"></i>
+    </label>
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('visit_general_list','visit_nation')" ng-model="analyse.analyseData['visit_general_list']['selected']" value="visit_nation">
+        <span>出访国家/地区 </span><i class="fa fa-bar-chart" style="color: #ff5500"></i>
+    </label>
+
+    <!--折线图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('visit_general_list','visit_time')" ng-model="analyse.analyseData['visit_general_list']['selected']" value="visit_time">
+        <span>出访时间 </span><i class="fa fa-line-chart" style="color: #00ce23"></i>
+    </label>
+
+    <!--饼状图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('visit_general_list','visit_type')" ng-model="analyse.analyseData['visit_general_list']['selected']" value="visit_type">
+        <span>出访类型 </span><i class="fa fa-pie-chart" style="color: #1d94ed"></i>
+    </label>
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('visit_general_list','visit_reason')" ng-model="analyse.analyseData['visit_general_list']['selected']" value="visit_reason">
+        <span>出访原因 </span><i class="fa fa-pie-chart" style="color: #1d94ed"></i>
+    </label>
+</div>
+
+
+<!--数据汇总分析-->
+<div style="margin: 20px 0 50px 20px;width: 900px;">
+    <div style="font-size: 15px; color: #346889;font-weight: 600">2018年度我校因公出国（境）共计209批次，共计357人。其中，厅级人员团组共15批次，人数共计45人。</div>
+    <div>1、因公出国的团组共计173批次，人数共计290人。相比2017年增长了19批次。其中，一般性访问的团组共计33批次，人数共计80人。相比2017年减少17批次，人数减少47人。学术交流合作团组共计140批次，人数共计210次，相比去年增长36次，人数增长54人。</div>
+    <div>2、因公访问港澳共计31批次，人数共计58人。因公访问台湾的共计5批次，人数共计9人。</div>
+</div>
+
+</div>

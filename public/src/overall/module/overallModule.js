@@ -5,5 +5,8 @@ var overallModule = angular.module('Angular',
     [
         'ngRoute',
         'ngCookies',
+        'ngAnimate',
         'Angular.edit',
+        'Angular.graph',
+        'Angular.analyse',
     ]);

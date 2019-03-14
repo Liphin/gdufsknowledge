@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="./d3.v5.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3 id="h3">Simple transitions</h3>
+<script>
+    //    d3.selectAll("h3").transition().style("color","green").duration(5000);
+    //d3.selectAll("h3").transition()
+    //    .style("font-size","28px").delay(2000).duration(2000);
+    d3.select("#h3")
+        .transition()
+        .delay(2000)
+        //.each("start", function() { console.log('start'); d3.select(this).style("color", "green"); })
+        .style("color", "red");
+</script>
+</body>
+</html>

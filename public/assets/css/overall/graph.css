@@ -1,0 +1,178 @@
+/*左侧导航栏展开操作*/
+.graphLeftBar {
+    width: 170px;
+}
+
+.graphLeftBar.ng-hide-remove {
+    -webkit-animation: 0.5s showGraphLeftBar;
+    animation: 0.5s showGraphLeftBar;
+}
+
+@keyframes showGraphLeftBar {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 170px;
+    }
+}
+
+@-webkit-keyframes showGraphLeftBar {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 170px;
+    }
+}
+
+/*左侧导航栏隐藏操作*/
+.graphLeftBar.ng-hide-add {
+    -webkit-animation: 0.5s hideGraphLeftBar;
+    animation: 0.5s hideGraphLeftBar;
+}
+
+@keyframes hideGraphLeftBar {
+    0% {
+        width: 170px;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+@-webkit-keyframes hideGraphLeftBar {
+    0% {
+        width: 170px;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+/*右侧导航栏展开操作*/
+.graphRightBar {
+    width: 400px;
+}
+
+.graphRightBar.ng-hide-remove {
+    -webkit-animation: 0.8s showGraphRightBar;
+    animation: 0.8s showGraphRightBar;
+}
+
+@keyframes showGraphRightBar {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 400px;
+    }
+}
+
+@-webkit-keyframes showGraphRightBar {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 400px;
+    }
+}
+
+/*左侧导航栏隐藏操作*/
+.graphRightBar.ng-hide-add {
+    -webkit-animation: 0.8s hideGraphRightBar;
+    animation: 0.8s hideGraphRightBar;
+}
+
+@keyframes hideGraphRightBar {
+    0% {
+        width: 400px;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+@-webkit-keyframes hideGraphRightBar {
+    0% {
+        width: 400px;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+/*基本信息输入框属性*/
+.inputInfo {
+    border: 1px solid #cecece;
+    border-width: 0 0 1px 0;
+    outline: none;
+    padding: 0px 6px;
+}
+
+/*新闻数据条目鼠标移动到上面背景发生变化*/
+.hoverNewsItem:hover {
+    background: whitesmoke;
+}
+
+/*选择某条新闻后新闻左右滑动出现隐藏*/
+/*右侧导航栏展开操作*/
+.viewDetailNews {
+    width: 400px;
+}
+
+.viewDetailNews.ng-hide-remove {
+    -webkit-animation: 0.6s showViewDetailNews;
+    animation: 0.6s showViewDetailNews;
+}
+
+@keyframes showViewDetailNews {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 400px;
+    }
+}
+
+@-webkit-keyframes showViewDetailNews {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 400px;
+    }
+}
+
+/*左侧导航栏隐藏操作*/
+.viewDetailNews.ng-hide-add {
+    -webkit-animation: 0.6s hideViewDetailNews;
+    animation: 0.6s hideViewDetailNews;
+}
+
+@keyframes hideViewDetailNews {
+    0% {
+        width: 400px;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+@-webkit-keyframes hideViewDetailNews {
+    0% {
+        width: 400px;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+.leftMenu:hover {
+    background: #4784ab;
+}
+
+
+
+
+

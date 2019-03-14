@@ -3,7 +3,7 @@
  */
 var overallModule = angular.module('Angular');
 
-overallModule.factory('OverallSer', function ($rootScope, OverallDataSer, $cookies,  $location, $http, OverallGeneralSer) {
+overallModule.factory('OverallSer', function ($rootScope, OverallDataSer, $cookies, $location, $http, OverallGeneralSer) {
 
     /**
      * 返回当前时间，格式为2018-01-01 12:00:00
@@ -57,7 +57,46 @@ overallModule.factory('OverallSer', function ($rootScope, OverallDataSer, $cooki
     };
 
 
+    /**
+     * 键盘按下热键时，根据不同热键类型执行相应的操作
+     * @param $event
+     */
+    var keyboardDownOpt = function ($event) {
+        var keyObj = $event.key.toLowerCase();
+        switch (keyObj) {
+            case 'control': {
+                //记录按下ctrl操作
+                OverallDataSer.keyBoard['ctrl'] = true;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    };
+
+    /**
+     * 键盘按下热键时，根据不同热键类型执行相应的操作
+     * @param $event
+     */
+    var keyboardUpOpt = function ($event) {
+        var keyObj = $event.key.toLowerCase();
+        switch (keyObj) {
+            case 'control': {
+                //记录按下ctrl操作
+                OverallDataSer.keyBoard['ctrl'] = false;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    };
+
+
     return {
+        keyboardUpOpt: keyboardUpOpt,
+        keyboardDownOpt: keyboardDownOpt,
         modalBackRemove: modalBackRemove,
         getUploadFileTime: getUploadFileTime,
         preventEventTransport: preventEventTransport,

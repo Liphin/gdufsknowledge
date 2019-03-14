@@ -1,0 +1,67 @@
+{
+  "type": "1",
+  "title": "测试来访",
+  "cover": "https://www.baidu.com",
+  "time": "2017年6月30日",
+  "timestamp": "222323232",
+  "place": "北校行政楼",
+  "origin_url": "https://www.baidu.com",
+  "key_word": "一带一路、粤港澳大湾区、波兰语教学、校企合作",
+  "unique_id": "sfsddgdhdfherwer343535233",
+  "gdufs_dept": [
+    {
+      "cn_name": "校级单位",
+      "attend": [
+        {
+          "cn_name": "隋广军",
+          "identity": "1",
+          "title": "校党委书记"
+        },
+        {
+          "cn_name": "石启佑",
+          "identity": "1",
+          "title": "校长"
+        }
+      ]
+    },
+    {
+      "cn_name": "国际处",
+      "attend": [
+        {
+          "cn_name": "柯晓华",
+          "identity": "1",
+          "title": "国际处处长"
+        }
+      ]
+    }
+  ],
+  "visitor_dept": [
+    {
+      "cn_name": "波兰驻华领事馆",
+      "nation": "波兰",
+      "attend": [
+        {
+          "cn_name": "赛熙军",
+          "en_name": "Saixijun",
+          "title": "波兰驻华领事"
+        },
+        {
+          "cn_name": "西瓦",
+          "en_name": "Xiwa",
+          "title": "波兰大使"
+        }
+      ]
+    },
+    {
+      "cn_name": "波兰大学",
+      "nation": "波兰",
+      "attend": [
+        {
+          "cn_name": "索菲斯",
+          "en_name": "Sofeisi",
+          "title": "波兰大学校长"
+        }
+      ]
+    }
+  ]
+}

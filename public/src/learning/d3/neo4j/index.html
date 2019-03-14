@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="../d3.v5.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<svg id="svgcontainer" style="width: 1200px; height: 500px; background: #fff7f7">
+    <g id="contain" transform="translate(300,250)">
+        <g id="line"></g>
+        <g id="node"></g>
+    </g>
+</svg>
+
+<script>
+
+    let svg = d3.select("#svgcontainer");
+    let contain = d3.select("#contain");
+    let line = d3.select("#line");
+    let node = d3.select("#node");
+    let nodePosition = {};
+    let prePosition = {
+        'k': 1,
+        'x': 0,
+        'y': 0,
+    };
+    let zoomActions = function () {
+        let offsetTransform = d3.event.transform;
+        if (offsetTransform['k'] != prePosition['k']) {
+            offsetTransform['x'] = prePosition['x'];
+            offsetTransform['y'] = prePosition['y'];
+            prePosition['k'] = offsetTransform['k']
+
+        } else {
+            prePosition['x'] = offsetTransform['x'];
+            prePosition['y'] = offsetTransform['y'];
+        }
+        line.attr("transform", offsetTransform);
+        node.attr("transform", offsetTransform);
+        console.log(d3.event.transform)
+    };
+
+    let zoom = d3.zoom().on("zoom", zoomActions);
+    svg.call(zoom);
+
+    let iteratorNewNode = function (baseNode, uniqueId) {
+        let tempX = Math.round(baseNode['node_relation']['n_num'] * initNode['n_length'] * Math.cos(baseNode['node_relation']['d_num'] * initNode['d_angle'] * Math.PI / 180)) + baseNode['position']['x'];
+        let tempY = Math.round(baseNode['node_relation']['n_num'] * initNode['n_length'] * Math.sin(baseNode['node_relation']['d_num'] * initNode['d_angle'] * Math.PI / 180)) + baseNode['position']['y'];
+
+        for (let i in nodePosition) {
+            let x = nodePosition[i]['x'];
+            let y = nodePosition[i]['y'];
+
+            if ((tempX - x) * (tempX - x) + (tempY - y) * (tempY - y) <= initNode['nodeR'] * initNode['nodeR'] * 4) {
+                //如果angle尚未达330度即d<12则进行angle变换
+                if (baseNode['node_relation']['d_num'] < 12) {
+                    baseNode['node_relation']['d_num']++; //增加d_num
+                }
+                //否则length个数增加
+                else {
+                    baseNode['node_relation']['d_num'] = 0; //重置d_num
+                    baseNode['node_relation']['n_num']++; //增加d_num个数
+                }
+                //迭代递归新节点
+                iteratorNewNode(baseNode, uniqueId);
+                return;
+            }
+        }
+
+        //遍历每个添加了的节点均距离该目标节点一定距离，取该tempX和tempY作为该目标节点的x和y坐标
+        try {
+            neoData['node'][uniqueId]['position']['x'] = tempX;
+            neoData['node'][uniqueId]['position']['y'] = tempY;
+            nodePosition[uniqueId] = {'x': tempX, 'y': tempY};
+
+        } catch (e) {
+            console.log(baseNode)
+        }
+    };
+
+
+    let createLine = function (from_unique_id, to_unique_id, text) {
+        let newLine = line.append("g")
+            .attr("transform", "translate(0,0)");
+
+        newLine.append("line")
+            .attr("x1", neoData["node"][from_unique_id]['position']["x"])
+            .attr("y1", neoData["node"][from_unique_id]['position']["y"])
+            .attr("x2", neoData["node"][to_unique_id]['position']["x"])
+            .attr("y2", neoData["node"][to_unique_id]['position']["y"])
+            .style("stroke", "grey")
+            .style("stroke-width", 2);
+    };
+
+
+    let dragActions = function () {
+        //d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+        console.log(d3.select(this)['_groups'][0][], d3.event.x , d3.event.y)
+        d3.select(this).attr("cx", d3.event.x).attr("cy", d3.event.y);
+    };
+    let drag = d3.drag().on("drag", dragActions);
+
+
+    let createNode = function (uniqueId) {
+        let setting = nodeTypeSetting[neoData['node'][uniqueId]['node_type']];
+        let x = neoData['node'][uniqueId]['position']['x'];
+        let y = neoData['node'][uniqueId]['position']['y'];
+        let textKey = setting['textKey'];
+
+        let newNode = node.append("g")
+            .attr("transform", "translate(" + x + "," + y + ")");
+
+        newNode.append("circle")
+            .attr("cx", 0).attr("cy", 0).attr("r", 20).attr("fill", setting['bg']);
+
+        newNode.append("text").attr("x", -15)
+            .attr("y", 5)
+            .attr("fill", "white")
+            .style("font-size", "10px")
+            .text(function () {
+                let text = neoData['node'][uniqueId][textKey];
+                if (text.length > 3) text = text.substring(0, 3) + "...";
+                return text
+            });
+        newNode.call(drag)
+
+    };
+
+
+
+
+
+
+    let neoData = {
+        "node": {
+            "1a423792-3b15-11e9-b671-d768172bb112": {
+                "cn_name": "柯晓华",
+                "position": {"x": "", "y": ""},
+                "node_type": "gdufs_teacher",
+                "node_relation": {"n_num": 1, "d_num": 0}
+            },
+            "8cccaa50-3b26-11e9-9247-0bf19c48e372": {
+                "cover": "http://internationaloffice.gdufs.edu.cn/__local/9/92/86/AC9E83DE6C9B3ACCBC7C072CB8E_5AA35B88_3D489.jpg?e=.jpg",
+                "origin_url": "http://internationaloffice.gdufs.edu.cn/info/1009/6259.htm",
+                "theme": "我校印尼语专业建设及中印尼合作发展",
+                "time": "2018年12月3日",
+                "place": "北校区行政楼贵宾厅",
+                "abstract": "印尼外交政策协会代表团团长迪诺·帕迪·贾拉尔（Dino Patti Djalal）简要介绍了来访团组成员及印尼外交政策协会基本情况。他指出，随着国际化的深入发展，越来越多的印尼人希望了解中国。中国是印尼重要的合作伙伴，希望两国增强交流与合作，实现互利共赢。",
+                "title": "印尼外交政策协会代表团来访",
+                "type": "1",
+                "timestamp": "2018-12-3",
+                "position": {"x": "", "y": "", "n": "", "d": ""},
+                "node_type": "visit_event",
+                "node_relation": {"n_num": 1, "d_num": 0}
+            },
+            "9b70f970-3b22-11e9-b671-d768172bb112": {
+                "cover": "http://internationaloffice.gdufs.edu.cn/__local/0/1F/BA/3C6F6472BA8F1A671F51B950BBA_7073CF26_2DE0C.jpg?e=.jpg",
+                "origin_url": "http://internationaloffice.gdufs.edu.cn/info/1009/6260.htm",
+                "theme": "孔子学院建设及两校进一步合作",
+                "time": "2018年12月3日",
+                "place": "北校区行政楼迎宾厅",
+                "abstract": "布格洛夫指出，我校是乌拉尔联邦大学的重要合作伙伴。今年是两校合作建立的俄罗斯乌拉尔联邦大学孔子学院成立十周年。十年间，孔院学生规模不断扩大，影响力越来越强。他邀请我校领导参加乌拉尔联邦大学孔子学院成立十周年庆祝仪式，并希望能与我校进一步加强人文领域方面的合作。",
+                "title": "俄罗斯乌拉尔联邦大学代表团来访",
+                "type": "1",
+                "timestamp": "2018-12-3",
+                "position": {"x": "", "y": "", "n": "", "d": ""},
+                "node_type": "visit_event",
+                "node_relation": {"n_num": 1, "d_num": 0}
+            },
+            "1a247660-3b15-11e9-b671-d768172bb112": {
+                "cover": "http://internationaloffice.gdufs.edu.cn/__local/7/E3/70/22BC8B8F0587F17DFC0BC93972E_A185E345_108C6.jpg",
+                "origin_url": "http://internationaloffice.gdufs.edu.cn/info/1009/6263.htm",
+                "theme": "孔子学院建设及拓展校际间合作事宜",
+                "time": "2018年12月7日",
+                "abstract": "秘鲁圣玛利亚天主教大学校长阿尔贝托·布里塞诺（Alberto Brice&ntilde;o）对石佑启的欢迎表示感谢。他指出，秘鲁孔院代表团曾于今年10月访问我校，双方就孔院建设及两国文化传播等进行交流，成果丰硕。未来，希望与我校就孔院发展中的教学方法、师资队伍建设等方面开展更多交流，并在秘鲁驻广州总领事馆的支持下，与我校展开更多领域的合作。最后，他对佛得角大学代表团表示问候，认为两校在传播汉语及中国文化方面目标一致，希望未来增强交流。\n\n佛得角大学副校长卡瓦尔霍代利马·马里奥·乔斯（Carvalhodelima Mario Jose）对我校的欢迎表示感谢。他表示，经过两国人民的不断努力，佛得角大学孔子学院于2015年建成。这极大地促进了两校关系，并使两国关系迈上新台阶。感谢我校为佛得角孔院的辛勤付出。未来，希望两校在已有合作的基础上，拓展其它领域的交流与合作。",
+                "place": "北校区行政楼贵宾厅/第三会议室",
+                "title": "秘鲁圣玛利亚天主教大学及佛得角大学代表团来访我校",
+                "type": "1",
+                "timestamp": "2018-12-7",
+                "position": {"x": "", "y": "", "n": "", "d": ""},
+                "node_type": "visit_event",
+                "node_relation": {"n_num": 1, "d_num": 0}
+            }
+        },
+        "relation": {
+            "8d1747e0-3b26-11e9-9247-0bf19c48e372": {
+                "from": "1a423792-3b15-11e9-b671-d768172bb112",
+                "to": "8cccaa50-3b26-11e9-9247-0bf19c48e372",
+                "role": 2
+            },
+            "9b8aea10-3b22-11e9-b671-d768172bb112": {
+                "from": "1a423792-3b15-11e9-b671-d768172bb112",
+                "to": "9b70f970-3b22-11e9-b671-d768172bb112",
+                "role": 2
+            },
+            "1a726f50-3b15-11e9-b671-d768172bb112": {
+                "from": "1a423792-3b15-11e9-b671-d768172bb112",
+                "to": "1a247660-3b15-11e9-b671-d768172bb112",
+                "role": 2
+            }
+        }
+    };
+
+    let initNode = {
+        'node_relation': {"n_num": 1, "d_num": 0},
+        'position': {'x': 0, 'y': 0},
+        "n_length": 70,
+        "d_angle": 30,
+        "nodeR": 20
+    };
+    let nodeTypeSetting = {
+        "gdufs_teacher": {
+            "bg": "skyblue",
+            "textKey": "cn_name",
+        },
+        "visit_event": {
+            "bg": "#ffb979",
+            "textKey": "title",
+        }
+    };
+
+
+    for (let i in neoData['relation']) {
+        //分别获取起始节点和最终节点是否存在
+        let fromUniqueId = neoData['relation'][i]['from'];
+        let toUniqueId = neoData['relation'][i]['to'];
+        let fromExist = nodePosition.hasOwnProperty(fromUniqueId);
+        let toExist = nodePosition.hasOwnProperty(toUniqueId);
+
+        //根据起始节点和最终节点是否存在进行4种情况的组合
+        //起点和终点均存在
+        if (fromExist && toExist) {
+            createLine(fromUniqueId, toUniqueId);
+
+        }
+        //起点存在，终点不存在
+        else if (fromExist && !toExist) {
+            iteratorNewNode(neoData['node'][fromUniqueId], toUniqueId);
+            createNode(toUniqueId);
+            createLine(fromUniqueId, toUniqueId)
+
+        }
+        //起点不存在，终点存在
+        else if (!fromExist && toExist) {
+            iteratorNewNode(neoData['node'][toUniqueId], fromUniqueId);
+            createNode(fromUniqueId);
+            createLine(fromUniqueId, toUniqueId)
+
+        }
+        //起点不存在，终点不存在
+        else if (!fromExist && !toExist) {
+            iteratorNewNode(initNode, fromUniqueId);
+            iteratorNewNode(neoData['node'][fromUniqueId], toUniqueId);
+
+            createNode(fromUniqueId);
+            createNode(toUniqueId);
+
+            createLine(fromUniqueId, toUniqueId)
+
+        }
+    }
+
+
+</script>
+</body>
+</html>

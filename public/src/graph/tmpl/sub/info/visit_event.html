@@ -1,0 +1,26 @@
+<!--事件基本信息描述展开合并控制-->
+<!--<div style="padding: 8px 10px 10px 10px; background: whitesmoke;cursor: pointer"-->
+     <!--ng-click="graph.nodeLinkSelectedData['visit_event']['info']['general']['status']=!graph.nodeLinkSelectedData['visit_event']['info']['general']['status']">-->
+    <!--<div style="display: inline-block">基本描述</div>-->
+    <!--<i style="font-size: 24px; position: relative; top: 4px; left: 5px; color: grey"-->
+       <!--ng-class="{'fa fa-caret-down':graph.nodeLinkSelectedData['visit_event']['info']['general']['status'], 'fa fa-caret-left':!graph.nodeLinkSelectedData['visit_event']['info']['general']['status']}"></i>-->
+<!--</div>-->
+<!--&lt;!&ndash;事件基本信息内容描述，可编辑状态&ndash;&gt;-->
+<!--<div style="" ng-if="graph.nodeLinkSelectedData['visit_event']['info']['general']['status']" >-->
+    <!--<div>-->
+
+    <!--</div>-->
+<!--</div>-->
+
+<!--事件新闻数据展开合并控制-->
+<div style="padding: 10px; background: whitesmoke; cursor: pointer; border: 1px solid gainsboro;border-width: 1px 0 0 0"
+     ng-click="graph.nodeLinkSelectedData['visit_event']['info']['detail']['status']=!graph.nodeLinkSelectedData['visit_event']['info']['detail']['status']">
+    <div style="display: inline-block">新闻详情</div>
+    <i style="font-size: 24px; position: relative; top: 4px; left: 5px; color: grey"
+       ng-class="{'fa fa-caret-down':graph.nodeLinkSelectedData['visit_event']['info']['detail']['status'], 'fa fa-caret-left':!graph.nodeLinkSelectedData['visit_event']['info']['detail']['status']}" ></i>
+    <a target="_blank" href="{{graph.getNewsOriginInfo()}}" ng-click="$event.stopPropagation()" style="color: #2a526d; font-size: 16px; margin-left: 30px">访问原文</a>
+</div>
+<!--事件新闻数据展示-->
+<div ng-if="graph.nodeLinkSelectedData['visit_event']['info']['detail']['status']" ng-bind-html="graph.nodeLinkSelectedData['visit_event']['info']['detail']['news']" style="border: 1px solid gainsboro;border-width: 0 0 1px 0 ; padding: 0 20px; line-height: 150%; letter-spacing: 1px;"></div>
+<!--底部占位符-->
+<div style="width: 100%; height: 30px"></div>

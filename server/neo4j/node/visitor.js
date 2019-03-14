@@ -179,7 +179,9 @@ let getAllVisitorNode = function (driver) {
         session.run('match (n:Visitor) return properties(n) as result')
             .subscribe({
                 onNext: record => {
-                    visitNodes.push(record.get('result'));
+                    let result = record.get('result');
+                    result['label_name']='visitor';
+                    visitNodes.push(result);
                 },
                 onCompleted: () => {
                     resolve(visitNodes);

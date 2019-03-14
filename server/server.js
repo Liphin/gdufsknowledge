@@ -21,6 +21,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const device = require('express-device');
 const data = require('./data');
+const service =  require('./service/service');
 
 //数据库初始化
 require('./db/mongodb');
@@ -54,7 +55,8 @@ if (global.env == 'prod') {
     console.log("Server is running at port: ", data.setting['port'], " and run at environment: ", global.env);
 }
 
-
+//执行初始化方法操作
+service.init();
 
 
 

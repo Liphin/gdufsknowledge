@@ -8,15 +8,13 @@ const request = require('request');
 const router = express.Router();
 
 //节点句柄
-const gdufsTeacher = require('../neo4j/node/gdufs_teacher');
+const gdufsDept = require('../neo4j/node/gdufs_dept');
 const visitorDept = require('../neo4j/node/visitor_dept');
 const visitEvent = require('../neo4j/node/visit_event');
-const visitor = require('../neo4j/node/visitor');
 
 //关系句柄
-const gdufsTeacherVisitEvent = require('../neo4j/relation/gdufs_teacher_visit_event');
-const visitorVisitDept = require('../neo4j/relation/visitor_visitor_dept');
-const visitorVisitEvent = require('../neo4j/relation/visitor_visit_event');
+const gdufsDeptVisitEvent = require('../neo4j/relation/gdufs_dept_visit_event');
+const visitorDeptVisitEvent = require('../neo4j/relation/visitor_dept_visit_event');
 
 //其他加载及解析
 const newsParse = require('../service/newsParse');
@@ -27,6 +25,7 @@ const utilTool = require('../service/utilTool');
  * 添加广外外事新的关系节点和数据存储
  */
 router.post('/addVisitNewsData', (req, res, next) => {
+    //console.log('begin', utilTool.getCurrentDataTime());
     //从前台获取创建的请求数据
     let bodyData = req.body;
     bodyData['unique_id'] = uuidv1();
@@ -36,25 +35,23 @@ router.post('/addVisitNewsData', (req, res, next) => {
 
     //所有节点创建完成
     Promise.all([
-        gdufsTeacher.gdufsTeachInitCheck(bodyData, driver), //广外接待领导和教师节点
+        gdufsDept.deptInitCheck(bodyData, driver), //广外部门节点
         visitorDept.deptInitCheck(bodyData, driver), //来访单位节点
-        visitEvent.visitEventInitCheck(bodyData, driver), //来访事件节点
-        visitor.visitorInitCheck(bodyData, driver)] //来访者节点
-    ).then(([result1, result2, result3, result4]) => {
+        visitEvent.visitEventInitCheck(bodyData, driver)] //来访事件节点
+    ).then(([result1, result2, result3]) => {
 
         //若创建过程出错则立即返回，不再继续进行
-        if (result1 == 200 && result2 == 200 && result3 == 200 && result4 == 200) {
+        if (result1 == 200 && result2 == 200 && result3 == 200) {
             //各节点间关系的创建
             Promise.all([
-                gdufsTeacherVisitEvent.gdufsTeacherVisitEventInit(bodyData, driver), //广外接待领导教师——来访事件关系
-                visitorVisitDept.visitorVisitDeptInit(bodyData, driver), //来访嘉宾——所在单位关系
-                visitorVisitEvent.visitorVisitEventInit(bodyData, driver)] //来访嘉宾——来访事件关系
+                gdufsDeptVisitEvent.gdufsDeptVisitEventInit(bodyData, driver), //广外接待部门——来访事件关系
+                visitorDeptVisitEvent.visitorDeptVisitEventInit(bodyData, driver)] //来访单位——来访事件关系
 
-            ).then(([result5, result6, result7]) => {
+            ).then(([result4, result5]) => {
 
-                if (result5 == 200 && result6 == 200 && result7 == 200) {
+                if (result4 == 200 && result5 == 200) {
                     //1、把HTML文件存储到OSS中，异步操作，用于查看原文时使用
-                    newsParse.newsHttpRequestAndParse(bodyData);
+                    //newsParse.newsHttpRequestAndParse(bodyData);
 
                     //2、简单返回正确代码到前端即可
                     //console.log('end', utilTool.getCurrentDataTime());
@@ -64,7 +61,7 @@ router.post('/addVisitNewsData', (req, res, next) => {
                     //console.log('print 2');
                     res.send({
                         status: 408,
-                        result: [result5, result6, result7]
+                        result: [result4, result5]
                     });
                 }
             });
@@ -73,7 +70,7 @@ router.post('/addVisitNewsData', (req, res, next) => {
             //console.log('print 3');
             res.send({
                 status: 407,
-                result: [result1, result2, result3, result4]
+                result: [result1, result2, result3]
             });
         }
     });
@@ -265,6 +262,35 @@ router.post('/updateNodeInfo', (req, res, next) => {
 });
 
 
+/**
+ * 获取所有节点和连接关系数据
+ */
+router.post('/getAllNodeAndLinksData', (req, res, next) => {
+    let driver = data.dbPool['neo4j'];
+
+    Promise.all([
+        gdufsDept.getAllGdufsDeptNode(driver), //广外接待部门节点
+        visitorDept.getAllVisitDeptNode(driver), //来访单位节点
+        visitEvent.getAllVisitEventNode(driver), //来访事件节点
+        gdufsDeptVisitEvent.getAllGdufsDeptVisitEventLink(driver), //广外接待部门——来访事件连接
+        visitorDeptVisitEvent.getAllVisitorDeptVisitEventLink(driver)]//来访嘉宾所在单位——来访事件连接
+    ).then(([result1, result2, result3, result4, result5]) => {
+        let nodes = result1.concat(result2).concat(result3);
+        let links = result4.concat(result5);
+        res.send({
+            'nodes': nodes,
+            'links': links
+        });
+    });
+});
+
+
+/**
+ * http请求获取全部广外知识图谱mysql中数据
+ */
+router.post('/getAllGdufsKnowledgeMysqlData', (req, res, next) => {
+    res.send(data.gdufsKnowledgeTableData);
+});
 
 
 module.exports = router;

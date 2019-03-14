@@ -76,8 +76,39 @@ let visitorVisitDeptInit = function (bodyData, driver) {
 };
 
 
+/**
+ * 获取所有来访嘉宾——所在单位的所有关系数据
+ * @param driver
+ */
+let getAllVisitorVisitorDeptLink = function (driver) {
+    return new Promise(resolve => {
+        const session = driver.session();
+        let visitorVisitorDeptLink = [];
+        session.run('match (v:Visitor)-[n:Visitor_Visitor_Dept]->(d:Visitor_Dept) return properties(n) as result, v.unique_id as source, d.unique_id as target')
+            .subscribe({
+                onNext: record => {
+                    visitorVisitorDeptLink.push({
+                        'source': record.get('source'),
+                        'target': record.get('target'),
+                        'attach': record.get('result'),
+                        'label_name':'visitor_visitor_dept'
+                    });
+                },
+                onCompleted: () => {
+                    resolve(visitorVisitorDeptLink);
+                },
+                onError: error => {
+                    console.error('getAllVisitorVisitDeptLink error', error);
+                    resolve([]);
+                }
+            });
+    });
+};
+
+
 module.exports = {
-    visitorVisitDeptInit: visitorVisitDeptInit
+    visitorVisitDeptInit: visitorVisitDeptInit,
+    getAllVisitorVisitorDeptLink: getAllVisitorVisitorDeptLink,
 };
 
 

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="./d3.v5.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3>Simple transitions</h3>
+</body>
+
+<script>
+    var t = d3.transition().duration(2000);
+    d3.select("body").transition(t).style("background-color", "lightblue");
+</script>
+</html>

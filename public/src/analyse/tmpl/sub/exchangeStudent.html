@@ -1,0 +1,76 @@
+<!--2018年广外各学院出国境学生数据图表-->
+<div style="">
+
+    <!--学院——学生人数 柱形图-->
+    <exchange-student-bar-institute-new min-people-num="{{analyse.analyseData['exchange_student_list']['factor']['institute']['minPeopleNum']}}"
+                                       ng-if="analyse.analyseData['exchange_student_list']['factor']['institute']['status']"></exchange-student-bar-institute-new>
+
+    <!--交换时长——人数：饼状图-->
+    <exchange-student-bar-exchange-period ng-if="analyse.analyseData['exchange_student_list']['factor']['exchange_period']['status']"></exchange-student-bar-exchange-period>
+
+    <!--外事专家短期来访各国家/地区占比——饼状图-->
+    <!--<expert-long-visit-pie-education ng-if="analyse.analyseData['exchange_student_list']['factor']['education']['status']"></expert-long-visit-pie-education>-->
+
+
+    <!--参数设置-->
+    <div style="position: absolute; top: 20px; left: 1000px; padding-right: 40px; margin:0 0 0 40px;">
+        <!--数据分析图选择-->
+        <div>
+            <div><span style="color: #1c70af; font-size: 16px">数据源</span></div>
+            <div style="width: 280px; cursor: pointer;margin-top: 10px">
+                <div ng-repeat="(key, value) in analyse.analyseData" ng-click="analyse.chooseAnalyseGraph(key, null)" style="padding: 10px;" ng-class="{'analyseSelected':value['status']}">
+                    <span>{{value['text']}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!--具体数据-->
+        <div style="margin: 30px 0 0 10px">
+            <div><span style="color: #1c70af; font-size: 16px">相关操作</span></div>
+            <!--各学院邀请外事人员来访人数设置-->
+            <div style="margin-top: 10px" ng-if="analyse.analyseData['exchange_student_list']['factor']['institute']['status']">
+                <span style="">最低人次数： </span>
+                <input type="number" min="1" class="inputStyle" style="width: 47px; padding: 2px 0px 2px 6px;margin-left: 5px; border-width: 0 0 1px 0" ng-model="analyse.analyseData['exchange_student_list']['factor']['institute']['minPeopleNum']"/>
+                <span>（人次）</span>
+            </div>
+            <!--各学院邀请外事人员来访国家/地区最低占比显示设置-->
+            <!--<div style="margin-top: 10px" ng-if="analyse.analyseData['exchange_student_list']['factor']['nation']['status']">-->
+                <!--<span style="">最低占比： </span>-->
+                <!--<input type="number" min="0" class="inputStyle" style="width: 47px; padding: 2px 0px 2px 6px;margin-left: 5px; border-width: 0 0 1px 0" ng-model="analyse.analyseData['exchange_student_list']['factor']['nation']['minNationRate']"/>-->
+                <!--<span>（%）</span>-->
+            <!--</div>-->
+            <!--原始数据文件下载-->
+            <div style="margin-top: 10px">
+                <span>原始数据文件下载：<a href="{{analyse.analyseData['exchange_student_list']['file']}}">下载</a></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div style="margin: 20px 0 50px 20px;">
+    <span style="color: #19626b; font-size: 16px">分析变量选择：</span>
+    <!--柱状图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('exchange_student_list', 'institute')" ng-model="analyse.analyseData['exchange_student_list']['selected']" value="institute">
+        <span>学院部门 </span><i class="fa fa-bar-chart" style="color: #ff5500"></i>
+    </label>
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('exchange_student_list', 'exchange_period')" ng-model="analyse.analyseData['exchange_student_list']['selected']" value="exchange_period">
+        <span>交换时长 </span><i class="fa fa-bar-chart" style="color: #ff5500"></i>
+    </label>
+
+    <!--饼状图-->
+    <!--<label class="radio-inline" style="margin-left: 20px">-->
+        <!--<input type="radio" ng-change="analyse.chooseAnalyseGraph('exchange_student_list', 'education')" ng-model="analyse.analyseData['exchange_student_list']['selected']" value="education">-->
+        <!--<span>学历 </span><i class="fa fa-pie-chart" style="color: #1d94ed"></i>-->
+    <!--</label>-->
+    <!--<label class="radio-inline" style="margin-left: 20px">-->
+        <!--<input type="radio" ng-change="analyse.chooseAnalyseGraph('exchange_student_list', 'nation')" ng-model="analyse.analyseData['exchange_student_list']['selected']" value="nation">-->
+        <!--<span>来访国家/地区 </span><i class="fa fa-pie-chart" style="color: #1d94ed"></i>-->
+    <!--</label>-->
+
+</div>
+
+</div>

@@ -16,8 +16,20 @@ let dbPool = {
     'neo4j': '',
 };
 
+//广外知识图谱数据库所有数据装载
+let gdufsKnowledgeTableData = {
+    'visit_general_list': '',
+    'visit_director_list': '',
+    'expert_short_visit': '',
+    'expert_long_visit':'',
+    'exchange_student_list':'',
+    'agreements': '',
+    'school_level_reception': '',
+};
+
 module.exports = {
     setting: setting,
     openConfig: openConfig,
     dbPool: dbPool,
+    gdufsKnowledgeTableData: gdufsKnowledgeTableData,
 };

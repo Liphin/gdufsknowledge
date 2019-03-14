@@ -1,0 +1,109 @@
+<!--广外教师基本信息描述展开合并控制-->
+<div style="padding: 8px 10px 10px 10px; background: whitesmoke;cursor: pointer"
+     ng-click="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['status']=!graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['status']">
+    <div style="display: inline-block">基本描述</div>
+    <i style="font-size: 24px; position: relative; top: 4px; left: 5px; color: grey"
+       ng-class="{'fa fa-caret-down':graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['status'], 'fa fa-caret-left':!graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['status']}"></i>
+</div>
+<!--广外教师基本信息，可编辑状态-->
+<div style="padding: 10px 10px 10px 35px" ng-if="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['status']" >
+    <!--中文姓名-->
+    <div>
+        <span>中文姓名：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['cn_name']"/>
+    </div>
+
+    <!--英文姓名-->
+    <div style="margin-top: 10px">
+        <span>英文姓名：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['en_name']"/>
+    </div>
+
+    <!--工号-->
+    <div style="margin-top: 10px">
+        <span>工号：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['account']" style="margin-left: 30px"/>
+    </div>
+
+    <!--职务-->
+    <div style="margin-top: 10px">
+        <span>职务：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['title']" style="margin-left: 30px"/>
+    </div>
+
+    <!--职称-->
+    <div style="margin-top: 10px">
+        <span>职称：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['post']" style="margin-left: 30px" />
+    </div>
+
+    <!--电话-->
+    <div style="margin-top: 10px">
+        <span>电话：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['phone']" style="margin-left: 30px"/>
+    </div>
+
+    <!--邮箱-->
+    <div style="margin-top: 10px">
+        <span>邮箱：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['email']" style="margin-left: 30px"/>
+    </div>
+
+    <!--个人简历-->
+    <div style="margin-top: 20px">
+        <span style="vertical-align: top">个人简历：</span>
+        <textarea class="scrollBar-7" ng-model="graph.nodeLinkSelectedData['gdufs_teacher']['info']['general']['data']['profile']" style="outline: none;padding: 6px;vertical-align: top; border-color: #cecece; width: 250px; height: 150px"></textarea>
+    </div>
+
+    <div style="margin-top: 20px">
+        <button class="btn btn-info" style="width: 80px; outline: none; padding: 4px 12px">保存</button>
+    </div>
+</div>
+
+<!--广外教师所相关联的新闻数据展开合并控制-->
+<div style="padding: 10px; background: whitesmoke; cursor: pointer; border: 1px solid gainsboro;border-width: 1px 0 1px 0"
+     ng-click="graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['status']=!graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['status']">
+    <div style="display: inline-block">外事交流</div>
+    <i style="font-size: 24px; position: relative; top: 4px; left: 5px; color: grey"
+       ng-class="{'fa fa-caret-down':graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['status'], 'fa fa-caret-left':!graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['status']}" ></i>
+</div>
+<!--新闻数据展示，图片、标题，时间三种元素-->
+<div ng-if="graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['status']" style="cursor: pointer; padding-left: 10px; position: relative">
+    <div>
+        <div ng-repeat="value in graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['news'] track by $index" class="hoverNewsItem"
+             style="border: 1px solid gainsboro;border-width: 0 0 1px 0; padding: 10px 10px 10px 20px;display: flex;flex-direction: row"
+             ng-click="graph.chooseNewsShow(value['unique_id'],'gdufs_teacher')">
+            <!--封面图片-->
+            <div style="width: 100px; height: 80px; padding: 6px; border: 1px solid gainsboro ;">
+                <div style="background: url({{value['cover']}}) no-repeat center center; background-size: cover; width: 86px; height: 66px"></div>
+            </div>
+
+            <!--描述-->
+            <div style="flex: 1; position: relative; margin-left: 10px">
+                <!--标题-->
+                <div style="line-height: 120%; margin-top: 10px">{{value['title']}}</div>
+                <!--时间-->
+                <div style="position: absolute;right: 20px; bottom: 0; font-size: 12px; color: #696969">{{value['time']}}</div>
+            </div>
+        </div>
+    </div>
+
+    <!--事件新闻数据展示-->
+    <div ng-show="graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['newsDetail']['status']" class="viewDetailNews" style="position: absolute; top: 0; right: 0;height: 100%; background: white">
+        <button style="padding: 4px 12px; margin: 10px;" class="btn btn-info" ng-click="graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['newsDetail']['status']=false">
+            <i class="fa fa-angle-left"></i>
+            <span>返回</span>
+        </button>
+        <div ng-bind-html="graph.nodeLinkSelectedData['gdufs_teacher']['info']['detail']['newsDetail']['news']" style="border: 1px solid gainsboro;border-width: 0 0 1px 0 ; padding: 0 20px; line-height: 150%; letter-spacing: 1px;"></div>
+
+        <!--底部占位符-->
+        <div style="width: 100%; height: 30px"></div>
+    </div>
+</div>
+
+
+
+
+
+
+

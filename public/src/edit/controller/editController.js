@@ -12,27 +12,26 @@ editModule.controller('EditCtrl', function ($location, $routeParams, EditDataSer
 
 
     //添加新闻事件数据*************************************************************************************
-
-    edit.addMeetingPerson = function (type) {
-        EditDataSer.visitData[type].push(angular.copy(EditDataSer.supportData['addPerson'][type]))
+    //添加部门
+    edit.addMeetingDept = function (type) {
+        EditDataSer.visitData[type].push(angular.copy(EditDataSer.supportData['addDept'][type]))
     };
-
-    edit.removeMeetingPerson = function (type, index) {
+    //删除部门
+    edit.removeMeetingDept = function (type, index) {
         EditDataSer.visitData[type].splice(index, 1)
     };
-
-    edit.resetEditData = function () {
-        for (let i in EditDataSer.visitData) {
-            if (EditDataSer.visitData[i] instanceof Array) {
-                EditDataSer.visitData[i].length = 0;
-                EditDataSer.visitData[i].push(angular.copy(EditDataSer.supportData['addPerson'][i]))
-
-            } else {
-                EditDataSer.visitData[i] = '';
-            }
-        }
+    //添加与会人员
+    edit.addMeetingPerson = function (type, parent) {
+        console.log(type, parent)
+        EditDataSer.visitData[type][parent]['attend'].push(angular.copy(EditDataSer.supportData['addPerson'][type]))
+    };
+    //删除与会人员
+    edit.removeMeetingPerson = function (type, parent, index) {
+        console.log(type, parent, index)
+        EditDataSer.visitData[type][parent]['attend'].splice(index, 1)
     };
 
+    //添加来访、到访事件
     edit.addNewVisitData = function () {
         //单独设置时间戳数据
         let datePattern = new RegExp("\\d+年\\d+月\\d+日", "g");
@@ -44,7 +43,10 @@ editModule.controller('EditCtrl', function ($location, $routeParams, EditDataSer
         EditDataSer.visitData['timestamp'] = dateTime[0].replace('年', '-').replace('月', '-').replace('日', '');
         OverallGeneralSer.httpPostData3(EditDataSer.visitData, OverallDataSer.urlData['frontEndHttp']['addVisitNewsData'],
             function (result) {
-                console.log('result', result)
+                if (result.status != 200) {
+                    alert("此次操作有误");
+                    console.log('result', result)
+                }
             })
     };
 

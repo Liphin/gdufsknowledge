@@ -7,32 +7,17 @@ editModule.factory('EditDataSer', function () {
 
     //一则完整的新闻来访数据
     let visitData = {
-        type: '1', //1：来访交流、2：出访交流
         title: '', //会议标题
+        time: '2018年', //会议时间
+        type: '1', //1：来访交流、2：出访交流
         cover: '', //封面url
-        time: '2017年', //会议时间
-        timestamp: '', //时间戳
-        place: '', //会议地址
-        theme: '', //会议主题
         origin_url: '', //广外新闻原网址
-        abstract: '', //广外外事管理内容摘要
+        key_word: '', //广外外事管理内容关键词，用于搜索时使用
+        timestamp: '', //时间戳
         unique_id: '',//来访事件唯一标识
 
-        //广外接待会见人员
-        gdufs_teacher: [
-            {'cn_name': '', 'role': '1', 'title':''}, //1：主接待人； 2：陪同接待
-        ],
-
-        //来访人
-        visitor: [
-            {'cn_name': '', 'en_name': '', 'role': '1', 'title': ''} //1：主出访人；2：陪同出访
-        ],
-
-        //来访人/出访的机构、部门、学校信息
-        visitor_dept: {
-            'cn_name': '', //中文名称
-            'nation': '', //国籍
-        },
+        gdufs_dept: [{'cn_name': '', 'attend': [{'cn_name': '', 'identity': '1', 'title': ''}]}], //广外接待部门
+        visitor_dept: [{'cn_name': '', 'nation': '', 'attend': [{'cn_name': '', 'en_name': '', 'title': ''}]}] //来访人部门
     };
 
     let supportData = {
@@ -40,9 +25,13 @@ editModule.factory('EditDataSer', function () {
             modify: false,
             add: false
         },
+        addDept: {
+            gdufs_dept: {'cn_name': '', 'attend': [{'cn_name': '', 'identity': '1', 'title': ''}]}, //广外部门添加
+            visitor_dept: {'cn_name': '', 'nation': '', 'attend': [{'cn_name': '', 'en_name': '', 'title': ''}]} //来访单位添加
+        },
         addPerson: {
-            gdufs_teacher: {'name': '', 'role': '1', 'title':''},
-            visitor: {'cn_name': '', 'en_name': '', 'role': '1', 'dept': ''}
+            gdufs_dept: {'cn_name': '', 'identity': '1', 'title': ''},  //identity: 1:教师； 2：学生
+            visitor_dept: {'cn_name': '', 'en_name': '', 'title': ''}
         }
     };
 

@@ -17,7 +17,17 @@ overallModule.config(function ($routeProvider, $httpProvider, $sceDelegateProvid
             controller: 'EditCtrl',
             controllerAs: 'edit',
         })
-        .otherwise({redirectTo: '/edit/modify'});
+        .when('/graph/:option', {
+            templateUrl: 'src/graph/tmpl/graph.html',
+            controller: 'GraphCtrl',
+            controllerAs: 'graph',
+        })
+        .when('/analyse/:option', {
+            templateUrl: 'src/analyse/tmpl/analyse.html',
+            controller: 'AnalyseCtrl',
+            controllerAs: 'analyse',
+        })
+        .otherwise({redirectTo: '/graph/nodeLink'});
 
     //部署拦截器，每次http请求，会经过拦截器方法后再往下传
     $httpProvider.interceptors.push('interceptHttp');

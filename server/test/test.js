@@ -2,16 +2,12 @@
  * Created by Administrator on 2019/3/1.
  */
 
-let a = ['2018-12-12', '2018-6-2'];
+//13132800000  86400000
+// let a = '2018-09-01 00:00';
+// let b = '2019-01-31 00:00';
+let a = '2018-09-01 00:00';
+let b = '2018-09-02 00:00';
+console.log(new Date(b)-new Date(a))
 
-sortDate = function (a, b) {
-  return new Date(a)-new Date(b)
-};
-//console.log(a.sort(sortDate));
 
-
-let str = "2018年6月5日至2018年7月18日";
-let datePattern = new RegExp("\\d+年\\d+月\\d+日","g");
-let dateTime = str.match(datePattern)[0];
-console.log(dateTime.replace('年','-').replace('月','-').replace('日',''));
-
+console.log(2591000000/2592000000)

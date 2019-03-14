@@ -81,6 +81,11 @@ let gdufsTeachInitCheck = function (bodyData, driver) {
 };
 
 
+
+
+
+
+
 /**
  * 搜索广外对应教师的出访或接待来访记录
  * @param visitData
@@ -154,7 +159,9 @@ let getAllGdufsTeacherNode = function (driver) {
         session.run('match (n:Gdufs_Teacher) return properties(n) as result')
             .subscribe({
                 onNext: record => {
-                    gdufsTeacherNodes.push(record.get('result'));
+                    let result = record.get('result');
+                    result['label_name']='gdufs_teacher';
+                    gdufsTeacherNodes.push(result);
                 },
                 onCompleted: () => {
                     resolve(gdufsTeacherNodes);

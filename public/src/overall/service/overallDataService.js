@@ -6,15 +6,17 @@ var overallModule = angular.module('Angular');
 overallModule.factory('OverallDataSer', function ($rootScope) {
 
     var overallData = {
+        'screen': {'width': '', 'height': ''},
         'loginStatus': false,
         'loadingData': false, //
         'requestDataErrorMsg': '尊敬的客户，服务出错，请稍后重试',
-        'fileSuffix': ['doc','docx','pdf','xls','xlsx','png','jpeg','jpg','gif','pfx','zip'], //文件后缀辅助数据
+        'fileSuffix': ['doc', 'docx', 'pdf', 'xls', 'xlsx', 'png', 'jpeg', 'jpg', 'gif', 'pfx', 'zip'], //文件后缀辅助数据
     };
 
     /* Url 系统各种文件获取的URL设置 */
     var baseUrlData = {
         'frontEndHttp': "http://127.0.0.1:3037/",
+        'ossHttp': 'https://output-service.oss-cn-shenzhen.aliyuncs.com',
     };
 
     // http请求的具体路径
@@ -34,10 +36,12 @@ overallModule.factory('OverallDataSer', function ($rootScope) {
             'deleteBatchArbi': baseUrlData['frontEndHttp'] + 'deleteBatchArbi',
 
 
+            'getAllGdufsKnowledgeMysqlData': baseUrlData['frontEndHttp'] + 'getAllGdufsKnowledgeMysqlData',
             'addVisitNewsData': baseUrlData['frontEndHttp'] + 'addVisitNewsData',
             'getAllFillData': baseUrlData['frontEndHttp'] + 'getAllFillData',
             'updateNodeInfo': baseUrlData['frontEndHttp'] + 'updateNodeInfo',
-
+            'getAllNodeAndLinksData': baseUrlData['frontEndHttp'] + 'getAllNodeAndLinksData',
+            'gdufsNewsOssUrl': baseUrlData['ossHttp'] + '/gdufs/knowledge/',
         }
     };
 
@@ -60,8 +64,14 @@ overallModule.factory('OverallDataSer', function ($rootScope) {
         'viewPicture': 1001
     };
 
+    //电脑键盘按键操作
+    let keyBoard = {
+        "ctrl": false,
+    };
+
 
     return {
+        keyBoard: keyBoard,
         urlData: urlData,
         redirect: redirect,
         sqlVerify: sqlVerify,

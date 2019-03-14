@@ -2,6 +2,7 @@
 body {
     padding-right: 0px !important;
 }
+
 *.modal-open {
     overflow-y: scroll;
     padding-right: 0 !important;
@@ -19,6 +20,7 @@ body {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
     background-color: rgb(192, 209, 253);
 }
+
 /*滚动条凹槽颜色*/
 .scrollBar-1::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -31,6 +33,7 @@ body {
     height: 10px;
     background-color: #F5F5F5;
 }
+
 /** STYLE 7 */
 .scrollBar-7::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -52,7 +55,6 @@ body {
     width: 5px;
     background-color: #F5F5F5;
 }
-
 
 /** STYLE 8 */
 .scrollBar-8::-webkit-scrollbar-track {
@@ -76,21 +78,19 @@ body {
     background-color: #F5F5F5;
 }
 
-
-
-.innerInlineDiv div{
+.innerInlineDiv div {
     display: inline-block;
 }
-.hoverUnderline:hover{
+
+.hoverUnderline:hover {
     cursor: pointer;
     color: rgb(53, 35, 63);
     text-decoration: underline;
 }
 
-.deptChoose:hover{
+.deptChoose:hover {
     background: #ffd7e0;
 }
-
 
 /**
  避免快速点击后变蓝
@@ -101,32 +101,43 @@ body {
     -khtml-user-select: none; /* Konqueror HTML */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                     supported by Chrome and Opera */
 }
 
 /*jquery拖动操作*/
-#sortable { list-style-type: none; margin: 0; padding: 0; width: 450px; }
-#sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 4em; text-align: center; }
+#sortable {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 450px;
+}
 
-
+#sortable li {
+    margin: 3px 3px 3px 0;
+    padding: 1px;
+    float: left;
+    width: 100px;
+    height: 90px;
+    font-size: 4em;
+    text-align: center;
+}
 
 /*记录闯关地图页面按钮颜色*/
-.buttonColorOk{
+.buttonColorOk {
     color: #ff8500;
 }
-.buttonColorOff{
+
+.buttonColorOff {
     color: grey;
 }
 
-
 /*富文本框上传视频时操作*/
-iframe, embed{
+iframe, embed {
     width: 350px !important;
     height: 280px !important;
 }
-
-
 
 /*end demo-specific*/
 .loader {
@@ -134,11 +145,13 @@ iframe, embed{
     margin: 0 auto;
     width: 70px;
 }
+
 .loader:before {
     content: '';
     display: block;
     padding-top: 100%;
 }
+
 .circular {
     animation: rotate 4s linear infinite;
     height: 100%;
@@ -151,17 +164,20 @@ iframe, embed{
     right: 0;
     margin: auto;
 }
+
 .path {
     stroke-dasharray: 1, 200;
     stroke-dashoffset: 0;
     animation: dash 2s ease-in-out infinite, color 8s ease-in-out infinite;
     stroke-linecap: round;
 }
+
 @keyframes rotate {
     100% {
         transform: rotate(360deg);
     }
 }
+
 @keyframes dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -176,6 +192,7 @@ iframe, embed{
         stroke-dashoffset: -124px;
     }
 }
+
 @keyframes color {
     100%,
     0% {
@@ -193,10 +210,9 @@ iframe, embed{
     }
 }
 
-
-.arbiEditLeft div{
+.arbiEditLeft div {
     height: 70px;
-    border:1px solid lightgray;
+    border: 1px solid lightgray;
     border-width: 0 0 1px 0;
     width: inherit;
     display: flex;
@@ -204,50 +220,58 @@ iframe, embed{
     align-items: center;
     cursor: pointer;
 }
+
 /*.arbiEditLeft div:hover{*/
-    /*background: #e4f2f7;*/
-    /*border-color: #e4f2f7;*/
-    /*color: black;*/
+/*background: #e4f2f7;*/
+/*border-color: #e4f2f7;*/
+/*color: black;*/
 /*}*/
 
-.inputStyle{
+.inputStyle {
     outline: none;
     padding: 4px 10px;
     border: 1px solid #bdbdbd;
     border-width: 0 0 1px 0;
 }
 
-.textAreaStyle{
+.textAreaStyle {
     outline: none;
     padding: 4px 10px;
     border: 1px solid #bdbdbd;
 }
 
-.selectedItem{
+.selectedItem {
     background: #5bc0de;
     color: white;
 }
+
 /*编辑菜单鼠标放上去时样式变化*/
 .listOptMenu span:hover {
     background: #78a1bf;
     cursor: pointer;
 }
 
-.tableTrStyle td, .tableTrStyle th{
+.tableTrStyle td, .tableTrStyle th {
     text-align: center;
 }
 
-.caseChoose:hover{
+.caseChoose:hover {
     border-color: #7bb0cc;
     background: #fffffa;
 }
 
-.colorRed{
+.colorRed {
     color: red;
 }
-.colorGreen{
+
+.colorGreen {
     color: green;
 }
 
+/*选择了某个数据分析item后样式变化*/
+.analyseSelected {
+    background: #4784ab;
+    color: white;
+}
 
 

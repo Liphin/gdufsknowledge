@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="./d3.v5.min.js"></script>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<style>
+    .myClass1 {
+        color: orange;
+    }
+
+    .myClass2 {
+        background: pink;
+    }
+</style>
+<body>
+
+<!---------------------Selector----------------------->
+<div id="myClass" class="myClass1">
+    Hello World!
+</div>
+<h2 class="myclass">Message</h2>
+<div class="myclass">
+    Hello World!
+</div>
+
+<!---------------------Data Join------------------------>
+<ul id="list">
+    <li></li>
+    <li></li>
+</ul>
+<input type="button" name="remove" value="Remove fourth value"
+       onclick="javascript:remove()"/>
+
+<p></p>
+<div id="tryDatum"></div>
+
+
+<p></p>
+
+
+<script>
+    /*Selector学习*/
+    //d3.select("#myClass").append("span").text("from d3 js");
+    //d3.select("#myClass").html("Hello world <span>from D3 js htl</span>")
+    //d3.select("#myClass").style("color", "red").style("background","pink");
+    //d3.select("#myClass").classed("myClass2", false)
+
+    //let ele = d3.select("#myClass");
+    //ele.classed("myClass2", !ele.classed("myClass2"));
+
+    //d3.selectAll(".myclass").attr("style", "color: red");
+
+    /*Data join 学习*/
+    //d3.select("#list").selectAll("li").data([10, 20, 30, 25, 15]);
+    //    d3.select("#list").selectAll("li")
+    //        .data([10, 20, 30, 25, 15])
+    //        .text(function (d) {
+    //            return d;
+    //        });
+
+        d3.select("#list").selectAll("li")
+            .data([10, 20, 30, 25, 15, 23])
+            .text(function (d) {
+                return "This is pre-existing element and the value is " + d;
+            })
+            .enter()
+            .append("li")
+            .text(function (d) {
+                return "This is dynamically created element and the value is " + d;
+            });
+    //
+    //
+    //    function remove() {
+    //        d3.selectAll("li")
+    //            .data([10, 20, 30, 115])
+    //            .exit()
+    //            .remove()
+    //  }
+
+    //    d3.select("p")
+    //        .datum(50)
+    //        .text(function(d) {
+    //            return "Used existing paragraph element and the data " + d + " is assigned.";
+    //        });
+    //
+    //    d3.select("#tryDatum")
+    //        .datum(100)
+    //        .append("p")
+    //        .text(function(d) {
+    //            return "Created new paragraph element and the data " + d + " is assigned.";
+    //        });
+
+//        var data = [1, 2, 3, 4, 5];
+//        var paragraph = d3.select("body")
+//            .selectAll("p")
+//            .data(data)
+//            .text(function (d, i) {
+//                console.log("d: " + d);
+//                console.log("i: " + i);
+//                console.log("this: " + this);
+//                return "The index is " + i + " and the data is " + d;
+//            });
+
+</script>
+</body>
+</html>

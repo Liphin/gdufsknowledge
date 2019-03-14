@@ -1,150 +1,185 @@
 <!--添加知识图谱元数据用户交互界面-->
-<div ng-if="edit.supportData['pageShow']['add']" style="margin-left: 100px">
-    <div style="margin-top: 20px">
-        <!--标题-->
-        <div style="display: inline-block">
-            <span>标题：</span>
-            <input placeholder="请输入标题" ng-model="edit.visitData['title']" style="width: 200px; margin-left: 28px"/>
-        </div>
+<div ng-if="edit.supportData['pageShow']['add']" style="margin-left: 100px;">
 
-        <!--时间-->
-        <div style="margin-left: 100px;display: inline-block">
-            <span>时间：</span>
-            <input placeholder="请输入时间" ng-model="edit.visitData['time']" style="width: 200px; margin-left: 28px"/>
-        </div>
+    <!--左侧导航栏-->
+    <div>
+        <i ng-if="false" class="fa fa-angle-double-right" ng-click="graph.overallData['leftBarShow']=true" style="color: #808080;cursor: pointer;font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; left: 2px"></i>
+        <div ng-show="true" class="graphLeftBar"  style="position: fixed; left: 0; top: 0; bottom: 0;background: #2a536d">
+            <i ng-if="" class="fa fa-angle-double-left" ng-click="graph.overallData['leftBarShow']=false" style="cursor: pointer;color: white; font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; right: 2px"></i>
 
-        <!--合作交流类型：1:来访交流、2:出访交流-->
-        <div style="display: inline-block; margin-left: 100px">
-            <span>交流类型：</span>
-            <select ng-model="edit.visitData['type']">
-                <option value="1">来访交流</option>
-                <option value="2">出访交流</option>
-            </select>
-        </div>
-    </div>
+            <!--外事图片logo-->
+            <div style="position: relative; z-index: 10; margin: 10px;width: 170px">
+                <img style="width: 40px; height: 40px;" src="/assets/img/overall/bg_top.png">
+                <span style="color: white; margin-left: 5px">外事知识图谱</span>
+            </div>
 
-    <div style="margin-top: 20px">
-        <!--封面-->
-        <div style="display: inline-block">
-            <span>封面：</span>
-            <input placeholder="请输入封面" ng-model="edit.visitData['cover']" style="width: 200px; margin-left: 28px"/>
-        </div>
-
-        <!--地点-->
-        <div style="margin-left: 100px;display: inline-block">
-            <span>地点：</span>
-            <input placeholder="请输入地点" ng-model="edit.visitData['place']" style="width: 200px; margin-left: 28px"/>
-        </div>
-
-        <!--会谈主题-->
-        <div style="margin-left: 100px;display: inline-block">
-            <span>会谈主题：</span>
-            <input placeholder="请输入会议主题" ng-model="edit.visitData['theme']" style="width: 200px"/>
+            <!--左侧导航栏菜单页面菜单-->
+            <div ng-click="switchPath('graph/nodeLink')" style="color: white; width: 100%; height: 45px;margin-top: 40px; padding: 12px 0 0 45px; cursor: pointer; " class="leftMenu">知识图谱</div>
+            <div ng-click="switchPath('analyse/relation')" style="color: white; width: 100%; height: 45px;padding: 12px 0 0 45px;cursor: pointer;" class="leftMenu">关系分析</div>
+            <div style="color: white; width: 100%; height: 45px;padding: 12px 0 0 45px;cursor: pointer;background: #4784ab;" class="leftMenu">数据编辑</div>
         </div>
     </div>
 
 
-    <!--原网址-->
-    <div style="margin-top: 20px">
-        <span>原网址：</span>
-        <input placeholder="请输入原网址" ng-model="edit.visitData['origin_url']" style="width: 580px; margin-left: 14px"/>
-    </div>
-
-    <!--内容摘要-->
-    <div style="margin-top: 20px">
-        <span style="vertical-align: top">内容摘要：</span>
-        <textarea placeholder="请输入内容摘要" ng-model="edit.visitData['abstract']" style="width: 580px; height: 100px; vertical-align: top"/>
-    </div>
-
-
-    <!--校方代表，人员、身份（接待，陪同） array-->
-    <div style="margin-top: 20px">
-        <div >
-            <!--我方出访人-->
-            <span>我方出访人：&nbsp;</span>
-            <!--添加按钮-->
-            <span class="fa fa-plus" style="color: grey; cursor: pointer" ng-click="edit.addMeetingPerson('gdufs_teacher')">&nbsp;添加</span>
-        </div>
-
-        <div ng-repeat="value in edit.visitData['gdufs_teacher'] track by $index" style="margin-top: 5px;">
+    <div style="margin-left: 200px">
+        <div style="margin-top: 20px">
+            <!--标题-->
             <div style="display: inline-block">
-                <span>中文姓名：</span>
-                <input placeholder="请输入出访人姓名" ng-model="value['cn_name']" style="width: 150px"/>
+                <span>标题：</span>
+                <input placeholder="请输入标题" ng-model="edit.visitData['title']" style="width: 200px; margin-left: 28px"/>
             </div>
 
-            <div style="display: inline-block; margin-left: 20px">
-                <span>职务：</span>
-                <input placeholder="请输入来访方职称" ng-model="value['title']" style="width: 150px; margin-left: 26px"/>
+            <!--时间-->
+            <div style="margin-left: 70px;display: inline-block">
+                <span>时间：</span>
+                <input placeholder="请输入时间" ng-model="edit.visitData['time']" style="width: 200px; margin-left: 28px"/>
             </div>
 
-            <div style="display: inline-block; margin-left: 20px">
-                <span>出访身份：</span>
-                <select ng-model="value['role']">
-                    <option value="1">主会谈人</option>
-                    <option value="2">陪同出访</option>
+            <!--合作交流类型：1:来访交流、2:出访交流-->
+            <div style="display: inline-block; margin-left: 70px">
+                <span>交流类型：</span>
+                <select ng-model="edit.visitData['type']">
+                    <option value="1">来访交流</option>
+                    <option value="2">出访交流</option>
                 </select>
             </div>
-
-            <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingPerson('gdufs_teacher', $index)">
-                <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
-            </div>
-        </div>
-    </div>
-
-
-    <!--来访方代表，人员、身份（接待，陪同） array-->
-    <div style="margin-top: 40px">
-        <div >
-            <!--来访方-->
-            <span>来访方：&nbsp;</span>
-            <!--添加按钮-->
-            <span class="fa fa-plus" style="color: grey; cursor: pointer" ng-click="edit.addMeetingPerson('visitor')">&nbsp;添加</span>
         </div>
 
-        <div ng-repeat="value in edit.visitData['visitor'] track by $index" style="width: 720px;;margin-top: 15px;border: 1px solid darkgrey; border-width: 0 0 1px 0 ">
+        <div style="margin-top: 20px">
+            <!--封面-->
+            <div style="display: inline-block">
+                <span>封面：</span>
+                <input placeholder="请输入封面" ng-model="edit.visitData['cover']" style="width: 580px; margin-left: 28px"/>
+            </div>
+        </div>
 
-            <div style="display: inline-block; ">
-                <span>中文姓名：</span>
-                <input placeholder="请输入来访方中文姓名" ng-model="value['cn_name']" style="width: 150px"/>
+        <!--原网址-->
+        <div style="margin-top: 20px">
+            <span>原网址：</span>
+            <input placeholder="请输入原网址" ng-model="edit.visitData['origin_url']" style="width: 580px; margin-left: 14px"/>
+        </div>
+
+        <!--内容摘要-->
+        <div style="margin-top: 20px">
+            <span style="vertical-align: top">会议关键词：</span>
+            <textarea placeholder="请输入会议关键词" ng-model="edit.visitData['key_word']" style="width: 565px; height: 100px; vertical-align: top"/>
+        </div>
+
+
+        <!--校方代表，人员、身份（接待，陪同） array-->
+        <div style="margin-top: 20px; border: 1px solid #c3c3c3; border-radius: 10px;padding: 20px; width: 870px">
+            <div>
+                <!--我方出访人-->
+                <span>我方接待部门：&nbsp;</span>
+                <!--添加按钮-->
+                <span class="fa fa-plus" style="color: grey; cursor: pointer" ng-click="edit.addMeetingDept('gdufs_dept')">&nbsp;添加</span>
             </div>
 
-            <div style="display: inline-block; margin-left: 20px">
-                <span>英文姓名：</span>
-                <input placeholder="请输入来访方英文姓名" ng-model="value['en_name']" style="width: 150px"/>
+            <div ng-repeat="value in edit.visitData['gdufs_dept'] track by $index" style="margin-top: 15px;">
+                <div style="display: inline-block">
+                    <span>部门名称：</span>
+                    <input ng-model="value['cn_name']" style="width: 150px"/>
+
+                    <!--删除该部门信息-->
+                    <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingDept('gdufs_dept', $index)">
+                        <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
+                    </div>
+                </div>
+
+                <!--该部门下的出访接待教师或学生-->
+                <div style="margin: 10px 0 0 80px">
+                    <div ng-repeat="subValue in value['attend'] track by $index" style="margin: 10px 0 0 0;">
+                        <!--出访人姓名-->
+                        <div style="display: inline-block">
+                            <span>中文姓名：</span>
+                            <input ng-model="subValue['cn_name']" style="width: 150px"/>
+                        </div>
+
+                        <!--出访人身份：教师、学生-->
+                        <div style="display: inline-block; margin-left: 20px">
+                            <span>出访身份：</span>
+                            <select ng-model="subValue['identity']" style="width: 150px">
+                                <option value="1">教师</option>
+                                <option value="2">学生</option>
+                            </select>
+                        </div>
+
+                        <!--出访人职务-->
+                        <div style="display: inline-block; margin-left: 20px">
+                            <span>职务：</span>
+                            <input ng-model="subValue['title']" style="width: 150px;"/>
+                        </div>
+
+                        <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingPerson('gdufs_dept', $parent.$index, $index)">
+                            <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
+                        </div>
+                    </div>
+
+                    <!--添加部门出访人的按钮-->
+                    <span class="fa fa-plus" style="color: grey; cursor: pointer; margin: 10px 0 0 0;" ng-click="edit.addMeetingPerson('gdufs_dept', $index)">&nbsp;添加</span>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--来访方代表，人员、身份（接待，陪同） array-->
+        <div style="margin-top: 50px; border: 1px solid #c3c3c3; border-radius: 10px;padding: 20px; width: 870px">
+            <div >
+                <!--来访方-->
+                <span>来访方：&nbsp;</span>
+                <!--添加按钮-->
+                <span class="fa fa-plus" style="color: grey; cursor: pointer" ng-click="edit.addMeetingDept('visitor_dept')">&nbsp;添加</span>
             </div>
 
-            <div style="display: inline-block; margin-left: 20px">
-                <span>职务：</span>
-                <input placeholder="请输入来访方职称" ng-model="value['title']" style="width: 150px"/>
-            </div>
-
-            <div style="margin-top: 10px; margin-bottom: 10px">
-                <div style="display: inline-block;">
+            <div ng-repeat="value in edit.visitData['visitor_dept'] track by $index" style="margin-top: 15px;">
+                <div style="display: inline-block">
                     <span>单位名称：</span>
-                    <input placeholder="所在单位中文名称" ng-model="value['dept_cn_name']" style="width: 150px"/>
+                    <input ng-model="value['cn_name']" style="width: 150px"/>
+
+                    <div style="display: inline-block; margin-left: 20px">
+                        <span>单位国别：</span>
+                        <input ng-model="value['nation']" style="width: 150px"/>
+                    </div>
+
+                    <!--删除该单位信息-->
+                    <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingDept('visitor_dept', $index)">
+                        <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
+                    </div>
                 </div>
 
-                <div style="display: inline-block; margin-left: 20px">
-                    <span>单位国别：</span>
-                    <input placeholder="来访单位国别" ng-model="value['nation']" style="width: 150px"/>
+                <div style="margin: 10px 0 0 80px">
+                    <div ng-repeat="subValue in value['attend'] track by $index" style="width: 820px;;margin-top: 15px;">
+                        <div style="display: inline-block; ">
+                            <span>中文姓名：</span>
+                            <input ng-model="subValue['cn_name']" style="width: 150px"/>
+                        </div>
+
+                        <div style="display: inline-block; margin-left: 20px">
+                            <span>英文姓名：</span>
+                            <input ng-model="subValue['en_name']" style="width: 150px"/>
+                        </div>
+
+                        <div style="display: inline-block; margin-left: 20px">
+                            <span>职务：</span>
+                            <input ng-model="subValue['title']" style="width: 150px"/>
+                        </div>
+
+                        <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingPerson('visitor_dept', $parent.$index, $index)">
+                            <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
+                        </div>
+                    </div>
+
+                    <!--添加部门出访人的按钮-->
+                    <span class="fa fa-plus" style="color: grey; cursor: pointer; margin: 10px 0 0 0;" ng-click="edit.addMeetingPerson('visitor_dept', $index)">&nbsp;添加</span>
+
                 </div>
 
-                <div style="display: inline-block; margin-left: 20px">
-                    <span>出访身份：</span>
-                    <select ng-model="value['role']">
-                        <option value="1">主会谈人</option>
-                        <option value="2">陪同出访</option>
-                    </select>
-                </div>
-
-                <div style="display: inline-block; margin-left: 20px" ng-click="edit.removeMeetingPerson('visitor', $index)">
-                    <span class="fa fa-trash-o" style="font-size: 17px;cursor: pointer; color: grey"></span>
-                </div>
             </div>
+
         </div>
+
+        <button class="btn btn-success" style="margin-top: 70px; width: 100px;" ng-click="edit.addNewVisitData()">提交</button>
+        <div style="width: 100%; height: 80px"></div>
     </div>
-
-
-    <button class="btn btn-default" style="margin-top: 70px" ng-click="edit.resetEditData()">重置</button>
-    <button class="btn btn-success" style="margin-top: 70px; margin-left: 100px; width: 100px;" ng-click="edit.addNewVisitData()">提交</button>
 </div>

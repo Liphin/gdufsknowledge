@@ -55,8 +55,39 @@ let gdufsTeacherVisitEventInit = function (bodyData, driver) {
 };
 
 
+/**
+ * 获取所有广外领导教师——接待来访事件的所有关系数据
+ * @param driver
+ */
+let getAllGdufsTeacherVisitEventLink = function (driver) {
+    return new Promise(resolve => {
+        const session = driver.session();
+        let gdufsTeacherVisitEventLink = [];
+        session.run('match (g:Gdufs_Teacher)-[n:Gdufs_Teacher_Visit_Event]->(e:Visit_Event) return properties(n) as result, g.unique_id as source, e.unique_id as target')
+            .subscribe({
+                onNext: record => {
+                    gdufsTeacherVisitEventLink.push({
+                        'source':record.get('source'),
+                        'target':record.get('target'),
+                        'attach':record.get('result'),
+                        'label_name':'gdufs_teacher_visit_event'
+                    });
+                },
+                onCompleted: () => {
+                    resolve(gdufsTeacherVisitEventLink);
+                },
+                onError: error => {
+                    console.error('getAllGdufsTeacherVisitEventLink error', error);
+                    resolve([]);
+                }
+            });
+    });
+};
+
+
 module.exports = {
-    gdufsTeacherVisitEventInit: gdufsTeacherVisitEventInit
+    gdufsTeacherVisitEventInit: gdufsTeacherVisitEventInit,
+    getAllGdufsTeacherVisitEventLink: getAllGdufsTeacherVisitEventLink,
 };
 
 

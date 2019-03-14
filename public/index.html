@@ -9,6 +9,8 @@
     <!--本地css-->
     <link rel="stylesheet" href="assets/css/overall/shadows.css" media="none" onload="if(media!='all')media='all'">
     <link rel="stylesheet" href="assets/css/overall/overall.css" media="none" onload="if(media!='all')media='all'">
+    <link rel="stylesheet" href="assets/css/overall/graph.css" media="none" onload="if(media!='all')media='all'">
+
     <!--javascript 加载-->
     <script src="assets/js/boot/head.load.min.js"></script>
     <script src="assets/js/boot/boot.js"></script>
@@ -19,7 +21,8 @@
     <title>广外外事知识图谱系统</title>
 
 </head>
-<body style="overflow-y: auto;" class="scrollBar-1">
+<body resize class="scrollBar-1" style="overflow-y: auto;font: 15px/1.5 Microsoft YaHei,arial,SimSun,宋体;
+        font-family:'PingFangSC','helvetica neue','hiragino sans gb','arial','microsoft yahei ui','microsoft yahei','simsun','sans-serif'" ng-keydown="keyboardDownOpt($event)" ng-keyup="keyboardUpOpt($event)">
 <!--loading加载动画-->
 <div ng-if="loading" align="center" style="background: rgba(255,255,255,0.5);position: fixed;left: 0;right: 0;
             top: 0;bottom: 0; z-index:{{zIndexHelper['loading']}};text-align: center;">

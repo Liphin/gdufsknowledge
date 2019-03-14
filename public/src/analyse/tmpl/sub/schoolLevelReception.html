@@ -1,0 +1,72 @@
+<!--2018年广外校级外事接待-->
+<div style="">
+
+    <!--国家——嘉宾人数 柱形图-->
+    <school-level-reception-bar-nation min-people-num="{{analyse.analyseData['school_level_reception']['factor']['nation']['minPeopleNum']}}"
+                                       ng-if="analyse.analyseData['school_level_reception']['factor']['nation']['status']"></school-level-reception-bar-nation>
+
+    <!--来访时间——嘉宾人次：线形图-->
+    <school-level-reception-line-sign-time ng-if="analyse.analyseData['school_level_reception']['factor']['visit_time']['status']"></school-level-reception-line-sign-time>
+
+    <!--大洲——占比：饼状图-->
+    <school-level-reception-pie-continent ng-if="analyse.analyseData['school_level_reception']['factor']['continent']['status']"></school-level-reception-pie-continent>
+
+
+    <!--参数设置-->
+    <div style="position: absolute; top: 20px; left: 1000px; padding-right: 40px;; margin:0 0 0 40px;">
+        <!--数据分析图选择-->
+        <div>
+            <div><span style="color: #1c70af; font-size: 16px">数据源</span></div>
+            <div style="width: 280px; cursor: pointer;margin-top: 10px">
+                <div ng-repeat="(key, value) in analyse.analyseData" ng-click="analyse.chooseAnalyseGraph(key, null)" style="padding: 10px;" ng-class="{'analyseSelected':value['status']}">
+                    <span>{{value['text']}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!--具体数据-->
+        <div style="margin: 30px 0 0 10px">
+            <div><span style="color: #1c70af; font-size: 16px">相关操作</span></div>
+            <!--各学院邀请外事人员来访人数设置-->
+            <div style="margin-top: 10px" ng-if="analyse.analyseData['school_level_reception']['factor']['nation']['status']">
+                <span style="">最低人次数： </span>
+                <input type="number" min="1" class="inputStyle" style="width: 47px; padding: 2px 0px 2px 6px;margin-left: 5px; border-width: 0 0 1px 0" ng-model="analyse.analyseData['school_level_reception']['factor']['nation']['minPeopleNum']"/>
+                <span>（人次）</span>
+            </div>
+            <!--原始数据文件下载-->
+            <div style="margin-top: 10px">
+                <span>原始数据文件下载：<a href="{{analyse.analyseData['school_level_reception']['file']}}">下载</a></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div style="margin: 20px 0 50px 20px;">
+    <span style="color: #19626b; font-size: 16px">分析变量选择：</span>
+    <!--柱状图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('school_level_reception', 'nation')" ng-model="analyse.analyseData['school_level_reception']['selected']" value="nation">
+        <span>来访国家/地区 </span><i class="fa fa-bar-chart" style="color: #ff5500"></i>
+    </label>
+
+    <!--折线图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('school_level_reception', 'visit_time')" ng-model="analyse.analyseData['school_level_reception']['selected']" value="visit_time">
+        <span>来访时间 </span><i class="fa fa-line-chart" style="color: #00ce23"></i>
+    </label>
+
+    <!--饼状图-->
+    <label class="radio-inline" style="margin-left: 20px">
+        <input type="radio" ng-change="analyse.chooseAnalyseGraph('school_level_reception', 'continent')" ng-model="analyse.analyseData['school_level_reception']['selected']" value="continent">
+        <span>大洲占比 </span><i class="fa fa-pie-chart" style="color: #1d94ed"></i>
+    </label>
+    <!--<label class="radio-inline" style="margin-left: 20px">-->
+        <!--<input type="radio" ng-change="analyse.chooseAnalyseGraph('school_level_reception', 'nation')" ng-model="analyse.analyseData['school_level_reception']['selected']" value="nation">-->
+        <!--<span>来访国家/地区 </span><i class="fa fa-pie-chart" style="color: #1d94ed"></i>-->
+    <!--</label>-->
+
+</div>
+
+</div>

@@ -16,12 +16,37 @@ overallModule.controller('OverallCtrl', function ($http, $cookies, $rootScope, $
 
 
     /**
+     * 切换路由path
+     */
+    $rootScope.switchPath = function (path) {
+        $location.path(path);
+    };
+
+
+    /**
      * 停止事件传递和禁用一些默认事件处理情况
      * @param $event
      */
     $rootScope.preventEventTransport = function ($event) {
         OverallSer.preventEventTransport($event);
     };
+
+
+    /**
+     * 电脑键盘按键按下操作
+     * @param $event
+     */
+    $rootScope.keyboardDownOpt=function ($event) {
+        OverallSer.keyboardDownOpt($event)
+    };
+    /**
+     * 电脑键盘按键弹起操作
+     * @param $event
+     */
+    $rootScope.keyboardUpOpt=function ($event) {
+        OverallSer.keyboardUpOpt($event)
+    };
+
 
     /**
      * 退出登录操作
