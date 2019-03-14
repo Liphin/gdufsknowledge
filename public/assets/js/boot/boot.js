@@ -6,19 +6,19 @@ head.load(
     'assets/js/jquery/jquery-1.11.0.js',
     //'http://cdn.static.runoob.com/libs/jquery/1.11.0/jquery.min.js',
 
-    'assets/js/angularjs/angular.min.js',
+    'assets/js/angularjs/angular.js',
     //'https://cdn.bootcss.com/angular.js/1.5.8/angular.js',
 
     //'vendor/angular/messages/angular-messages.min.js',
     //'https://cdn.bootcss.com/angular.js/1.5.8/angular-messages.min.js',
 
-    'assets/js/angularjs/angular-route.min.js',
+    'assets/js/angularjs/angular-route.js',
     //'https://cdn.bootcss.com/angular.js/1.5.8/angular-route.min.js',
 
-    'assets/js/angularjs/angular-animate.min.js',
+    'assets/js/angularjs/angular-animate.js',
     //'https://cdn.bootcss.com/angular.js/1.5.8/angular-animate.min.js',
 
-    'assets/js/angularjs/angular-cookies.min.js',
+    'assets/js/angularjs/angular-cookies.js',
     //'https://cdn.bootcss.com/angular.js/1.5.8/angular-cookies.min.js',
 
     'assets/js/bootstrap/bootstrap.min.js',
