@@ -48,7 +48,7 @@
             <i class="fa fa-angle-left"></i>
             <span>返回</span>
         </button>
-        <a target="_blank" href="{{graph.getNewsOriginInfo()}}" style="color: #2a526d; font-size: 16px; margin-left: 30px">访问原文</a>
+        <span ng-click="graph.getNewsOriginInfo($event)" style="color: #2a526d; font-size: 16px; margin-left: 30px">访问原文</span>
         <div ng-bind-html="graph.nodeLinkSelectedData['gdufs_dept']['info']['detail']['newsDetail']['news']" style="border: 1px solid gainsboro;border-width: 0 0 1px 0 ; padding: 0 20px; line-height: 150%; letter-spacing: 1px;"></div>
 
         <!--底部占位符-->

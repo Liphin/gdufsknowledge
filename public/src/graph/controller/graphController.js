@@ -3,7 +3,8 @@
  */
 var graphModule = angular.module('Angular.graph');
 
-graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphDataSer, NodeLinkSer, NeoSer, OverallGeneralSer, OverallDataSer) {
+graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphDataSer, NodeLinkSer, NeoSer,
+                                              OverallGeneralSer, OverallDataSer, GraphSer) {
 
     var graph = this;
     graph.overallData = GraphDataSer.overallData;
@@ -36,15 +37,8 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
     /**
      * 返回新闻原网页信息数据
      */
-    graph.getNewsOriginInfo=function () {
-        let uniqueId = GraphDataSer.overallData['nodeSelected']['unique_id'];
-        let type = GraphDataSer.overallData['nodeSelected']['type'];
-        let subUniqueId = GraphDataSer.overallData['nodeSelected']['sub_unique_id'];
-        if(type=='visit_event'){
-            return GraphDataSer.neoNodeDataObj[uniqueId]['origin_url'];
-        }else {
-            return GraphDataSer.neoNodeDataObj[subUniqueId]['origin_url'];
-        }
+    graph.getNewsOriginInfo=function (event) {
+        GraphSer.getNewsOriginInfo(event)
     }
 });
 
