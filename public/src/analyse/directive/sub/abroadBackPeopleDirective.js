@@ -161,7 +161,7 @@ analyseModule.directive('abroadBackPeopleBarDestination', function (AnalyseDataS
                     tooltip: {
                         headerFormat: '<span style="font-size:11px"></span>',
                         pointFormat: '<span style="font-size: 15px; color: black"> 公派至 </span>' +
-                        '<span style="font-size: 15px; color: #248dc2; font-weight: bold">{point.name}</span>' +
+                        '<span style="font-size: 15px; color: #248dc2; font-weight: bold">{point.name} </span>' +
                         '<span style="font-size: 15px; color: #248dc2; font-weight: bold">{point.y}</span>' +
                         '<span style="font-size: 15px; color: black"> 人次 </span>'
                     },
