@@ -79,8 +79,8 @@ head.load(
     'src/graph/directive/graphUrlDirective.js',
     'src/graph/service/graphDataService.js',
     'src/graph/service/graphService.js',
-    'src/graph/service/sub/NeoService.js',
-    'src/graph/service/sub/NodeLinkService.js',
+    'src/graph/service/sub/neoService.js',
+    'src/graph/service/sub/nodeLinkService.js',
     'src/graph/controller/graphController.js',
 
 
