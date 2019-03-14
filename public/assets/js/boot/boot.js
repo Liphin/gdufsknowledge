@@ -29,16 +29,12 @@ head.load(
 
     //js.cookie.min.js
     'assets/js/others/js.cookie.min.js',
-
     //日期选择器
     'assets/js/others/laydate_export.js',
-
     //d3.v5图数据展示
     'assets/js/others/d3.v5.min.js',
-
     //highcharts
     'assets/js/others/highcharts.js',
-
 
     //下载组件模块
     'assets/js/jquery/Blob.js',
