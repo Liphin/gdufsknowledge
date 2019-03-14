@@ -13,7 +13,7 @@
     "host": "rm-2ze7293154b3khhn2i.mysql.rds.aliyuncs.com",
     "user": "beanson",
     "password": "2016BeansonBar",
-    "database": "report"
+    "database": "gdufs_knowledge"
   },
   "neo4j": {
     "toConnect": true,
