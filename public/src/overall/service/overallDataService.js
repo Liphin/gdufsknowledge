@@ -15,7 +15,7 @@ overallModule.factory('OverallDataSer', function ($rootScope) {
 
     /* Url 系统各种文件获取的URL设置 */
     var baseUrlData = {
-        'frontEndHttp': "http://127.0.0.1:3037/",
+        'frontEndHttp': "http://127.0.0.1:3080/",
         'ossHttp': 'https://output-service.oss-cn-shenzhen.aliyuncs.com',
     };
 
