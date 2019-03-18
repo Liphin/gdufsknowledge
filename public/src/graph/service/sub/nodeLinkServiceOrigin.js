@@ -173,24 +173,61 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
                 return text
             });
 
-
-        //添加最后一个node节点，用于鼠标放上节点时显示节点名称，并且永远在渲染层的顶端
-        let nodeTextNode = nodeArray.append("g").attr("id", "lastRefNode");
-
         //添加矩形节点信息信息描述面板
-        nodeTextNode.append("rect")
-            .attr("id", "nodeRect")
+        node.append("rect")
+            .attr("id", function (d, i) {
+                return "nodeRect" + i;
+            })
             .attr("fill", "white")
+            .attr("y", function (d) {
+                //依据节点半径再上偏移30个单位长度即可
+                return -(GraphDataSer.neoNodeDataObj[d.unique_id]['radius'] + 33);
+            })
+            .attr("x", function (d) {
+                //依据不同类型显示不同文本，并根据字数确定左偏移位置
+                if (d.label_name == 'visit_event') {
+                    return -(d.title.length * 7 + 14);
+
+                } else {
+                    return -(d.cn_name.length * 7 + 14);
+                }
+            })
+            .attr("width", function (d) {
+                //依据不同类型显示不同文本，并根据字数确定宽度
+                if (d.label_name == 'visit_event') {
+                    return d.title.length * 14 + 28;
+
+                } else {
+                    return d.cn_name.length * 14 + 28;
+                }
+            })
             .attr("height", 28)
             .attr("stroke", "#585858")
-            .attr("stroke-width", 1);
+            .attr("stroke-width", 1)
+            .attr("visibility", "hidden");
 
         //添加矩形节点信息信息描述文字
-        nodeTextNode.append("text")
-            .attr("id", "nodeText")
+        node.append("text")
+            .attr("id", function (d, i) {
+                return "nodeText" + i;
+            })
+            .attr("y", function (d) {
+                //依据节点半径再上偏移13个单位长度即可
+                return -(GraphDataSer.neoNodeDataObj[d.unique_id]['radius'] + 14);
+            })
             .attr("fill", "black")
             .style("font-size", "14px")
-            .style("text-anchor", "middle");
+            .style("text-anchor", "middle")
+            .attr("visibility", "hidden")
+            .text(function (d) {
+                //依据不同类型显示不同文本
+                if (d.label_name == 'visit_event') {
+                    return d.title;
+
+                } else {
+                    return d.cn_name;
+                }
+            });
 
 
         //设置节点拖拽事件响应
@@ -199,67 +236,14 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
             .on("drag", dragged)
             .on("end", dragended));
 
-
         //设置节点点击事件响应
         node.on("mouseenter", (d, i) => {
-
-            //设置节点是否显示text消息体为true，用于节点移动时tickActions判断使用
-            d['textShow'] = true;
-
-            //显示节点文本的节点，把该节点转换至特定的位置
-            nodeTextNode.attr("transform", function () {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
-
-            //设置文本上偏移及文本内容
-            nodeTextNode.select("text")
-                .attr("y", function () {
-                    //依据节点半径再上偏移13个单位长度即可
-                    return -(GraphDataSer.neoNodeDataObj[d['unique_id']]['radius'] + 14);
-                })
-                .text(function () {
-                    //依据不同类型显示不同文本
-                    if (d['label_name'] == 'visit_event') {
-                        return d['title'];
-
-                    } else {
-                        return d['cn_name'];
-                    }
-                });
-
-            //设置文本背景白色矩形框的上偏移、左偏移和宽度
-            nodeTextNode.select("rect")
-                .attr("y", function () {
-                    //依据节点半径再上偏移30个单位长度即可
-                    return -(GraphDataSer.neoNodeDataObj[d['unique_id']]['radius'] + 33);
-                })
-                .attr("x", function () {
-                    //依据不同类型显示不同文本，并根据字数确定左偏移位置
-                    if (d['label_name'] == 'visit_event') {
-                        return -(d['title'].length * 7 + 14);
-
-                    } else {
-                        return -(d['cn_name'].length * 7 + 14);
-                    }
-                })
-                .attr("width", function () {
-                    //依据不同类型显示不同文本，并根据字数确定宽度
-                    if (d['label_name'] == 'visit_event') {
-                        return d['title'].length * 14 + 28;
-
-                    } else {
-                        return d['cn_name'].length * 14 + 28;
-                    }
-                })
-
+            d3.select("#nodeRect" + i).attr("visibility", "visible");
+            d3.select("#nodeText" + i).attr("visibility", "visible");
 
         }).on("mouseleave", (d, i) => {
-            //当鼠标移开是，设置是否显示文本图标为false
-            d['textShow'] = false;
-            //设置文本节点位置到一个很远的位置即可
-            nodeTextNode.attr("transform", function () {
-                return "translate(-5000,-5000)";
-            })
+            d3.selectAll("#nodeRect" + i).attr("visibility", "hidden");
+            d3.selectAll("#nodeText" + i).attr("visibility", "hidden");
 
         }).on("click", (d, i) => {
             //获取与该节点相关联的节点信息
@@ -270,7 +254,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
                 setUnRelativeNodeGray(d, i);
             }
         });
-
 
         //设置svg中zoom移动和缩放交互
         d3.zoom().on("zoom", zoomActions)(svg);
@@ -295,13 +278,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
 
             //更新节点位置
             node.attr("transform", function (d) {
-                //如果该节点时鼠标放上去需要显示该节点文本时，则该段文本跟随节点运动而运动
-                if(d['textShow']){
-                    nodeTextNode.attr("transform", function () {
-                        return "translate(" + d.x + "," + d.y + ")";
-                    });
-                }
-                //返回该节点本身运动的位置
                 return "translate(" + d.x + "," + d.y + ")";
             });
         }
@@ -324,9 +300,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
         function dragged(d) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
-            nodeTextNode.attr("transform", function () {
-                return "translate(" + d.fx + "," + d.fy + ")";
-            })
         }
 
         /**

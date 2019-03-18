@@ -8,10 +8,11 @@ graphModule.factory('GraphDataSer', function () {
     let overallData = {
         'leftBarShow': true,
         'rightBarShow': false,
+        'lockRightBar': false,//标识是否锁定右侧展开面板
         "nodeSelected": { //选择了的节点类型和unique_id信息
             "unique_id": "",
             "type": "",
-            "sub_unique_id":"", //对应节点的子unique_id
+            "sub_unique_id": "", //对应节点的子unique_id
         },
         "nodeHover": { //鼠标放在节点上方时显示相关该节点的信息
             "text": "",
