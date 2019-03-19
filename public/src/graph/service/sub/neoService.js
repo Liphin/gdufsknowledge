@@ -14,7 +14,7 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
             //转换节点为以unique_id为key的对象，用于后续查找节点
             for (let i in result['nodes']) {
                 result['nodes'][i]['index'] = i;
-                result['nodes'][i]['degree'] = 0;
+                result['nodes'][i]['degree'] = 0; //记录入度和出度的数目，用来计算节点的大小
                 GraphDataSer.neoNodeDataObj[result['nodes'][i]['unique_id']] = result['nodes'][i]
             }
             //通过关系Links计算每个节点的度数，入度数和出度数
@@ -29,8 +29,12 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
             }
             //装载返回节点数据
             GraphDataSer.neoData = result;
+
             //初始化节点渲染到页面
             NodeLinkSer.nodeLinkInit();
+
+            // console.log('neodata',GraphDataSer.neoData);
+            // console.log('neoobj', GraphDataSer.neoNodeDataObj);
         })
     }
 
@@ -42,7 +46,7 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
      */
     function chooseNewsShow(uniqueId, type) {
         //保存选择的新闻子节点的openid
-        GraphDataSer.overallData['nodeSelected']['sub_unique_id']=uniqueId;
+        GraphDataSer.overallData['nodeSelected']['sub_unique_id'] = uniqueId;
         //重置news数据
         GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['news'] = "";
         //打开具体新闻页面

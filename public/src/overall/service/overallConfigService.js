@@ -27,6 +27,11 @@ overallModule.config(function ($routeProvider, $httpProvider, $sceDelegateProvid
             controller: 'AnalyseCtrl',
             controllerAs: 'analyse',
         })
+        .when('/utilService', {
+            templateUrl: 'src/utilservice/utilService.html',
+            controller: 'UtilServiceCtrl',
+            controllerAs: 'util',
+        })
         .otherwise({redirectTo: '/graph/nodeLink'});
 
     //部署拦截器，每次http请求，会经过拦截器方法后再往下传

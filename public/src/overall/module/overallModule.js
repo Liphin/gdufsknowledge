@@ -9,4 +9,5 @@ var overallModule = angular.module('Angular',
         'Angular.edit',
         'Angular.graph',
         'Angular.analyse',
+        'Angular.utilService',
     ]);
