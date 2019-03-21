@@ -3,7 +3,7 @@
  */
 var graphModule = angular.module('Angular.graph');
 
-graphModule.factory('GraphSer', function ($rootScope, OverallDataSer, $cookies, $location, $http,GraphDataSer, OverallGeneralSer) {
+graphModule.factory('GraphSer', function ($rootScope, OverallDataSer, $cookies, $location, $http, GraphDataSer, OverallGeneralSer) {
 
     /**
      * 返问新闻原网页信息数据
@@ -23,6 +23,8 @@ graphModule.factory('GraphSer', function ($rootScope, OverallDataSer, $cookies, 
         //取消消息体传递
         event.stopPropagation();
     };
+
+
 
     return {
         getNewsOriginInfo: getNewsOriginInfo,

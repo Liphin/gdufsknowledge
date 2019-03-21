@@ -173,6 +173,11 @@
 }
 
 
-
+.nodeMenu{
+    background: white;
+}
+.nodeMenu:hover{
+    background: #eff0f1;
+}
 
 

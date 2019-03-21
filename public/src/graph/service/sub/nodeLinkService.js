@@ -130,7 +130,18 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
             .attr("class", "nodeG")
             .style("cursor", "pointer");
 
-        //画圆形节点
+        //画节点内部的圆，成为环状 #6ac6ff
+        node.append("circle")
+            .attr("id", function (d, i) {
+                return "nodeRing" + i;
+            })
+            .attr("r", function (d) {
+                return GraphDataSer.neoNodeDataObj[d.unique_id]['radius'] + 10
+            })
+            .attr("fill", "#f9eccc")
+            .style("visibility","hidden");
+
+        //添加节点内部的圆形
         node.append("circle")
             .attr("id", function (d, i) {
                 return "nodeCircle" + i;
@@ -147,7 +158,8 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
             .attr("type", d => {
                 return d.label_name
             })
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 2)
+            .attr("class", "nodeCircle");
 
         //添加文本
         node.append("text")
@@ -174,7 +186,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
 
 
         //添加最后一个node节点，用于鼠标放上节点时显示节点名称，并且永远在渲染层的顶端
-        let nodeTextNode = nodeArray.append("g").attr("id", "lastRefNode");
+        let nodeTextNode = nodeArray.append("g").attr("id", "nodeTextNodeRef");
 
         //添加矩形节点信息信息描述面板
         nodeTextNode.append("rect")
@@ -191,7 +203,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
             .style("font-size", "14px")
             .style("text-anchor", "middle");
 
-
         //设置节点拖拽事件响应
         node.call(d3.drag()
             .on("start", dragstarted)
@@ -204,6 +215,12 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
 
             //设置节点是否显示text消息体为true，用于节点移动时tickActions判断使用
             d['textShow'] = true;
+            GraphDataSer.overallData['nodeHover']['status']=true;
+            GraphDataSer.overallData['nodeHover']['unique_id']=d['unique_id'];
+            GraphDataSer.overallData['nodeHover']['type']=d['label_name'];
+
+            //该节点外边环形亮起
+            nodeArray.select("#nodeRing"+i).style("visibility","visible");
 
             //显示节点文本的节点，把该节点转换至特定的位置
             nodeTextNode.attr("transform", function () {
@@ -255,6 +272,9 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
         }).on("mouseleave", (d, i) => {
             //当鼠标移开是，设置是否显示文本图标为false
             d['textShow'] = false;
+            GraphDataSer.overallData['nodeHover']['status']=false;
+            //该节点外边环形暗下
+            nodeArray.select("#nodeRing"+i).style("visibility","hidden");
             //设置文本节点位置到一个很远的位置即可
             nodeTextNode.attr("transform", function () {
                 return "translate(-5000,-5000)";
@@ -295,7 +315,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
             //更新节点位置
             node.attr("transform", function (d) {
                 //如果该节点时鼠标放上去需要显示该节点文本时，则该段文本跟随节点运动而运动
-                if(d['textShow']){
+                if (d['textShow']) {
                     nodeTextNode.attr("transform", function () {
                         return "translate(" + d.x + "," + d.y + ")";
                     });
@@ -487,7 +507,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
         }
 
         //选择所有节点进行迭代属性设置
-        d3.selectAll(".nodes circle").each(function (d2, i2) {
+        d3.selectAll(".nodes .nodeCircle").each(function (d2, i2) {
             //如果该节点在目标节点的范围内则进行填充灰色
             if (sumNodesUniqueId.indexOf(d2.unique_id) == -1) {
                 d3.select(this).attr("fill", "#c4c4c4");
@@ -526,7 +546,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
         if (GraphDataSer.overallData['graphSetting']['nodesGray']) {
             GraphDataSer.overallData['graphSetting']['nodesGray'] = false;
             //对nodes父节点下的circle样式每个单独进行颜色设置
-            d3.selectAll(".nodes circle").each(function (d2, i2) {
+            d3.selectAll(".nodes .nodeCircle").each(function (d2, i2) {
                 d3.select(this).attr("fill", GraphDataSer.nodeTypeSetting[d2.label_name]['bg']);
                 d3.select(this).attr("stroke", GraphDataSer.nodeTypeSetting[d2.label_name]['border_color']);
             });

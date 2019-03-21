@@ -9,6 +9,7 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
     var graph = this;
     graph.overallData = GraphDataSer.overallData;
     graph.nodeLinkSelectedData = GraphDataSer.nodeLinkSelectedData;
+    graph.nodeTypeSetting = GraphDataSer.nodeTypeSetting;
     NeoSer.getNeoData();
 
     /**
@@ -37,9 +38,9 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
     /**
      * 返回新闻原网页信息数据
      */
-    graph.getNewsOriginInfo=function (event) {
+    graph.getNewsOriginInfo = function (event) {
         GraphSer.getNewsOriginInfo(event)
-    }
+    };
 });
 
 

@@ -11,12 +11,17 @@ graphModule.factory('GraphDataSer', function () {
         'lockRightBar': false,//标识是否锁定右侧展开面板
         "nodeSelected": { //选择了的节点类型和unique_id信息
             "unique_id": "",
-            "type": "",
+            "type": "", //记录对应gdufs_dept, visit_event, visitor_event类型，不同类型有不同的显示颜色
             "sub_unique_id": "", //对应节点的子unique_id
         },
-        "nodeHover": { //鼠标放在节点上方时显示相关该节点的信息
-            "text": "",
-            "position": {"x": 0, "y": 0},
+        "nodeHover": { //鼠标放在节点上方时记录该节点
+            "unique_id": "",
+            "type": "", //记录对应gdufs_dept, visit_event, visitor_event类型，不同类型有不同的菜单选择
+            "status": false, //记录是否出现该节点被hover
+        },
+        "nodeMenu": { //是否显示该节点的菜单信息
+            "status": false,
+            "position": {"x": 0, "y": 0}
         },
         "search": {
             "text": "",
@@ -59,6 +64,7 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#ecb5c9",
             "border_color": "#da7298",
             "textKey": "cn_name",
+            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o"}, {"name": "相关人物", "icon":"fa fa-user-o"}]
         },
         "gdufs_teacher": {
             "bg": "#f79767",
@@ -69,6 +75,7 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#57c7e3",
             "border_color": "#23b3d7",
             "textKey": "title",
+            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o"}, {"name": "相关人物", "icon":"fa fa-user-o"}]
         },
         "visitor": {
             "bg": "#e088a8",
@@ -79,6 +86,7 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#f7d5b0",
             "border_color": "#f3a470",
             "textKey": "cn_name",
+            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o"}, {"name": "相关人物", "icon":"fa fa-user-o"}]
         }
     };
 
