@@ -139,7 +139,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
                 return GraphDataSer.neoNodeDataObj[d.unique_id]['radius'] + 10
             })
             .attr("fill", "#f9eccc")
-            .style("visibility","hidden");
+            .style("visibility", "hidden");
 
         //添加节点内部的圆形
         node.append("circle")
@@ -215,12 +215,12 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
 
             //设置节点是否显示text消息体为true，用于节点移动时tickActions判断使用
             d['textShow'] = true;
-            GraphDataSer.overallData['nodeHover']['status']=true;
-            GraphDataSer.overallData['nodeHover']['unique_id']=d['unique_id'];
-            GraphDataSer.overallData['nodeHover']['type']=d['label_name'];
+            GraphDataSer.overallData['nodeHover']['status'] = true;
+            GraphDataSer.overallData['nodeHover']['unique_id'] = d['unique_id'];
+            GraphDataSer.overallData['nodeHover']['type'] = d['label_name'];
 
             //该节点外边环形亮起
-            nodeArray.select("#nodeRing"+i).style("visibility","visible");
+            nodeArray.select("#nodeRing" + i).style("visibility", "visible");
 
             //显示节点文本的节点，把该节点转换至特定的位置
             nodeTextNode.attr("transform", function () {
@@ -272,22 +272,32 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
         }).on("mouseleave", (d, i) => {
             //当鼠标移开是，设置是否显示文本图标为false
             d['textShow'] = false;
-            GraphDataSer.overallData['nodeHover']['status']=false;
+            GraphDataSer.overallData['nodeHover']['status'] = false;
             //该节点外边环形暗下
-            nodeArray.select("#nodeRing"+i).style("visibility","hidden");
+            nodeArray.select("#nodeRing" + i).style("visibility", "hidden");
             //设置文本节点位置到一个很远的位置即可
             nodeTextNode.attr("transform", function () {
                 return "translate(-5000,-5000)";
             })
 
         }).on("click", (d, i) => {
-            //获取与该节点相关联的节点信息
-            getNewsInfo(d, i);
+            //存储当前选择的节点相关数据
+            GraphDataSer.overallData['nodeSelected']['unique_id'] = d['unique_id'];
+            GraphDataSer.overallData['nodeSelected']['type'] = d['label_name'];
 
-            //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其灰化
-            if (GraphDataSer.overallData['graphSetting']['nodesGray'] && !OverallDataSer.keyBoard['ctrl']) {
-                setUnRelativeNodeGray(d, i);
+            //若热键按住ctrl+点击事件则选择查看节点具体信息，获取与该节点相关联的节点信息
+            if (OverallDataSer.keyBoard['ctrl']) {
+                getNewsInfo();
+
+            } else {
+                //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
+                if (GraphDataSer.overallData['graphSetting']['nodesGray']) {
+                    setUnRelativeNodeGray(d, i);
+                }
             }
+
+            //HTML页面中赋值显示出来
+            $rootScope.$apply();
         });
 
 
@@ -373,23 +383,19 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
     /**
      * 新闻事件数据的处理，获取对应新闻数据信息
      */
-    function getNewsInfo(d, i) {
+    function getNewsInfo() {
         //获取该节点类型和unique_id
-        let uniqueId = d['unique_id'];
-        let type = d['label_name'];
+        let uniqueId = GraphDataSer.overallData['nodeSelected']['unique_id'];
+        let type = GraphDataSer.overallData['nodeSelected']['type'];
 
-        //存储当前选择的节点相关数据
-        GraphDataSer.overallData['nodeSelected']['unique_id'] = uniqueId;
-        GraphDataSer.overallData['nodeSelected']['type'] = type;
-
-        //打开相关节点信息面板：如果右侧面板锁为解锁状态则展开右侧面板，否则不展开右侧面板
-        !GraphDataSer.overallData['lockRightBar'] ? GraphDataSer.overallData['rightBarShow'] = true : false;
+        //打开相关节点信息面板，并展开右侧面板
+        GraphDataSer.overallData['rightBarShow'] = true;
         //先关闭所有右侧数据展示
         for (let i in GraphDataSer.nodeLinkSelectedData) {
             GraphDataSer.nodeLinkSelectedData[i]['status'] = false;
         }
         //单独开启目标数据展示
-        GraphDataSer.nodeLinkSelectedData[d['label_name']]['status'] = true;
+        GraphDataSer.nodeLinkSelectedData[type]['status'] = true;
 
         //根据不同节点类型展示不同消息信息体
         switch (type) {
@@ -417,7 +423,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
             }
             case 'visit_event': {
                 //直接获取该新闻具体消息体，并显示在右侧面板中
-                let url = OverallDataSer.urlData['frontEndHttp']['gdufsNewsOssUrl'] + "html/" + d['unique_id'] + ".html";
+                let url = OverallDataSer.urlData['frontEndHttp']['gdufsNewsOssUrl'] + "html/" + uniqueId + ".html";
                 OverallGeneralSer.httpGetFiles(url, result => {
                     GraphDataSer.nodeLinkSelectedData['visit_event']['info']['detail']['news'] = $sce.trustAsHtml(result);
                 });
@@ -429,19 +435,17 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
             }
         }
         //赋值基础数据并显示到面板
-        assignGeneralData(type, i);
-        //HTML页面中赋值显示出来
-        $rootScope.$apply();
+        assignGeneralData(type, uniqueId);
     }
 
 
     /**
      *
      * @param type
-     * @param index
+     * @param uniqueId
      */
-    function assignGeneralData(type, index) {
-        let node = GraphDataSer.neoData['nodes'][index];
+    function assignGeneralData(type, uniqueId) {
+        let node = GraphDataSer.neoNodeDataObj[uniqueId];
         for (let i in node) {
             GraphDataSer.nodeLinkSelectedData[type]['info']['general']['data'][i] = node[i];
         }
@@ -560,6 +564,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
 
 
     return {
+        getNewsInfo: getNewsInfo,
         nodeLinkInit: nodeLinkInit,
         resetAllNodeStyle: resetAllNodeStyle,
     }

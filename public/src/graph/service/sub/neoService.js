@@ -58,8 +58,36 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         })
     }
 
+
+    /**
+     * 选择对应的节点的菜单项
+     */
+    function chooseNodeMenu(menuType) {
+        //把该hover的节点数据传给选择数组
+        GraphDataSer.overallData['nodeSelected']['unique_id'] = GraphDataSer.overallData['nodeHover']['unique_id'];
+        GraphDataSer.overallData['nodeSelected']['type'] = GraphDataSer.overallData['nodeHover']['type'];
+        //根据不同菜单类型执行不同操作
+        switch (menuType) {
+            case "newsDetail": {
+                //调用展示节点信息详情方法
+                NodeLinkSer.getNewsInfo();
+                break;
+            }
+            case "relativePeople": {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        //菜单响应按键后，收回菜单
+        GraphDataSer.overallData['nodeMenu']['status'] = false;
+    }
+
+
     return {
         getNeoData: getNeoData,
+        chooseNodeMenu: chooseNodeMenu,
         chooseNewsShow: chooseNewsShow,
     }
 });

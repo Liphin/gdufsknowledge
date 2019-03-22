@@ -68,7 +68,9 @@
         <!--节点菜单-->
         <div ng-if="graph.overallData['nodeMenu']['status']" style="width: 120px;display: inline-block; cursor: pointer; border: 1px solid grey;box-shadow: 0 2px 5px grey;
                 z-index: 100;position: absolute; left: {{graph.overallData['nodeMenu']['position']['x']}}px; top:{{graph.overallData['nodeMenu']['position']['y']}}px">
-            <div class="nodeMenu" ng-repeat="value in graph.nodeTypeSetting[graph.overallData['nodeHover']['type']]['menu']" style="width: 100%; height: 40px;padding: 12px 12px; display: flex">
+            <div class="nodeMenu" ng-repeat="value in graph.nodeTypeSetting[graph.overallData['nodeHover']['type']]['menu']"
+                 style="width: 100%; height: 40px;padding: 12px 12px; display: flex"
+                 ng-click="graph.chooseNodeMenu(value['type'])">
                 <i class="{{value['icon']}}" style="width: 25px;"></i>
                 <span style="flex: 1; display: inline-block; text-align: left;position: relative; top: -3px">{{value['name']}}</span>
             </div>
@@ -79,9 +81,9 @@
     <!--右侧数据展示区-->
     <div>
         <!--锁定和解锁装置，是否点击节点后释放出来-->
-        <i ng-class="{'fa fa-unlock-alt fa-flip-horizontal':!graph.overallData['lockRightBar'],'fa fa-lock':graph.overallData['lockRightBar']}" ng-click="graph.overallData['lockRightBar']=!graph.overallData['lockRightBar']"
-           style="z-index: 10;color: #808080;cursor: pointer;font-size: 25px; position: absolute; top: {{overallData['screen']['height']/2-70}}px; right: 2px"></i>
-        <i ng-if="!graph.overallData['rightBarShow']" class="fa fa-angle-double-left" ng-click="graph.overallData['rightBarShow']=true" style="z-index: 10;;color: #808080;cursor: pointer;font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; right: 2px"></i>
+        <!--<i ng-class="{'fa fa-unlock-alt fa-flip-horizontal':!graph.overallData['lockRightBar'],'fa fa-lock':graph.overallData['lockRightBar']}" ng-click="graph.overallData['lockRightBar']=!graph.overallData['lockRightBar']"-->
+           <!--style="z-index: 10;color: #808080;cursor: pointer;font-size: 25px; position: absolute; top: {{overallData['screen']['height']/2-70}}px; right: 2px"></i>-->
+        <!--<i ng-if="!graph.overallData['rightBarShow']" class="fa fa-angle-double-left" ng-click="graph.overallData['rightBarShow']=true" style="z-index: 10;;color: #808080;cursor: pointer;font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; right: 2px"></i>-->
         <div ng-show="graph.overallData['rightBarShow']" class="graphRightBar" style="position: fixed; right: 0; top: 0; bottom: 0;z-index: 10;border: 1px solid #e2e2e2; border-width: 0 0 0 1px; box-shadow: 0 -2px 5px #d4d4d4;background: white">
             <i ng-if="graph.overallData['rightBarShow']" class="fa fa-angle-double-right" ng-click="graph.overallData['rightBarShow']=false" style="z-index: 10;cursor: pointer;color: #808080; font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; left: 2px"></i>
 

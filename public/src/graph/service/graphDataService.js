@@ -8,7 +8,7 @@ graphModule.factory('GraphDataSer', function () {
     let overallData = {
         'leftBarShow': true,
         'rightBarShow': false,
-        'lockRightBar': false,//标识是否锁定右侧展开面板
+        //'lockRightBar': false,//标识是否锁定右侧展开面板，弃用<deprecated>
         "nodeSelected": { //选择了的节点类型和unique_id信息
             "unique_id": "",
             "type": "", //记录对应gdufs_dept, visit_event, visitor_event类型，不同类型有不同的显示颜色
@@ -64,7 +64,7 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#ecb5c9",
             "border_color": "#da7298",
             "textKey": "cn_name",
-            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o"}, {"name": "相关人物", "icon":"fa fa-user-o"}]
+            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o","type":"newsDetail"}, {"name": "相关人物", "icon":"fa fa-user-o","type":"relativePeople"}]
         },
         "gdufs_teacher": {
             "bg": "#f79767",
@@ -75,7 +75,7 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#57c7e3",
             "border_color": "#23b3d7",
             "textKey": "title",
-            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o"}, {"name": "相关人物", "icon":"fa fa-user-o"}]
+            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o","type":"newsDetail"}, {"name": "相关人物", "icon":"fa fa-user-o","type":"relativePeople"}]
         },
         "visitor": {
             "bg": "#e088a8",
@@ -86,7 +86,7 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#f7d5b0",
             "border_color": "#f3a470",
             "textKey": "cn_name",
-            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o"}, {"name": "相关人物", "icon":"fa fa-user-o"}]
+            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o","type":"newsDetail"}, {"name": "相关人物", "icon":"fa fa-user-o","type":"relativePeople"}]
         }
     };
 

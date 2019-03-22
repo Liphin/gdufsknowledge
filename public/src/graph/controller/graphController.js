@@ -41,6 +41,14 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
     graph.getNewsOriginInfo = function (event) {
         GraphSer.getNewsOriginInfo(event)
     };
+
+    /**
+     * 选择对应节点的菜单项
+     * @see GraphSer.chooseNodeMenu
+     */
+    graph.chooseNodeMenu = function (menuType) {
+        NeoSer.chooseNodeMenu(menuType)
+    }
 });
 
 
