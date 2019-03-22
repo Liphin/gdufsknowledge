@@ -102,13 +102,8 @@
 </head>
 <body resize class="scrollBar-1" style="overflow-y: auto;font: 15px/1.5 Microsoft YaHei,arial,SimSun,宋体;
         font-family:'PingFangSC','helvetica neue','hiragino sans gb','arial','microsoft yahei ui','microsoft yahei','simsun','sans-serif'" ng-keydown="keyboardDownOpt($event)" ng-keyup="keyboardUpOpt($event)">
-<!--loading加载动画-->
-<div ng-if="loading" align="center" style="background: rgba(255,255,255,0.5);position: fixed;left: 0;right: 0;
-            top: 0;bottom: 0; z-index:{{zIndexHelper['loading']}};text-align: center;">
-    <img src="assets/img/load/loader1.gif" style="margin-top: 100px;">
-</div>
-<!--获取数据动画-->
-<div ng-if="overallData['loadingData']" style="background: rgba(255,255,255,0.5);position: fixed;left: 0;right: 0; top: 0;bottom: 0;z-index:{{zIndexHelper['loading']}};text-align: center;">
+<!--页面加载动画-->
+<div ng-if="loading" style="background: rgba(255,255,255,1);position: fixed;left: 0;right: 0; top: 0;bottom: 0;z-index:{{zIndexHelper['loading']}};text-align: center;">
     <div style="vertical-align: middle;display: inline-block">
         <div class="loader">
             <svg class="circular" viewBox="25 25 50 50">
@@ -116,6 +111,7 @@
             </svg>
         </div>
     </div>
+    <!--用于定位垂直居中效果-->
     <div style="vertical-align: middle;width: 0;height: 100%;background: black;display: inline-block"></div>
 </div>
 

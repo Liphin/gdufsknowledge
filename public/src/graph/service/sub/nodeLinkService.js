@@ -4,7 +4,8 @@
  */
 var graphModule = angular.module('Angular.graph');
 
-graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $cookies, $location, $http, OverallGeneralSer, GraphDataSer) {
+graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, OverallDataSer, $cookies, $location, $http,
+                                             OverallGeneralSer, GraphDataSer) {
 
     let svg, linkArray, nodeArray;//节点数组
 
@@ -12,7 +13,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
      * 节点及连接关系初始化操作
      */
     function nodeLinkInit() {
-        svg = d3.select("svg");//图数据库展示
+        svg = d3.select(".knowledgeSvg");//图数据库展示
         linkArray = d3.select(".links");//连接数组
         nodeArray = d3.select(".nodes");//节点数组
 
@@ -388,8 +389,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
         let uniqueId = GraphDataSer.overallData['nodeSelected']['unique_id'];
         let type = GraphDataSer.overallData['nodeSelected']['type'];
 
-        //打开相关节点信息面板，并展开右侧面板
-        GraphDataSer.overallData['rightBarShow'] = true;
         //先关闭所有右侧数据展示
         for (let i in GraphDataSer.nodeLinkSelectedData) {
             GraphDataSer.nodeLinkSelectedData[i]['status'] = false;
@@ -449,6 +448,17 @@ graphModule.factory('NodeLinkSer', function ($sce, $rootScope, OverallDataSer, $
         for (let i in node) {
             GraphDataSer.nodeLinkSelectedData[type]['info']['general']['data'][i] = node[i];
         }
+        //如果面板之前已经打开了，则无loading，如果之前尚未打开，则有loading
+        if(!GraphDataSer.overallData['rightBarShow']){
+            //面板展开时，信息尚未显示出来，loading加载
+            GraphDataSer.loader['nodeDetail']['status'] = true;
+            //1秒后，动画消失，显示内容
+            $timeout(function () {
+                GraphDataSer.loader['nodeDetail']['status'] = false;
+            }, 1000);
+        }
+        //打开相关节点信息面板，并展开右侧面板
+        GraphDataSer.overallData['rightBarShow'] = true;
     }
 
 

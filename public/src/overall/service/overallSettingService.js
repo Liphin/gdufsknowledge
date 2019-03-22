@@ -9,35 +9,25 @@ var overallModule = angular.module('Angular');
  */
 overallModule.factory('interceptHttp', function ($cookies, $location, $rootScope) {
 
-    var intercept = {
+    return {
         /*成功请求数据*/
         request: function (receive) {
-            //获取头部的loading设置load Mark来标识是否展示loading动画
-            if (receive['loadMark'] == undefined || receive['loadMark'] == true) {
-                $rootScope['loading'] = true;
-                //console.log('request',receive);
-            }
             return receive;
         },
 
         /*成功返回数据*/
         response: function (response) {
-            $rootScope['loading'] = false;
             return response
         },
 
         /*请求或返回数据出现错误*/
         requestError: function (err) {
-            $rootScope['loading'] = false;
             return err;
         },
         responseError: function (err) {
-            $rootScope['loading'] = false;
             return err;
         }
     };
-
-    return intercept;
 });
 
 /**

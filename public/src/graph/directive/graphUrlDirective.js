@@ -53,6 +53,15 @@ graphModule.directive('visitorDeptInfo', ['$document', function ($document) {
     };
 }]);
 
+/**
+ * loading加载js动画
+ */
+graphModule.directive('graphLoader', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/sub/helper/loader.html'
+    };
+}]);
 
 
 

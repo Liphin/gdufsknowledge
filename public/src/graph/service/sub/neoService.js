@@ -35,7 +35,8 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
 
             // console.log('neodata',GraphDataSer.neoData);
             // console.log('neoobj', GraphDataSer.neoNodeDataObj);
-        })
+
+        }, GraphDataSer.loader['nodeLinks'])
     }
 
 

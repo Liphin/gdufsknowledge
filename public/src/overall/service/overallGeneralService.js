@@ -118,7 +118,12 @@ overallModule.factory('OverallGeneralSer', function ($http, OverallDataSer, $tim
     /**
      * http get获取资源数据
      */
-    var httpGetFiles = function (url, callback) {
+    var httpGetFiles = function (url, callback, loader) {
+        //设置该loader加载项设置加载动画
+        if (loader != undefined) {
+            loader['status'] = true;
+        }
+
         //设置loading状态
         OverallDataSer.overallData['loadingData'] = true;
         $http({
@@ -136,8 +141,10 @@ overallModule.factory('OverallGeneralSer', function ($http, OverallDataSer, $tim
             alert(OverallDataSer.overallData['requestDataErrorMsg'] + ".," + err);
 
         }).finally(function () {
-            //重置loading状态
-            OverallDataSer.overallData['loadingData'] = false;
+            if (loader != undefined) {
+                //关闭该加载动画
+                loader['status'] = false;
+            }
         });
     };
 
@@ -246,8 +253,13 @@ overallModule.factory('OverallGeneralSer', function ($http, OverallDataSer, $tim
      * @param data
      * @param url
      * @param callback
+     * @param loader
      */
-    var httpPostData3 = function (data, url, callback) {
+    var httpPostData3 = function (data, url, callback, loader) {
+        //设置该loader加载项设置加载动画
+        if (loader != undefined) {
+            loader['status'] = true;
+        }
         $http({
             method: 'POST',
             url: url,
@@ -260,6 +272,12 @@ overallModule.factory('OverallGeneralSer', function ($http, OverallDataSer, $tim
 
         }).error(function (err) {
             OverallGeneralSer.alertHttpRequestError("请求出错: ", 600, err);
+
+        }).finally(function () {
+            if (loader != undefined) {
+                //关闭该加载动画
+                loader['status'] = false;
+            }
         });
     };
 

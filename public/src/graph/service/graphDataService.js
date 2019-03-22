@@ -64,7 +64,11 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#ecb5c9",
             "border_color": "#da7298",
             "textKey": "cn_name",
-            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o","type":"newsDetail"}, {"name": "相关人物", "icon":"fa fa-user-o","type":"relativePeople"}]
+            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
+                "name": "相关人物",
+                "icon": "fa fa-user-o",
+                "type": "relativePeople"
+            }]
         },
         "gdufs_teacher": {
             "bg": "#f79767",
@@ -75,7 +79,11 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#57c7e3",
             "border_color": "#23b3d7",
             "textKey": "title",
-            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o","type":"newsDetail"}, {"name": "相关人物", "icon":"fa fa-user-o","type":"relativePeople"}]
+            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
+                "name": "相关人物",
+                "icon": "fa fa-user-o",
+                "type": "relativePeople"
+            }]
         },
         "visitor": {
             "bg": "#e088a8",
@@ -86,7 +94,11 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#f7d5b0",
             "border_color": "#f3a470",
             "textKey": "cn_name",
-            "menu": [{"name": "事件详情","icon":"fa fa-newspaper-o","type":"newsDetail"}, {"name": "相关人物", "icon":"fa fa-user-o","type":"relativePeople"}]
+            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
+                "name": "相关人物",
+                "icon": "fa fa-user-o",
+                "type": "relativePeople"
+            }]
         }
     };
 
@@ -178,8 +190,17 @@ graphModule.factory('GraphDataSer', function () {
         },
     };
 
+    /**
+     * 加载loading属性
+     */
+    var loader = {
+        "nodeLinks": {"status":false},
+        "nodeDetail": {"status":false},
+    };
+
 
     return {
+        loader: loader,
         neoData: neoData,
         neoNodeDataObj: neoNodeDataObj,
         nodeTypeSetting: nodeTypeSetting,

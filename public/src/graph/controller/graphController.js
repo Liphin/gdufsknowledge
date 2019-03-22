@@ -10,6 +10,7 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
     graph.overallData = GraphDataSer.overallData;
     graph.nodeLinkSelectedData = GraphDataSer.nodeLinkSelectedData;
     graph.nodeTypeSetting = GraphDataSer.nodeTypeSetting;
+    graph.loader = GraphDataSer.loader;
     NeoSer.getNeoData();
 
     /**

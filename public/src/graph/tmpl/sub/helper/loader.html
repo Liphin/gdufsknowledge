@@ -1,0 +1,12 @@
+<!--加载节点数据动画-->
+<div ng-if="graph.loader['nodeLinks']['status']" style="position: fixed;left: 0;right: 0; top: 0;bottom: 0;z-index:{{zIndexHelper['loading']}};text-align: center;">
+    <div style="vertical-align: middle;display: inline-block">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+            </svg>
+        </div>
+    </div>
+    <!--用于定位垂直居中效果-->
+    <div style="vertical-align: middle;width: 0;height: 100%;background: black;display: inline-block"></div>
+</div>

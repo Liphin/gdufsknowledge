@@ -60,7 +60,7 @@
         </div>
 
         <!--background: #ffffed;-->
-        <svg knowledge-render style="width: 100%; height: 100%" >
+        <svg class="knowledgeSvg" knowledge-render style="width: 100%; height: 100%" >
             <g class="links"></g>
             <g class="nodes"></g>
         </svg>
@@ -75,6 +75,7 @@
                 <span style="flex: 1; display: inline-block; text-align: left;position: relative; top: -3px">{{value['name']}}</span>
             </div>
         </div>
+
     </div>
 
 
@@ -85,7 +86,7 @@
            <!--style="z-index: 10;color: #808080;cursor: pointer;font-size: 25px; position: absolute; top: {{overallData['screen']['height']/2-70}}px; right: 2px"></i>-->
         <!--<i ng-if="!graph.overallData['rightBarShow']" class="fa fa-angle-double-left" ng-click="graph.overallData['rightBarShow']=true" style="z-index: 10;;color: #808080;cursor: pointer;font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; right: 2px"></i>-->
         <div ng-show="graph.overallData['rightBarShow']" class="graphRightBar" style="position: fixed; right: 0; top: 0; bottom: 0;z-index: 10;border: 1px solid #e2e2e2; border-width: 0 0 0 1px; box-shadow: 0 -2px 5px #d4d4d4;background: white">
-            <i ng-if="graph.overallData['rightBarShow']" class="fa fa-angle-double-right" ng-click="graph.overallData['rightBarShow']=false" style="z-index: 10;cursor: pointer;color: #808080; font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; left: 2px"></i>
+            <i ng-if="graph.overallData['rightBarShow']" class="fa fa-angle-double-right" ng-click="graph.overallData['rightBarShow']=false;graph.overallData['rightBarInfoShow'] = true; graph.loader['nodeDetail']['status']=false" style="z-index: 10;cursor: pointer;color: #808080; font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; left: 2px"></i>
 
             <!--信息展示头部，选择某中进行字段信息展示-->
             <div style="width: 100%; height: 42px; background: #2a536d; display: flex; flex-direction: row; cursor: pointer">
@@ -93,7 +94,18 @@
                 <div style="flex: 1; text-align: center; color: white;padding-top: 10px">全局信息</div>
             </div>
 
-            <div style="width: 100%; overflow-y: auto; position: absolute; bottom: 0; top: 42px; padding-bottom: 20px" class="scrollBar-7">
+            <!--加载该节点详情数据-->
+            <div ng-if="graph.loader['nodeDetail']['status']" style="text-align: center;position: relative; top:{{overallData['screen']['height']/2-90}}px; z-index:{{zIndexHelper['loading']}};text-align: center;">
+                <div style="vertical-align: middle;display: inline-block">
+                    <div class="loader">
+                        <svg class="circular" viewBox="25 25 50 50">
+                            <circle class="path" cx="50" cy="50" r="17" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="!graph.loader['nodeDetail']['status']" style="width: 100%; overflow-y: auto; position: absolute; bottom: 0; top: 42px; padding-bottom: 20px" class="scrollBar-7">
                 <!--来访、到访事件新闻数据展示-->
                 <visit-event-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['visit_event']['status']"></visit-event-info>
 
@@ -111,4 +123,7 @@
             </div>
         </div>
     </div>
+
+    <!--Loader动画加载-->
+    <graph-loader></graph-loader>
 </div>
