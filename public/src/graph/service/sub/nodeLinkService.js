@@ -151,10 +151,27 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
                 return GraphDataSer.neoNodeDataObj[d.unique_id]['radius']
             })
             .attr("fill", d => {
-                return GraphDataSer.nodeTypeSetting[d['label_name']]['bg'];
+                //如果是事件节点则区分来访事件和出访时事件两种颜色
+                if (d['label_name'] == 'visit_event') {
+                    if (d['type'] == 1) {
+                        return GraphDataSer.nodeTypeSetting[d['label_name']]['bg_in'];
+                    } else {
+                        return GraphDataSer.nodeTypeSetting[d['label_name']]['bg_out'];
+                    }
+                } else {
+                    return GraphDataSer.nodeTypeSetting[d['label_name']]['bg'];
+                }
             })
             .attr("stroke", d => {
-                return GraphDataSer.nodeTypeSetting[d['label_name']]['border_color'];
+                if (d['label_name'] == 'visit_event') {
+                    if (d['type'] == 1) {
+                        return GraphDataSer.nodeTypeSetting[d['label_name']]['border_color_in'];
+                    } else {
+                        return GraphDataSer.nodeTypeSetting[d['label_name']]['border_color_out'];
+                    }
+                } else {
+                    return GraphDataSer.nodeTypeSetting[d['label_name']]['border_color'];
+                }
             })
             .attr("type", d => {
                 return d.label_name
@@ -535,8 +552,30 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             }
             //否则进行填充指定的颜色
             else {
-                d3.select(this).attr("fill", GraphDataSer.nodeTypeSetting[d2.label_name]['bg']);
-                d3.select(this).attr("stroke", GraphDataSer.nodeTypeSetting[d2.label_name]['border_color']);
+                // d3.select(this).attr("fill", GraphDataSer.nodeTypeSetting[d2.label_name]['bg']);
+                d3.select(this).attr("fill", function () {
+                    if (d2['label_name'] == 'visit_event') {
+                        if (d2['type'] == 1) {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['bg_in'];
+                        } else {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['bg_out'];
+                        }
+                    } else {
+                        return GraphDataSer.nodeTypeSetting[d2['label_name']]['bg'];
+                    }
+                });
+                // d3.select(this).attr("stroke", GraphDataSer.nodeTypeSetting[d2.label_name]['border_color']);
+                d3.select(this).attr("stroke", function () {
+                    if (d2['label_name'] == 'visit_event') {
+                        if (d2['type'] == 1) {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['border_color_in'];
+                        } else {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['border_color_out'];
+                        }
+                    } else {
+                        return GraphDataSer.nodeTypeSetting[d2['label_name']]['border_color'];
+                    }
+                });
             }
         });
 
@@ -566,8 +605,29 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             GraphDataSer.overallData['graphSetting']['nodesGray'] = false;
             //对nodes父节点下的circle样式每个单独进行颜色设置
             d3.selectAll(".nodes .nodeCircle").each(function (d2, i2) {
-                d3.select(this).attr("fill", GraphDataSer.nodeTypeSetting[d2.label_name]['bg']);
-                d3.select(this).attr("stroke", GraphDataSer.nodeTypeSetting[d2.label_name]['border_color']);
+                // d3.select(this).attr("fill", GraphDataSer.nodeTypeSetting[d2.label_name]['bg']);
+                d3.select(this).attr("fill", function () {
+                    if (d2['label_name'] == 'visit_event') {
+                        if (d2['type'] == 1) {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['bg_in'];
+                        } else {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['bg_out'];
+                        }
+                    } else {
+                        return GraphDataSer.nodeTypeSetting[d2['label_name']]['bg'];
+                    }
+                });
+                d3.select(this).attr("stroke", function () {
+                    if (d2['label_name'] == 'visit_event') {
+                        if (d2['type'] == 1) {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['border_color_in'];
+                        } else {
+                            return GraphDataSer.nodeTypeSetting[d2['label_name']]['border_color_out'];
+                        }
+                    } else {
+                        return GraphDataSer.nodeTypeSetting[d2['label_name']]['border_color'];
+                    }
+                });
             });
 
             //对links父节点下的line样式每条线单独进行颜色设置

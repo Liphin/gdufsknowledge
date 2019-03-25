@@ -47,7 +47,8 @@
                 <div style="display: inline-block; position: relative; top: 2px">
                     <span>校内组织 </span><i class="fa fa-square" style="color: rgb(236,181,201)"></i>
                     <span style="margin-left: 15px">外方实体 </span><i class="fa fa-square" style="color: rgb(247,213,176)"></i>
-                    <span style="margin-left: 15px">事件 </span><i class="fa fa-square" style="color: rgb(87, 199, 227)"></i>
+                    <span style="margin-left: 15px">来访</span><i class="fa fa-square" style="color: rgb(87, 199, 227)"></i>
+                    出访<i class="fa fa-square" style="color: rgb(195,172,237)"></i>
                 </div>
 
                 <!--操作模式设置-->
@@ -63,7 +64,7 @@
 
                 <!--搜索-->
                 <div style="display: inline-block">
-                    <input enter-search-node ng-model="graph.overallData['search']['text']" placeholder="输入搜索内容" style=";background: transparent;border: 1px solid #b1b1b1; border-width: 0 0 1px 0; outline: none;padding: 0 12px;margin-left: 40px;"/>
+                    <input enter-search-node ng-model="graph.overallData['search']['text']" value="graph.overallData['search']['text']" placeholder="输入搜索内容" style=";background: transparent;border: 1px solid #b1b1b1; border-width: 0 0 1px 0; outline: none;padding: 0 12px;margin-left: 40px;"/>
                     <i ng-click="graph.searchTargetNodes()" class="fa fa-search" style="cursor: pointer;position: relative; left: -20px; color: grey;"></i>
                     <!--<button ng-click="graph.searchTargetNode()" class="btn btn-info" style="padding: 3px 12px; outline: none">搜索</button>-->
                 </div>
@@ -72,10 +73,13 @@
         </div>
 
         <!--background: #ffffed;-->
-        <svg class="knowledgeSvg" knowledge-render style="width: 100%; height: 100%" >
-            <g class="links"></g>
-            <g class="nodes"></g>
-        </svg>
+        <div>
+            <svg class="knowledgeSvg" knowledge-render style="width: 100%; height: 100%" >
+                <g class="links"></g>
+                <g class="nodes"></g>
+            </svg>
+        </div>
+
 
         <!--节点菜单-->
         <div ng-if="graph.overallData['nodeMenu']['status']" style="width: 120px;display: inline-block; cursor: pointer; border: 1px solid grey;box-shadow: 0 2px 5px grey;

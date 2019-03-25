@@ -8,6 +8,7 @@ graphModule.factory('GraphDataSer', function () {
     let overallData = {
         'leftBarShow': true,
         'rightBarShow': false,
+        'renderSvgGraph': true, //是否渲染svg数据
         //'lockRightBar': false,//标识是否锁定右侧展开面板，弃用<deprecated>
         "nodeSelected": { //选择了的节点类型和unique_id信息
             "unique_id": "",
@@ -24,7 +25,7 @@ graphModule.factory('GraphDataSer', function () {
             "position": {"x": 0, "y": 0}
         },
         "search": {
-            "text": "",
+            "text": "柯晓华",
         },
         "graphSetting": { //节点图的设置描述
             "nodesGray": true, //是否设置非目标及其关联的节点未选择状态时设置为灰色
@@ -81,8 +82,10 @@ graphModule.factory('GraphDataSer', function () {
             "textKey": "cn_name",
         },
         "visit_event": {
-            "bg": "#57c7e3",
-            "border_color": "#23b3d7",
+            "bg_in": "#57c7e3",
+            "border_color_in": "#23b3d7",
+            "bg_out": "#c3aced",
+            "border_color_out": "#9a6ced",
             "textKey": "title",
             "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
                 "name": "相关人物",
@@ -96,6 +99,16 @@ graphModule.factory('GraphDataSer', function () {
             "textKey": "cn_name",
         },
         "visitor_dept": {
+            "bg": "#f7d5b0",
+            "border_color": "#f3a470",
+            "textKey": "cn_name",
+            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
+                "name": "相关人物",
+                "icon": "fa fa-user-o",
+                "type": "relativePeople"
+            }]
+        },
+        "people": {
             "bg": "#f7d5b0",
             "border_color": "#f3a470",
             "textKey": "cn_name",
