@@ -13,25 +13,6 @@ graphModule.directive('gdufsDeptInfo', ['$document', function ($document) {
     };
 }]);
 
-/**
- * 教师信息详情数据
- */
-graphModule.directive('gdufsTeacherInfo', ['$document', function ($document) {
-    return {
-        restrict: 'E',
-        templateUrl: 'src/graph/tmpl/sub/info/gdufs_teacher.html'
-    };
-}]);
-
-/**
- * 来访嘉宾信息详情数据
- */
-graphModule.directive('visitorInfo', ['$document', function ($document) {
-    return {
-        restrict: 'E',
-        templateUrl: 'src/graph/tmpl/sub/info/visitor.html'
-    };
-}]);
 
 /**
  * 来访、到访事件信息详情数据
@@ -50,6 +31,16 @@ graphModule.directive('visitorDeptInfo', ['$document', function ($document) {
     return {
         restrict: 'E',
         templateUrl: 'src/graph/tmpl/sub/info/visitor_dept.html'
+    };
+}]);
+
+/**
+ * 与会者信息数据
+ */
+graphModule.directive('attendee', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/sub/info/attendee.html'
     };
 }]);
 

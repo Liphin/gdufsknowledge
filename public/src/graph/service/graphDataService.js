@@ -63,6 +63,12 @@ graphModule.factory('GraphDataSer', function () {
     //单独以unique_id为键装载节点的对象
     let neoNodeDataObj = {};
 
+    //装载首页所有节点和关系的数据，也是用于搜索的搜索源
+    let allNodeLinkData = {
+        "obj": {},
+        "array": [],
+    };
+
 
     //读取的节点和连接关系数据设置
     let nodeTypeSetting = {
@@ -70,16 +76,11 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#ecb5c9",
             "border_color": "#da7298",
             "textKey": "cn_name",
-            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
+            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
                 "name": "相关人物",
                 "icon": "fa fa-user-o",
-                "type": "relativePeople"
+                "type": "relativeAttendee"
             }]
-        },
-        "gdufs_teacher": {
-            "bg": "#f79767",
-            "border_color": "#f36924",
-            "textKey": "cn_name",
         },
         "visit_event": {
             "bg_in": "#57c7e3",
@@ -87,36 +88,29 @@ graphModule.factory('GraphDataSer', function () {
             "bg_out": "#c3aced",
             "border_color_out": "#9a6ced",
             "textKey": "title",
-            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
+            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
                 "name": "相关人物",
                 "icon": "fa fa-user-o",
-                "type": "relativePeople"
+                "type": "relativeAttendee"
             }]
-        },
-        "visitor": {
-            "bg": "#e088a8",
-            "border_color": "#bb3264",
-            "textKey": "cn_name",
         },
         "visitor_dept": {
             "bg": "#f7d5b0",
             "border_color": "#f3a470",
             "textKey": "cn_name",
-            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
+            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
                 "name": "相关人物",
                 "icon": "fa fa-user-o",
-                "type": "relativePeople"
+                "type": "relativeAttendee"
             }]
         },
-        "people": {
+        "attendee": {
+            // "bg": "#b8e9e8",
+            // "border_color": "#87c6cc",
             "bg": "#f7d5b0",
             "border_color": "#f3a470",
             "textKey": "cn_name",
-            "menu": [{"name": "事件详情", "icon": "fa fa-newspaper-o", "type": "newsDetail"}, {
-                "name": "相关人物",
-                "icon": "fa fa-user-o",
-                "type": "relativePeople"
-            }]
+            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}]
         }
     };
 
@@ -133,40 +127,6 @@ graphModule.factory('GraphDataSer', function () {
                     "data": {},//该教师个人数据
                 },
                 "detail": { //该教师所相关联的具体新闻数据
-                    "status": true,
-                    "news": [], //装载具体新闻数据节点对象
-                    "newsDetail": {
-                        "status": false, //是否展开显示某条新闻具体详情
-                        "news": "",//具体新闻HTML内容
-                    },//该新闻的详情
-                }
-            }
-        },
-        "gdufs_teacher": {
-            "status": false,
-            "info": {
-                "general": { //该教师的个人信息数据
-                    "status": false,
-                    "data": {},//该教师个人数据
-                },
-                "detail": { //该教师所相关联的具体新闻数据
-                    "status": true,
-                    "news": [], //装载具体新闻数据节点对象
-                    "newsDetail": {
-                        "status": false, //是否展开显示某条新闻具体详情
-                        "news": "",//具体新闻HTML内容
-                    },//该新闻的详情
-                }
-            }
-        },
-        "visitor": {
-            "status": false,
-            "info": {
-                "general": { //该来访嘉宾的个人信息数据
-                    "status": false,
-                    "data": {},//该来访嘉宾个人数据
-                },
-                "detail": { //该来访嘉宾所相关联的具体新闻数据
                     "status": true,
                     "news": [], //装载具体新闻数据节点对象
                     "newsDetail": {
@@ -206,6 +166,23 @@ graphModule.factory('GraphDataSer', function () {
                 }
             }
         },
+        "attendee": {
+            "status": false,
+            "info": {
+                "general": { //该出访人的个人信息数据
+                    "status": false,
+                    "data": {},//该出访人个人数据
+                },
+                "detail": { //该出访人所相关联的具体新闻数据
+                    "status": true,
+                    "news": [], //装载具体新闻数据节点对象
+                    "newsDetail": {
+                        "status": false, //是否展开显示某条新闻具体详情
+                        "news": "",//具体新闻HTML内容
+                    },//该新闻的详情
+                }
+            }
+        },
     };
 
 
@@ -225,6 +202,7 @@ graphModule.factory('GraphDataSer', function () {
         neoNodeDataObj: neoNodeDataObj,
         nodeTypeSetting: nodeTypeSetting,
         overallData: overallData,
+        allNodeLinkData: allNodeLinkData,
         nodeLinkSelectedData: nodeLinkSelectedData,
     }
 });

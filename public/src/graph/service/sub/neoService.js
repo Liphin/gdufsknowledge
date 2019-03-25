@@ -14,6 +14,13 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
             //解析neo4j数据，并渲染到页面中
             parseNeoData(result);
 
+            //记录第一次所有节点及关系数据
+            GraphDataSer.allNodeLinkData['array'] = angular.copy(GraphDataSer.neoData); //拷贝一个副本，当neoData变化后保持不变
+            GraphDataSer.allNodeLinkData['obj'] = angular.copy(GraphDataSer.neoNodeDataObj); //拷贝一个副本，当neoNodeDataObj变化后保持不变
+
+            //初始化节点渲染到页面svg
+            NodeLinkSer.nodeLinkInit();
+
         }, GraphDataSer.loader['nodeLinks'])
     }
 
@@ -43,12 +50,6 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         }
         //装载返回节点数据
         GraphDataSer.neoData = result;
-
-        // console.log('neodata',GraphDataSer.neoData);
-        // console.log('neoobj', GraphDataSer.neoNodeDataObj);
-
-        //初始化节点渲染到页面
-        NodeLinkSer.nodeLinkInit();
     }
 
 
@@ -81,12 +82,13 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         GraphDataSer.overallData['nodeSelected']['type'] = GraphDataSer.overallData['nodeHover']['type'];
         //根据不同菜单类型执行不同操作
         switch (menuType) {
-            case "newsDetail": {
+            case "infoDetail": {
                 //调用展示节点信息详情方法
                 NodeLinkSer.getNewsInfo();
                 break;
             }
-            case "relativePeople": {
+            case "relativeAttendee": {
+                getRelativeAttendee();
                 break;
             }
             default: {
@@ -99,15 +101,102 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
 
 
     /**
+     * 获取相关与会人员信息
+     */
+    function getRelativeAttendee() {
+        let uniqueId = GraphDataSer.overallData['nodeHover']['unique_id'];
+        let type = GraphDataSer.overallData['nodeHover']['type'];
+        let allLinks = GraphDataSer.allNodeLinkData['array']['links'];
+        let targetNodeArray = [], targetLinkArray = [], tempNodeNameObj = {};
+
+        switch (type) {
+            //校内组织机构的外事出席人
+            case 'gdufs_dept': {
+                //循环每个链接，查看链接中attach的数据，从中获取外事出席人
+                for (let j in allLinks) {
+                    let link = allLinks[j];
+                    let attach = link['attach'];
+                    //如果没有附加数据则继续循环
+                    if (!OverallGeneralSer.checkDataNotEmpty(attach)) continue;
+
+                    try {
+                        //解析出席人数据
+                        let attendeeData = JSON.parse(attach['attend']);
+                        //分别判断该链接的源是否与该校内单位节点相同，若相同则证明该链接关系与该节点相连。
+                        //由于gdufs_dept只有出度关系，因此不用判断入度
+                        if (uniqueId == link['source']) {
+                            let eventUniqueId = '';
+                            //若出访人不为空则添加部门-->出席人-->事件的关系
+                            if (OverallGeneralSer.checkDataNotEmpty(attendeeData)) {
+                                //若校内单位为源节点，则添加该事件节点为目标节点
+                                eventUniqueId = link['target'];
+                                targetNodeArray.push(GraphDataSer.allNodeLinkData['obj'][link['target']]);
+
+                                for (let j in attendeeData) {
+                                    let attendeeUniqueId = '';//添加出席人的uniqueId
+                                    //若之前尚未添加以该出席人姓名的为key的节点，则添加
+                                    if (!tempNodeNameObj.hasOwnProperty(attendeeData[j]['cn_name'])) {
+                                        attendeeUniqueId = uuidv1();
+                                        tempNodeNameObj[attendeeData[j]['cn_name']] = attendeeUniqueId;
+                                        //添加出席人节点
+                                        targetNodeArray.push({
+                                            'cn_name': attendeeData[j]['cn_name'],
+                                            'unique_id': attendeeUniqueId,
+                                            'label_name': 'attendee'
+                                        });
+                                    } else {
+                                        //若之前已添加此出席人，则获取该出席人的unique_id值
+                                        attendeeUniqueId = tempNodeNameObj[attendeeData[j]['cn_name']];
+                                    }
+
+                                    //添加出席人-->事件关系
+                                    targetLinkArray.push({
+                                        'source': attendeeUniqueId,
+                                        'target': eventUniqueId,
+                                        'attach': {'unique_id': uuidv1()}
+                                    })
+                                }
+                            }
+                        }
+
+                    } catch (e) {
+                        console.error('search add link err', e, link);
+                    }
+                }
+                break;
+            }
+            case 'visit_event': {
+                break;
+            }
+            case 'visit_dept': {
+                break;
+            }
+        }
+
+        console.log(targetLinkArray)
+        parseNeoData({
+            'nodes': targetNodeArray,
+            'links': targetLinkArray
+        });
+
+        //初始化节点渲染到页面svg
+        NodeLinkSer.nodeLinkInit();
+
+    }
+
+
+    /**
      * 搜索对应的节点信息
      */
     function searchTargetNodes() {
         let targetText = GraphDataSer.overallData['search']['text'];
         let targetNodeArray = [], targetLinkArray = [], tempNodeUniqueIdArray = [];
+        let allNodes = GraphDataSer.allNodeLinkData['array']['nodes'];
+        let allLinks = GraphDataSer.allNodeLinkData['array']['links'];
 
         //1、搜索部门和事件相关节点
-        for (let i in GraphDataSer.neoData['nodes']) {
-            let node = GraphDataSer.neoData['nodes'][i];
+        for (let i in allNodes) {
+            let node = allNodes[i];
             try {
                 if (node['label_name'] == 'visit_event') {
                     //搜索visit_event节点中key_word, title
@@ -131,21 +220,21 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         //2、如果前面搜索的部门和事件节点不为空则添加关系链接，否则搜索人物信息
         if (targetNodeArray.length > 0) {
             //遍历每个节点的关系
-            for (let j in GraphDataSer.neoData['links']) {
-                let link = GraphDataSer.neoData['links'][j];
+            for (let j in allLinks) {
+                let link = allLinks[j];
                 try {
-                    let sourceExist = tempNodeUniqueIdArray.indexOf(link['source']['unique_id']);
-                    let targetExist = tempNodeUniqueIdArray.indexOf(link['target']['unique_id']);
+                    let sourceExist = tempNodeUniqueIdArray.indexOf(link['source']);
+                    let targetExist = tempNodeUniqueIdArray.indexOf(link['target']);
                     if (sourceExist > -1 || targetExist > -1) {
                         if (sourceExist > -1 && targetExist <= -1) {
-                            targetNodeArray.push(link['target']);
+                            targetNodeArray.push(GraphDataSer.allNodeLinkData['obj'][link['target']]);
 
                         } else if (sourceExist <= -1 && targetExist > -1) {
-                            targetNodeArray.push(link['source']);
+                            targetNodeArray.push(GraphDataSer.allNodeLinkData['obj'][link['source']]);
                         }
                         targetLinkArray.push({
-                            'source': link['source']['unique_id'],
-                            'target': link['target']['unique_id'],
+                            'source': link['source'],
+                            'target': link['target'],
                             'attach': link['attach']
                         })
                     }
@@ -155,77 +244,74 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
                 }
             }
         }
+
         //搜索人物信息
-        else {
-            let teachObj = {}, eventSet = new Set();
-            for (let k in GraphDataSer.neoData['links']) {
-                let link = GraphDataSer.neoData['links'][k];
-                //搜索attend，若不空则进行json解析，否则继续下一个
-                let attend = link['attach']['attend'];
-                if (!OverallGeneralSer.checkDataNotEmpty(attend)) {
-                    continue;
-                }
-                let tempArray = JSON.parse(attend);
-                try {
-                    //遍历每个link的attach中的attend（出席人员），查看是否有相应的人员
-                    for (let h in tempArray) {
-                        //如果该名称为空则不进行查询，继续下一个节点
-                        if (!OverallGeneralSer.checkDataNotEmpty(tempArray[h]['cn_name'])) continue;
-                        //添加符合该教师名称的数据
-                        if (tempArray[h]['cn_name'].indexOf(targetText) > -1) {
-                            //如果该教师对象已添加该教师名称数据，则直接添加到数组，否则重新初始化
-                            if (teachObj.hasOwnProperty(tempArray[h]['cn_name'])) {
-                                teachObj[tempArray[h]['cn_name']].push(link['target']['unique_id']);
-                            } else {
-                                teachObj[tempArray[h]['cn_name']] = [link['target']['unique_id']]
-                            }
-                            //添加该事件的unique_id到不重复的set数组中
-                            eventSet.add(link['target']['unique_id']);
+        let teachObj = {}, eventSet = new Set();
+        for (let k in allLinks) {
+            let link = allLinks[k];
+            //搜索attend，若不空则进行json解析，否则继续下一个
+            let attend = link['attach']['attend'];
+            if (!OverallGeneralSer.checkDataNotEmpty(attend)) {
+                continue;
+            }
+            let tempArray = JSON.parse(attend);
+            try {
+                //遍历每个link的attach中的attend（出席人员），查看是否有相应的人员
+                for (let h in tempArray) {
+                    //如果该名称为空则不进行查询，继续下一个节点
+                    if (!OverallGeneralSer.checkDataNotEmpty(tempArray[h]['cn_name'])) continue;
+                    //添加符合该教师名称的数据
+                    if (tempArray[h]['cn_name'].indexOf(targetText) > -1) {
+                        //如果该教师对象已添加该教师名称数据，则直接添加到数组，否则重新初始化
+                        if (teachObj.hasOwnProperty(tempArray[h]['cn_name'])) {
+                            teachObj[tempArray[h]['cn_name']].push(link['target']);
+                        } else {
+                            teachObj[tempArray[h]['cn_name']] = [link['target']]
                         }
+                        //添加该事件的unique_id到不重复的set数组中
+                        eventSet.add(link['target']);
                     }
-                } catch (e) {
-                    console.error('search people add node err', e, link);
                 }
-            }
-
-            //添加相关的事件节点
-            for (let item of eventSet.values()) {
-                targetNodeArray.push(GraphDataSer.neoNodeDataObj[item])
-            }
-
-            //添加人员节点到节点并与事件节点进行链接
-            for (let i in teachObj) {
-                let uniqueId = uuidv1();
-                targetNodeArray.push({
-                    'cn_name': i,
-                    'unique_id': uniqueId,
-                    'label_name': 'people'
-                });
-                for (let j in teachObj[i]) {
-                    targetLinkArray.push({
-                        'source': uniqueId,
-                        'target': teachObj[i][j]
-                    })
-                }
+            } catch (e) {
+                console.error('search people add node err', e, link);
             }
         }
 
-        console.log(targetNodeArray)
-        console.log(targetLinkArray)
+        //添加相关的事件节点
+        for (let item of eventSet.values()) {
+            //如果之前尚未添加过则添加此节点信息
+            if (tempNodeUniqueIdArray.indexOf(item) <= -1) {
+                targetNodeArray.push(GraphDataSer.allNodeLinkData['obj'][item])
+            }
+        }
+
+        //添加人员节点到节点并与事件节点进行链接
+        for (let i in teachObj) {
+            let uniqueId = uuidv1();
+            targetNodeArray.push({
+                'cn_name': i,
+                'unique_id': uniqueId,
+                'label_name': 'attendee'
+            });
+            for (let j in teachObj[i]) {
+                targetLinkArray.push({
+                    'source': uniqueId,
+                    'target': teachObj[i][j],
+                    'attach': {'unique_id': uuidv1()}
+                })
+            }
+        }
+
+
+        //console.log(targetNodeArray);
         //分别设置节点和链接数据至渲染数组中
         parseNeoData({
-            'nodes':targetNodeArray,
-            'links':targetLinkArray
+            'nodes': targetNodeArray,
+            'links': targetLinkArray
         });
 
-
-        //gdufs_dept_visit_event中的source和target是否有选择的unique_id
-        //visitor_dept_visit_event中的source和target是否有选择的unique_id
-
-
-        //搜索gdufs_dept_visit_event关系中的attend
-        //搜索visitor_dept_visit_event关系中的attend
-
+        //初始化节点渲染到页面svg
+        NodeLinkSer.nodeLinkInit();
     }
 
 

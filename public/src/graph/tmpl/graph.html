@@ -47,20 +47,21 @@
                 <div style="display: inline-block; position: relative; top: 2px">
                     <span>校内组织 </span><i class="fa fa-square" style="color: rgb(236,181,201)"></i>
                     <span style="margin-left: 15px">外方实体 </span><i class="fa fa-square" style="color: rgb(247,213,176)"></i>
+                    <span style="margin-left: 15px">人物 </span><i class="fa fa-square" style="color: rgb(184,233,232)"></i>
                     <span style="margin-left: 15px">来访</span><i class="fa fa-square" style="color: rgb(87, 199, 227)"></i>
                     出访<i class="fa fa-square" style="color: rgb(195,172,237)"></i>
                 </div>
 
                 <!--操作模式设置-->
-                <!--<div style="display: inline-block; margin-left: 30px">-->
-                    <!--<li class="dropdown">-->
-                        <!--<button style="padding: 3px 12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">模式&nbsp; <span class="caret"></span></button>-->
-                        <!--<ul class="dropdown-menu" style="min-width: 120px; cursor: pointer">-->
-                            <!--<li ng-click="graph.overallData['graphSetting']['nodesGray']=true"><a>聚焦模式<i ng-if="graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>-->
-                            <!--<li ng-click="graph.resetAllNodeStyle()"><a>普通模式<i ng-if="!graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>-->
-                        <!--</ul>-->
-                    <!--</li>-->
-                <!--</div>-->
+                <div style="display: inline-block; margin-left: 30px">
+                    <li class="dropdown">
+                        <button style="padding: 3px 12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">模式&nbsp; <span class="caret"></span></button>
+                        <ul class="dropdown-menu" style="min-width: 120px; cursor: pointer">
+                            <li ng-click="graph.overallData['graphSetting']['nodesGray']=true"><a>聚焦模式<i ng-if="graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>
+                            <li ng-click="graph.resetAllNodeStyle()"><a>普通模式<i ng-if="!graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>
+                        </ul>
+                    </li>
+                </div>
 
                 <!--搜索-->
                 <div style="display: inline-block">
@@ -125,17 +126,14 @@
                 <!--来访、到访事件新闻数据展示-->
                 <visit-event-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['visit_event']['status']"></visit-event-info>
 
-                <!--教师信息节点信息展示 -->
-                <gdufs-teacher-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['gdufs_teacher']['status']"></gdufs-teacher-info>
-
                 <!--广外部门节点信息展示 -->
                 <gdufs-dept-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['gdufs_dept']['status']"></gdufs-dept-info>
 
-                <!--来访嘉宾信息节点展示 -->
-                <visitor-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['visitor']['status']"></visitor-info>
-
                 <!--来访嘉宾所在单位 -->
                 <visitor-dept-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['visitor_dept']['status']"></visitor-dept-info>
+
+                <!--会议参与者/接待嘉宾 -->
+                <attendee style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['attendee']['status']"></attendee>
             </div>
         </div>
     </div>

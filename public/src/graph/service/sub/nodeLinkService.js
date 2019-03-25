@@ -420,12 +420,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
 
         //根据不同节点类型展示不同消息信息体
         switch (type) {
-            case 'gdufs_teacher': {
-                //装载相关新闻数组
-                addRelatedEventNews(type, uniqueId);
-                break;
-            }
-            case 'visitor': {
+            case 'attendee': {
                 //装载相关新闻数组
                 addRelatedEventNews(type, uniqueId);
                 break;
@@ -605,7 +600,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             GraphDataSer.overallData['graphSetting']['nodesGray'] = false;
             //对nodes父节点下的circle样式每个单独进行颜色设置
             d3.selectAll(".nodes .nodeCircle").each(function (d2, i2) {
-                // d3.select(this).attr("fill", GraphDataSer.nodeTypeSetting[d2.label_name]['bg']);
+
                 d3.select(this).attr("fill", function () {
                     if (d2['label_name'] == 'visit_event') {
                         if (d2['type'] == 1) {
