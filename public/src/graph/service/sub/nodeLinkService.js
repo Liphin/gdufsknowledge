@@ -166,25 +166,29 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
         node.append("text")
             .attr("fill", "black")
             .attr("y", 4)
+            .style("text-anchor", "middle")
             .style("font-size", function (d, i) {
-                let textLength = d[GraphDataSer.nodeTypeSetting[d['label_name']]['textKey']].length;//文本长度
                 let radius = GraphDataSer.neoNodeDataObj[d.unique_id]['radius'];//节点半径
-                let tempN = Math.round((radius - 23) / 2 + 12);//临时中间变量
-                if (textLength <= 3) {
-                    return tempN < 12 ? (12 + "px") : (tempN + "px");
+                let tempSize = (radius * 2 - 48) / 4 + 12;
+                let fontSize = tempSize > 16 ? 16 : tempSize;
+                d['fontSize'] = fontSize;
+                return fontSize + "px";
+
+            })
+            .text(d => {
+                let text = d[GraphDataSer.nodeTypeSetting[d['label_name']]['textKey']];
+                let radius = GraphDataSer.neoNodeDataObj[d.unique_id]['radius'];//节点半径
+                let fontSize = d['fontSize'];
+                let availableFontNum = Math.round((radius * 2 - 5) / fontSize);
+                if (text.length < availableFontNum) {
+                    return text;
 
                 } else {
-                    return "12px";
+                    availableFontNum < 4 ? availableFontNum = 4 : true;
+                    return text.substring(0, availableFontNum - 1) + "...";
                 }
-            })
-            .style("text-anchor", "middle")
-            .text(d => {
-                //若文本字数大于4个则用...代替展示
-                let text = d[GraphDataSer.nodeTypeSetting[d['label_name']]['textKey']];
-                if (text.length > 3) text = text.substring(0, 3) + "...";
-                return text
-            });
 
+            });
 
         //添加最后一个node节点，用于鼠标放上节点时显示节点名称，并且永远在渲染层的顶端
         let nodeTextNode = nodeArray.append("g").attr("id", "nodeTextNodeRef");
@@ -193,7 +197,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
         nodeTextNode.append("rect")
             .attr("id", "nodeRect")
             .attr("fill", "white")
-            .attr("height", 28)
+            .attr("height", 37)
             .attr("stroke", "#585858")
             .attr("stroke-width", 1);
 
@@ -201,8 +205,9 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
         nodeTextNode.append("text")
             .attr("id", "nodeText")
             .attr("fill", "black")
-            .style("font-size", "14px")
-            .style("text-anchor", "middle");
+            .style("font-size", "16px")
+            .style("text-anchor", "middle")
+            .style("font-family", "微软雅黑");
 
         //设置节点拖拽事件响应
         node.call(d3.drag()
@@ -232,7 +237,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             nodeTextNode.select("text")
                 .attr("y", function () {
                     //依据节点半径再上偏移13个单位长度即可
-                    return -(GraphDataSer.neoNodeDataObj[d['unique_id']]['radius'] + 14);
+                    return -(GraphDataSer.neoNodeDataObj[d['unique_id']]['radius'] + 20);
                 })
                 .text(function () {
                     //依据不同类型显示不同文本
@@ -248,24 +253,24 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             nodeTextNode.select("rect")
                 .attr("y", function () {
                     //依据节点半径再上偏移30个单位长度即可
-                    return -(GraphDataSer.neoNodeDataObj[d['unique_id']]['radius'] + 33);
+                    return -(GraphDataSer.neoNodeDataObj[d['unique_id']]['radius'] + 43);
                 })
                 .attr("x", function () {
                     //依据不同类型显示不同文本，并根据字数确定左偏移位置
                     if (d['label_name'] == 'visit_event') {
-                        return -(d['title'].length * 7 + 14);
+                        return -(d['title'].length * 8 + 18);
 
                     } else {
-                        return -(d['cn_name'].length * 7 + 14);
+                        return -(d['cn_name'].length * 8 + 18);
                     }
                 })
                 .attr("width", function () {
                     //依据不同类型显示不同文本，并根据字数确定宽度
                     if (d['label_name'] == 'visit_event') {
-                        return d['title'].length * 14 + 28;
+                        return d['title'].length * 16 + 34;
 
                     } else {
-                        return d['cn_name'].length * 14 + 28;
+                        return d['cn_name'].length * 16 + 34;
                     }
                 })
 
@@ -449,7 +454,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             GraphDataSer.nodeLinkSelectedData[type]['info']['general']['data'][i] = node[i];
         }
         //如果面板之前已经打开了，则无loading，如果之前尚未打开，则有loading
-        if(!GraphDataSer.overallData['rightBarShow']){
+        if (!GraphDataSer.overallData['rightBarShow']) {
             //面板展开时，信息尚未显示出来，loading加载
             GraphDataSer.loader['nodeDetail']['status'] = true;
             //1秒后，动画消失，显示内容

@@ -24,7 +24,9 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
             }
             //设置每个节点的radius
             for (let k in GraphDataSer.neoNodeDataObj) {
-                GraphDataSer.neoNodeDataObj[k]['radius'] = 22 + Math.round(GraphDataSer.neoNodeDataObj[k]['degree']);
+                //GraphDataSer.neoNodeDataObj[k]['radius'] = 22 + Math.round(GraphDataSer.neoNodeDataObj[k]['degree']);
+                let tempRadius = 22 + Math.round(GraphDataSer.neoNodeDataObj[k]['degree']);
+                GraphDataSer.neoNodeDataObj[k]['radius'] = (tempRadius > 60 ? 60 : tempRadius); //最大的半径不能大于60
                 GraphDataSer.neoNodeDataObj[k]['distance'] = 50 + Math.round(GraphDataSer.neoNodeDataObj[k]['degree'] * 0.5);
             }
             //装载返回节点数据
@@ -86,9 +88,27 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
     }
 
 
+    /**
+     * 搜索对应的节点信息
+     */
+    function searchTargetNodes() {
+        let targetText = GraphDataSer.overallData['search']['text'];
+        //搜索gdufs_dept节点中cn_name
+        //搜索visitor_dept节点中cn_name
+        //搜索visit_event节点中key_word, title
+
+
+        //搜索gdufs_dept_visit_event关系中的attend
+        //搜索visitor_dept_visit_event关系中的attend
+
+
+    }
+
+
     return {
         getNeoData: getNeoData,
         chooseNodeMenu: chooseNodeMenu,
         chooseNewsShow: chooseNewsShow,
+        searchTargetNodes: searchTargetNodes,
     }
 });

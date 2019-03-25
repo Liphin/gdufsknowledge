@@ -41,6 +41,7 @@ overallModule.factory('OverallDataSer', function ($rootScope) {
             'getAllFillData': baseUrlData['frontEndHttp'] + 'getAllFillData',
             'updateNodeInfo': baseUrlData['frontEndHttp'] + 'updateNodeInfo',
             'getAllNodeAndLinksData': baseUrlData['frontEndHttp'] + 'getAllNodeAndLinksData',
+            // 'searchTargetNodes': baseUrlData['frontEndHttp'] + 'searchTargetNodes',
             'gdufsNewsOssUrl': baseUrlData['ossHttp'] + '/gdufs/knowledge/',
         }
     };

@@ -25,12 +25,17 @@ graphModule.factory('GraphDataSer', function () {
         },
         "search": {
             "text": "",
-            "type": "",
         },
         "graphSetting": { //节点图的设置描述
             "nodesGray": true, //是否设置非目标及其关联的节点未选择状态时设置为灰色
         }
     };
+
+
+    /**
+     * 目标知识图谱节点图
+     */
+    let graphPath = {};
 
 
     //从Neo4j数据库中读取相关数据并展示
@@ -190,18 +195,20 @@ graphModule.factory('GraphDataSer', function () {
         },
     };
 
+
     /**
      * 加载loading属性
      */
     var loader = {
-        "nodeLinks": {"status":false},
-        "nodeDetail": {"status":false},
+        "nodeLinks": {"status": false},
+        "nodeDetail": {"status": false},
     };
 
 
     return {
         loader: loader,
         neoData: neoData,
+        graphPath: graphPath,
         neoNodeDataObj: neoNodeDataObj,
         nodeTypeSetting: nodeTypeSetting,
         overallData: overallData,

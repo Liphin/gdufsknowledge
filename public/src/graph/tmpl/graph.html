@@ -22,38 +22,50 @@
 
     <!--图数据展示区域-->
     <div style="width: 100%;height: 100%">
-        <div style="position: absolute; top: 0; height: 60px;left: 170px; right: 0; background: white; z-index: 5;padding: 15px 0 0 50px">
-            <!--按类别搜索相关节点信息-->
-            <div>
-                <span style="font-size: 16px; color: #0082a2">2018年广外国际处外事交流数据知识图谱</span>
-                <a style="font-size: 15px;" href="http://internationaloffice.gdufs.edu.cn/lfjl.htm" target="_blank">（数据源）</a>
-                <!--<button ng-click="graph.searchTargetNode()" class="btn btn-info" style="padding: 3px 12px">搜索</button>-->
-                <!--<input ng-model="graph.overallData['search']['text']" placeholder="搜索节点内容" style=";background: transparent;border: 1px solid grey;border-width: 0 0 1px 0;outline: none;padding: 0 12px;margin-left: 20px;margin-right: 20px "/>-->
-                <label class="radio-inline">
-                    <!--<input type="radio" ng-model="graph.overallData['search']['type']" value="gdufs_dept">-->
-                    <span>校内组织 </span><i class="fa fa-square" style="color: rgb(236,181,201)"></i>
-                </label>
-                <!--<label class="radio-inline">-->
-                    <!--<input type="radio" ng-model="graph.overallData['search']['type']" value="visitor">嘉宾 <i class="fa fa-square" style="color: rgb(236, 181, 201)"></i>-->
-                <!--</label>-->
-                <label class="radio-inline">
-                    <!--<input type="radio" ng-model="graph.overallData['search']['type']"  value="visitor_dept">-->
-                    <span>外方实体 </span><i class="fa fa-square" style="color: rgb(247,213,176)"></i>
-                </label>
-                <label class="radio-inline">
-                    <!--<input type="radio" ng-model="graph.overallData['search']['type']"  value="visit_event">-->
-                    <span>事件 </span><i class="fa fa-square" style="color: rgb(87, 199, 227)"></i>
-                </label>
+        <div style="position: absolute; top: 0; height: 85px;left: 170px; right: 0; background: white; z-index: 5;padding: 15px 0 0 50px">
+            <!--数据源-->
+            <div style="display: inline-block">
+                <span style="font-size: 16px; color: #0082a2">2018年广外外事交流数据知识图谱</span>
+                <!--<span>知识图谱选择：</span>-->
+                <!--<div style="display: inline-block; margin-left: 10px">-->
+                    <!--<li class="dropdown">-->
+                        <!--<button style="padding: 3px 12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown"-->
+                                <!--role="button" aria-haspopup="true" aria-expanded="false">{{graph.targetGraphData['data'][graph.targetGraphData['targetIndex']]['name']}}&nbsp;-->
+                            <!--<span class="caret"></span>-->
+                        <!--</button>-->
+                        <!--<ul class="dropdown-menu" style="min-width: 120px; cursor: pointer">-->
+                            <!--<li ng-repeat="value in graph.targetGraphData['data'] track by $index" ng-click="graph.overallData['graphSetting']['nodesGray']=true">-->
+                                <!--<a>{{value['name']}}<i ng-if="graph.targetGraphData['targetIndex']==$index" class="fa fa-check" style="color: green; margin-left: 10px"></i></a>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</li>-->
+                <!--</div>-->
+            </div>
 
-                <!--设置是否节点灰化操作-->
-                <div style="display: inline-block; margin-left: 30px">
-                    <li class="dropdown">
-                        <button style="padding: 4px 12px" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">设置&nbsp; <span class="caret"></span></button>
-                        <ul class="dropdown-menu" style="min-width: 120px; cursor: pointer">
-                            <li ng-click="graph.overallData['graphSetting']['nodesGray']=true"><a>聚焦模式<i ng-if="graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>
-                            <li ng-click="graph.resetAllNodeStyle()"><a>普通模式<i ng-if="!graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>
-                        </ul>
-                    </li>
+            <!--按类别搜索相关节点信息-->
+            <div style="margin-top: 10px; ">
+                <div style="display: inline-block; position: relative; top: 2px">
+                    <span>校内组织 </span><i class="fa fa-square" style="color: rgb(236,181,201)"></i>
+                    <span style="margin-left: 15px">外方实体 </span><i class="fa fa-square" style="color: rgb(247,213,176)"></i>
+                    <span style="margin-left: 15px">事件 </span><i class="fa fa-square" style="color: rgb(87, 199, 227)"></i>
+                </div>
+
+                <!--操作模式设置-->
+                <!--<div style="display: inline-block; margin-left: 30px">-->
+                    <!--<li class="dropdown">-->
+                        <!--<button style="padding: 3px 12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">模式&nbsp; <span class="caret"></span></button>-->
+                        <!--<ul class="dropdown-menu" style="min-width: 120px; cursor: pointer">-->
+                            <!--<li ng-click="graph.overallData['graphSetting']['nodesGray']=true"><a>聚焦模式<i ng-if="graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>-->
+                            <!--<li ng-click="graph.resetAllNodeStyle()"><a>普通模式<i ng-if="!graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>-->
+                        <!--</ul>-->
+                    <!--</li>-->
+                <!--</div>-->
+
+                <!--搜索-->
+                <div style="display: inline-block">
+                    <input enter-search-node ng-model="graph.overallData['search']['text']" placeholder="输入搜索内容" style=";background: transparent;border: 1px solid #b1b1b1; border-width: 0 0 1px 0; outline: none;padding: 0 12px;margin-left: 40px;"/>
+                    <i ng-click="graph.searchTargetNodes()" class="fa fa-search" style="cursor: pointer;position: relative; left: -20px; color: grey;"></i>
+                    <!--<button ng-click="graph.searchTargetNode()" class="btn btn-info" style="padding: 3px 12px; outline: none">搜索</button>-->
                 </div>
             </div>
 

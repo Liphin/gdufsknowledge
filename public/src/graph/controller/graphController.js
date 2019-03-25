@@ -49,6 +49,14 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
      */
     graph.chooseNodeMenu = function (menuType) {
         NeoSer.chooseNodeMenu(menuType)
+    };
+
+    /**
+     * 搜索对应的节点信息
+     * @see NeoSer.searchTargetNodes
+     */
+    graph.searchTargetNodes = function () {
+        NeoSer.searchTargetNodes();
     }
 });
 
