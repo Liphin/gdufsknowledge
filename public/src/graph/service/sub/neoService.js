@@ -84,13 +84,20 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         GraphDataSer.overallData['nodeSelected']['type'] = GraphDataSer.overallData['nodeHover']['type'];
         //根据不同菜单类型执行不同操作
         switch (menuType) {
+            //该节点的具体信息
             case "infoDetail": {
                 //调用展示节点信息详情方法
                 NodeLinkSer.getNewsInfo();
                 break;
             }
+            //查询相关出席人
             case "relativeAttendee": {
                 getRelativeAttendee();
+                break;
+            }
+            //人物节点的相关事件
+            case "relativeEvent": {
+                getRelativeEvent();
                 break;
             }
             default: {
@@ -99,6 +106,53 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         }
         //菜单响应按键后，收回菜单
         GraphDataSer.overallData['nodeMenu']['status'] = false;
+    }
+
+
+    /**
+     * 查看该出席人节点的所有相关事件信息
+     */
+    function getRelativeEvent() {
+        let uniqueId = GraphDataSer.overallData['nodeHover']['unique_id'];
+        let type = GraphDataSer.overallData['nodeHover']['type'];
+        let allLinks = angular.copy(GraphDataSer.allNodeLinkData['array']['links']);
+        let targetNodeArray = [], targetLinkArray = [];
+        let attendeeNode = GraphDataSer.neoNodeDataObj[uniqueId];
+
+        targetNodeArray.push(attendeeNode);//初始化添加出席人节点
+        for (let i in allLinks) {
+            let link = allLinks[i];
+            let attach = link['attach'];
+            //如果没有附加数据则继续循环
+            if (!OverallGeneralSer.checkDataNotEmpty(attach)) continue;
+
+            try {
+                //如果出席人信息中有该对应的人员的姓名则添加该事件节点到数组中
+                if (attach['attend'].indexOf(attendeeNode['cn_name']) > -1) {
+                    //1、由于校内单位相对事件必然为源节点，则添加该事件节点为目标节点
+                    let eventUniqueId = link['target'];
+                    targetNodeArray.push(GraphDataSer.allNodeLinkData['obj'][link['target']]);
+
+                    //2、添加出席人-->事件链接
+                    targetLinkArray.push({
+                        'source': uniqueId,
+                        'target': eventUniqueId,
+                        'attach': {'unique_id': uuidv1()}
+                    })
+                }
+            } catch (e) {
+                console.log('getRelativeEvent err', e);
+            }
+        }
+
+        //数据封装
+        parseNeoData({
+            'nodes': targetNodeArray,
+            'links': targetLinkArray
+        });
+
+        //初始化节点渲染到页面svg
+        NodeLinkSer.nodeLinkInit();
     }
 
 
@@ -139,8 +193,8 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
                                 for (let j in attendeeData) {
                                     let attendeeUniqueId = '';//添加出席人的uniqueId
                                     //如果中文名称没有，则添加英文名称
-                                    if(!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
-                                        attendeeData[j]['cn_name']=attendeeData[j]['en_name']
+                                    if (!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
+                                        attendeeData[j]['cn_name'] = attendeeData[j]['en_name']
                                     }
                                     //若之前尚未添加以该出席人姓名的为key的节点，则添加
                                     if (!tempNodeNameObj.hasOwnProperty(attendeeData[j]['cn_name'])) {
@@ -207,8 +261,8 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
                                 for (let j in attendeeData) {
                                     let attendeeUniqueId = uuidv1(); //新创建该出席人节点的unique_id
                                     //如果中文名称没有，则添加英文名称
-                                    if(!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
-                                        attendeeData[j]['cn_name']=attendeeData[j]['en_name']
+                                    if (!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
+                                        attendeeData[j]['cn_name'] = attendeeData[j]['en_name']
                                     }
                                     tempNodeNameObj[attendeeData[j]['cn_name']] = attendeeUniqueId;
                                     //2、添加出席人节点
@@ -267,8 +321,8 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
                                 for (let j in attendeeData) {
                                     let attendeeUniqueId = '';//添加出席人的uniqueId
                                     //如果中文名称没有，则添加英文名称
-                                    if(!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
-                                        attendeeData[j]['cn_name']=attendeeData[j]['en_name']
+                                    if (!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
+                                        attendeeData[j]['cn_name'] = attendeeData[j]['en_name']
                                     }
                                     //若之前尚未添加以该出席人姓名的为key的节点，则添加
                                     if (!tempNodeNameObj.hasOwnProperty(attendeeData[j]['cn_name'])) {
@@ -311,8 +365,8 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
             }
         }
 
-        console.log(targetNodeArray);
-        console.log(targetLinkArray);
+        // console.log(targetNodeArray);
+        // console.log(targetLinkArray);
         parseNeoData({
             'nodes': targetNodeArray,
             'links': targetLinkArray
@@ -334,7 +388,7 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         let allLinks = angular.copy(GraphDataSer.allNodeLinkData['array']['links']);
 
         //只有搜索内容不为空时才进行搜索
-        if(OverallGeneralSer.checkDataNotEmpty(targetText)){
+        if (OverallGeneralSer.checkDataNotEmpty(targetText)) {
             //1、搜索部门和事件相关节点
             for (let i in allNodes) {
                 let node = allNodes[i];
@@ -444,7 +498,7 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
             }
         }
         //若搜索为空，则返回之前的所有数据重新渲染
-        else{
+        else {
             targetNodeArray = allNodes;
             targetLinkArray = allLinks
         }

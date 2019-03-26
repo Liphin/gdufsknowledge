@@ -95,7 +95,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             //     .y(window.innerHeight / 2 * forceProperties.forceY.y);
 
             simulation.force("link")
-            // .strength(1)  //设置link的强度；可设置大于1
+                 // .strength(1)  //设置link的强度；可设置大于1
                 .id(function (d) {
                     return d.unique_id;
                 })

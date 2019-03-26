@@ -25,7 +25,7 @@ graphModule.factory('GraphDataSer', function () {
             "position": {"x": 0, "y": 0}
         },
         "search": {
-            "text": "柯晓华",
+            "text": "",
         },
         "graphSetting": { //节点图的设置描述
             "nodesGray": true, //是否设置非目标及其关联的节点未选择状态时设置为灰色
@@ -62,6 +62,7 @@ graphModule.factory('GraphDataSer', function () {
     };
     //单独以unique_id为键装载节点的对象
     let neoNodeDataObj = {};
+
 
     //装载首页所有节点和关系的数据，也是用于搜索的搜索源；进入二级子节点该数据不变；作为保存的数据源
     let allNodeLinkData = {
@@ -110,7 +111,11 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#e6e3c0",
             "border_color": "#8baea2",
             "textKey": "cn_name",
-            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}]
+            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"},{
+                "name": "相关事件",
+                "icon": "fa fa-user-o",
+                "type": "relativeEvent"
+            }]
         }
     };
 
