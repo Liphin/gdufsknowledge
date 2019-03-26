@@ -21,64 +21,58 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
         linkArray.selectAll("line").data([]).exit().remove();
         nodeArray.selectAll("g").data([]).exit().remove();
 
-        let // values for all forces
-            forceProperties = {
-                center: {
-                    x: 0.5,
-                    y: 0.5
-                },
-                charge: {
-                    enabled: true,
-                    strength: -30,
-                    distanceMin: 1,
-                    distanceMax: 2000
-                },
-                collide: {
-                    enabled: true,
-                    strength: .7,
-                    iterations: 1,
-                    radius: 5
-                },
-                forceX: {
-                    enabled: false,
-                    strength: .1,
-                    x: .5
-                },
-                forceY: {
-                    enabled: false,
-                    strength: .1,
-                    y: .5
-                },
-                link: {
-                    enabled: true,
-                    distance: 30,
-                    iterations: 1
-                }
-            };
+        let simulation = d3.forceSimulation();
+
+        // values for all forces
+        let forceProperties = {
+            center: {
+                x: 0.5,
+                y: 0.5
+            },
+            charge: {
+                enabled: true,
+                strength: -30,
+                distanceMin: 1,
+                distanceMax: 2000
+            },
+            collide: {
+                enabled: true,
+                strength: .7,
+                iterations: 1,
+                radius: 5
+            },
+            forceX: {
+                enabled: true,
+                strength: 0.1,
+                x: 0.5
+            },
+            forceY: {
+                enabled: true,
+                strength: 0.1,
+                y: 0.5
+            },
+            link: {
+                enabled: true,
+                distance: 30,
+                iterations: 0.1
+            }
+        };
 
 
         //添加节点及设置相关的力
-        let simulation = d3.forceSimulation()
-            .nodes(GraphDataSer.neoData['nodes'])
+        simulation.nodes(GraphDataSer.neoData['nodes'])
             .force("link", d3.forceLink())
             .force("charge", d3.forceManyBody())
             .force("collide", d3.forceCollide())
+            // .force("forceX", d3.forceX())
+            // .force("forceY", d3.forceY())
             .force("center", d3.forceCenter())
-            .force("forceX", d3.forceX())
-            .force("forceY", d3.forceY());
+
         // apply properties to each of the forces
         updateForces();
 
         // apply new force properties
         function updateForces() {
-            //如果angularjs尚未完成Windows的width和height的设置则使用
-            if (!OverallGeneralSer.checkDataNotEmpty(OverallDataSer.overallData['screen']['width'])) {
-                OverallDataSer.overallData['screen']['width'] = window.innerWidth;
-                OverallDataSer.overallData['screen']['height'] = window.innerHeight;
-            }
-            simulation.force("center")
-                .x(OverallDataSer.overallData['screen']['width'] * forceProperties.center.x)
-                .y(OverallDataSer.overallData['screen']['height'] * forceProperties.center.y);
             simulation.force("charge")
                 .strength(forceProperties.charge.strength * forceProperties.charge.enabled)
                 .distanceMin(forceProperties.charge.distanceMin)
@@ -89,13 +83,19 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
                     return Math.round(GraphDataSer.neoNodeDataObj[d.unique_id]['radius'] * 1.68);
                 })
                 .iterations(forceProperties.collide.iterations);
-            simulation.force("forceX")
-                .strength(forceProperties.forceX.strength * forceProperties.forceX.enabled)
-                .x(OverallDataSer.overallData['screen']['width'] * forceProperties.forceX.x);
-            simulation.force("forceY")
-                .strength(forceProperties.forceY.strength * forceProperties.forceY.enabled)
-                .y(OverallDataSer.overallData['screen']['height'] * forceProperties.forceY.y);
+
+            simulation.force("center")
+                .x(window.innerWidth * forceProperties.center.x)
+                .y(window.innerHeight * forceProperties.center.y);
+            // simulation.force("forceX")
+            //     .strength(forceProperties.forceX.strength * forceProperties.forceX.enabled)
+            //     .x(window.innerWidth / 2 * forceProperties.forceX.x);
+            // simulation.force("forceY")
+            //     .strength(forceProperties.forceY.strength * forceProperties.forceY.enabled)
+            //     .y(window.innerHeight / 2 * forceProperties.forceY.y);
+
             simulation.force("link")
+                // .strength(2)
                 .id(function (d) {
                     return d.unique_id;
                 })
@@ -107,7 +107,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
 
             // updates ignored until this is run
             // restarts the simulation (important if simulation has already slowed down)
-            simulation.alpha(1).restart();
+            simulation.alpha(1).alphaTarget(0).alphaDecay(0.05).velocityDecay(0.5).restart();
         }
 
 
@@ -247,7 +247,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
 
             //显示节点文本的节点，把该节点转换至特定的位置
             nodeTextNode.attr("transform", function () {
-                return "translate(" + d.x + "," + d.y + ")";
+                return "translate(" + (d.x) + "," + (d.y) + ")";
             });
 
             //设置文本上偏移及文本内容
@@ -350,12 +350,19 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
                 //如果该节点时鼠标放上去需要显示该节点文本时，则该段文本跟随节点运动而运动
                 if (d['textShow']) {
                     nodeTextNode.attr("transform", function () {
-                        return "translate(" + d.x + "," + d.y + ")";
+                        return "translate(" + (d.x) + "," + (d.y) + ")";
                     });
                 }
+
                 //返回该节点本身运动的位置
-                return "translate(" + d.x + "," + d.y + ")";
+                return "translate(" + (d.x) + "," + (d.y) + ")";
             });
+
+            // console.log(simulation.alpha())
+            // 设置如果alph低于某个值后，即变化较小时，除去中间束缚力作用
+            if (simulation.alpha() < 0.7) {
+                simulation.force("center", null)
+            }
         }
 
 
@@ -364,7 +371,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
          * @param d
          */
         function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            if (!d3.event.active) simulation.alphaTarget(0.07).restart();
             d.fx = d.x;
             d.fy = d.y;
         }

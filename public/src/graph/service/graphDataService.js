@@ -105,10 +105,10 @@ graphModule.factory('GraphDataSer', function () {
             }]
         },
         "attendee": {
-            // "bg": "#b8e9e8",
-            // "border_color": "#87c6cc",
-            "bg": "#f7d5b0",
-            "border_color": "#f3a470",
+            // "bg": "#d8e8da",
+            // "border_color": "#8aaead",
+            "bg": "#e6e3c0",
+            "border_color": "#8baea2",
             "textKey": "cn_name",
             "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}]
         }

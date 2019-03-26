@@ -35,6 +35,11 @@ const exceptionRouter = require('./router/exception');
 let app = express();
 app.use(bodyParser.json({limit: '25mb'}));
 app.use(bodyParser.urlencoded({limit: '25mb', extended: true}));
+//用于调试使用，开放所有跨域访问
+app.use((req, res, next)=>{
+    res.setHeader('Access-Control-Allow-Origin', "*");
+    next();
+});
 app.use(neo4jRouter);
 app.use(indexRouter);
 app.use(exceptionRouter);

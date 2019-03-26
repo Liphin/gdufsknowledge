@@ -21,7 +21,7 @@
 <script>
 
     //create somewhere to put the force directed graph
-    var svg = d3.select("svg"), widthOffset = +svg.attr("width") / 2, heightOffset = +svg.attr("height") / 2;
+    var svg = d3.select("svg"), widthOffset = svg.attr("width") / 2, heightOffset = svg.attr("height") / 2;
     let linkArray = d3.select(".links");
     let nodeArray = d3.select(".nodes");
 
@@ -47,7 +47,7 @@
     //We need the id accessor to use named sources and targets
     var forceLink = d3.forceLink(links_data)
         .distance(120)
-        .strength(1)
+        .strength(2)
         .id(function (d) {
             return d.name;
         });
@@ -59,9 +59,9 @@
         .force("link", forceLink)
         .force("charge", d3.forceManyBody().strength(-30).distanceMin(10).distanceMax(2000))
         .force("collide", d3.forceCollide().strength(1).radius(45))
-        //        .force("center", d3.forceCenter(widthOffset, heightOffset))
-        .force("forceX", d3.forceX().strength(0.1).x(widthOffset))
-        .force("forceY", d3.forceY().strength(0.1).y(heightOffset));
+        .force("center", d3.forceCenter(widthOffset, heightOffset))
+//        .force("forceX", d3.forceX().strength(0.1).x(widthOffset))
+//        .force("forceY", d3.forceY().strength(0.1).y(heightOffset))
 
 
     var dragstarted = function (d) {
@@ -129,18 +129,18 @@
         //simply tells one end of the line to follow one node around
         //and the other end of the line to follow the other node around
         link.attr("x1", function (d) {
-            return d.source.x;
+            return d.source.x+widthOffset;
         }).attr("y1", function (d) {
-            return d.source.y;
+            return d.source.y+heightOffset;
         }).attr("x2", function (d) {
-            return d.target.x;
+            return d.target.x+widthOffset;
         }).attr("y2", function (d) {
-            return d.target.y;
+            return d.target.y+heightOffset;
         });
 
         //update circle positions each tick of the simulation
         node.attr("transform", function (d) {
-            return "translate(" + d.x + "," + d.y + ")";
+            return "translate(" + (d.x+widthOffset) + "," + (d.y+heightOffset) + ")";
         });
     };
 
