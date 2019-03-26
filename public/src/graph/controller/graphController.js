@@ -57,6 +57,15 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
      */
     graph.searchTargetNodes = function () {
         NeoSer.searchTargetNodes();
+    };
+
+    /**
+     * 返回主数据源
+     */
+    graph.backToSourceData = function () {
+        GraphDataSer.overallData['graphPath']['layer2']['name']=''; //设置第二层级数据源名称为空
+        GraphDataSer.overallData['search']['text']=''; //设置搜索内容为空
+        NeoSer.searchTargetNodes();//返回主数据源相当于搜索空内容
     }
 });
 

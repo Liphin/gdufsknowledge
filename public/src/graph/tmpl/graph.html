@@ -25,7 +25,15 @@
         <div style="position: absolute; top: 0; height: 85px;left: 170px; right: 0; background: white; z-index: 5;padding: 15px 0 0 50px">
             <!--数据源-->
             <div style="display: inline-block">
-                <span style="font-size: 16px; color: #0082a2">2018年广外外事交流数据知识图谱</span>
+                <span style="font-size: 16px; color: #0082a2">
+                    <!--主数据源-->
+                    <span ng-click="graph.backToSourceData()" style="text-decoration: underline; cursor: pointer">{{graph.overallData['graphPath']['layer1']['name']}}</span>
+                    <!--查询主数据源中节点及关系数据或主数据源的子节点-->
+                    <span ng-if="graph.overallData['graphPath']['layer2']['name']!=''">
+                        <span class="fa fa-angle-right" style="margin:0 10px"></span>
+                        <span>{{graph.overallData['graphPath']['layer2']['name']}}</span>
+                    </span>
+                </span>
                 <!--<span>知识图谱选择：</span>-->
                 <!--<div style="display: inline-block; margin-left: 10px">-->
                     <!--<li class="dropdown">-->

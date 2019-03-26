@@ -29,37 +29,35 @@ graphModule.factory('GraphDataSer', function () {
         },
         "graphSetting": { //节点图的设置描述
             "nodesGray": true, //是否设置非目标及其关联的节点未选择状态时设置为灰色
+        },
+        "graphPath": { //目标知识图谱节点图路径
+            "layer1": {'name': '2018年广外外事交流数据知识图谱'},
+            "layer2": {'name': ''}
         }
     };
 
 
-    /**
-     * 目标知识图谱节点图
-     */
-    let graphPath = {};
-
-
-    //从Neo4j数据库中读取相关数据并展示
+        //从Neo4j数据库中读取相关数据并展示
     let neoData = {
-        //节点数据
-        "nodes": [
-            {"name": "Travis", "sex": "M", "cn_name": "柯晓华"},
-            {"name": "Rake", "sex": "M", "cn_name": "RakeRakeRakeRake"},
-            {"name": "Diana", "sex": "F", "cn_name": "DianaDiana"},
-            {"name": "Rachel", "sex": "F", "cn_name": "Rachel"},
-            {"name": "Shawn", "sex": "M", "cn_name": "Shawn"},
-            {"name": "Emerald", "sex": "F", "cn_name": "Emerald"}
-        ],
-        //连接关系数据
-        "links": [
-            {"source": "Travis", "target": "Rake", "cn_name": "柯晓华"},
-            {"source": "Diana", "target": "Rake", "cn_name": "RakeRakeRakeRake"},
-            {"source": "Diana", "target": "Rachel", "cn_name": "DianaDiana"},
-            {"source": "Rachel", "target": "Rake", "cn_name": "Rachel"},
-            {"source": "Rachel", "target": "Shawn", "cn_name": "Shawn"},
-            {"source": "Emerald", "target": "Rachel", "cn_name": "Emerald"}
-        ]
-    };
+            //节点数据
+            "nodes": [
+                {"name": "Travis", "sex": "M", "cn_name": "柯晓华"},
+                {"name": "Rake", "sex": "M", "cn_name": "RakeRakeRakeRake"},
+                {"name": "Diana", "sex": "F", "cn_name": "DianaDiana"},
+                {"name": "Rachel", "sex": "F", "cn_name": "Rachel"},
+                {"name": "Shawn", "sex": "M", "cn_name": "Shawn"},
+                {"name": "Emerald", "sex": "F", "cn_name": "Emerald"}
+            ],
+            //连接关系数据
+            "links": [
+                {"source": "Travis", "target": "Rake", "cn_name": "柯晓华"},
+                {"source": "Diana", "target": "Rake", "cn_name": "RakeRakeRakeRake"},
+                {"source": "Diana", "target": "Rachel", "cn_name": "DianaDiana"},
+                {"source": "Rachel", "target": "Rake", "cn_name": "Rachel"},
+                {"source": "Rachel", "target": "Shawn", "cn_name": "Shawn"},
+                {"source": "Emerald", "target": "Rachel", "cn_name": "Emerald"}
+            ]
+        };
     //单独以unique_id为键装载节点的对象
     let neoNodeDataObj = {};
 
@@ -111,7 +109,7 @@ graphModule.factory('GraphDataSer', function () {
             "bg": "#e6e3c0",
             "border_color": "#8baea2",
             "textKey": "cn_name",
-            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"},{
+            "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
                 "name": "相关事件",
                 "icon": "fa fa-user-o",
                 "type": "relativeEvent"
@@ -194,7 +192,7 @@ graphModule.factory('GraphDataSer', function () {
     /**
      * 加载loading属性
      */
-    var loader = {
+    let loader = {
         "nodeLinks": {"status": false},
         "nodeDetail": {"status": false},
     };
@@ -203,7 +201,6 @@ graphModule.factory('GraphDataSer', function () {
     return {
         loader: loader,
         neoData: neoData,
-        graphPath: graphPath,
         neoNodeDataObj: neoNodeDataObj,
         nodeTypeSetting: nodeTypeSetting,
         overallData: overallData,

@@ -82,6 +82,29 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
         //把该hover的节点数据传给选择数组
         GraphDataSer.overallData['nodeSelected']['unique_id'] = GraphDataSer.overallData['nodeHover']['unique_id'];
         GraphDataSer.overallData['nodeSelected']['type'] = GraphDataSer.overallData['nodeHover']['type'];
+
+        //获取相应主节点信息，用于展示在header标题中
+        let targetNode = GraphDataSer.neoNodeDataObj[GraphDataSer.overallData['nodeHover']['unique_id']];
+        let infoText = '';
+        switch (targetNode['label_name']) {
+            case 'attendee': {
+                infoText += '人物 “' + targetNode['cn_name'] + "” ";
+                break;
+            }
+            case 'gdufs_dept': {
+                infoText += '校内组织 “' + targetNode['cn_name'] + "” ";
+                break;
+            }
+            case 'visitor_dept': {
+                infoText += '外方实体 “' + targetNode['cn_name'] + "” ";
+                break;
+            }
+            case 'visit_event': {
+                infoText += '事件 “' + targetNode['title'] + "” ";
+                break;
+            }
+        }
+
         //根据不同菜单类型执行不同操作
         switch (menuType) {
             //该节点的具体信息
@@ -93,11 +116,13 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
             //查询相关出席人
             case "relativeAttendee": {
                 getRelativeAttendee();
+                GraphDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关人员子节点";
                 break;
             }
             //人物节点的相关事件
             case "relativeEvent": {
                 getRelativeEvent();
+                GraphDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关事件子节点";
                 break;
             }
             default: {
@@ -382,7 +407,7 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
      * 搜索对应的节点信息
      */
     function searchTargetNodes() {
-        let targetText = GraphDataSer.overallData['search']['text'];
+        let targetText = GraphDataSer.overallData['search']['text'].trim();
         let targetNodeArray = [], targetLinkArray = [], tempNodeUniqueIdArray = [];
         let allNodes = angular.copy(GraphDataSer.allNodeLinkData['array']['nodes']);
         let allLinks = angular.copy(GraphDataSer.allNodeLinkData['array']['links']);
@@ -496,11 +521,15 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
                     })
                 }
             }
+            //设置搜索内容的横向标题
+            GraphDataSer.overallData['graphPath']['layer2']['name'] = '搜索节点 “' + targetText + "” 相关内容";
         }
         //若搜索为空，则返回之前的所有数据重新渲染
         else {
+            //分别重新设置数据源为第一数据源
             targetNodeArray = allNodes;
-            targetLinkArray = allLinks
+            targetLinkArray = allLinks;
+            GraphDataSer.overallData['graphPath']['layer2']['name'] = ''; //强制设置第二数据源名称为空
         }
 
         //console.log(targetNodeArray);
