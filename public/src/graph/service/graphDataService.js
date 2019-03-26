@@ -63,7 +63,7 @@ graphModule.factory('GraphDataSer', function () {
     //单独以unique_id为键装载节点的对象
     let neoNodeDataObj = {};
 
-    //装载首页所有节点和关系的数据，也是用于搜索的搜索源
+    //装载首页所有节点和关系的数据，也是用于搜索的搜索源；进入二级子节点该数据不变；作为保存的数据源
     let allNodeLinkData = {
         "obj": {},
         "array": [],

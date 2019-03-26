@@ -95,7 +95,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             //     .y(window.innerHeight / 2 * forceProperties.forceY.y);
 
             simulation.force("link")
-                // .strength(2)
+            // .strength(1)  //设置link的强度；可设置大于1
                 .id(function (d) {
                     return d.unique_id;
                 })
@@ -116,8 +116,8 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             .data(GraphDataSer.neoData['links'])
             .enter()
             .append("line")
-            .attr("stroke", "#999")
-            .attr("stroke-width", 2);
+            .attr("stroke", "#727272")
+            .attr("stroke-width", 1);
 
         //添加圆形节点及相关设置
         let node = nodeArray
@@ -424,12 +424,14 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
         }
         //单独开启目标数据展示
         GraphDataSer.nodeLinkSelectedData[type]['status'] = true;
+        //赋值基础数据并显示到面板
+        assignGeneralData(type, uniqueId);
 
         //根据不同节点类型展示不同消息信息体
         switch (type) {
             case 'attendee': {
                 //装载相关新闻数组
-                addRelatedEventNews(type, uniqueId);
+                attendeeAddRelativeEventNews(type, uniqueId);
                 break;
             }
             case 'gdufs_dept': {
@@ -457,8 +459,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
                 return;
             }
         }
-        //赋值基础数据并显示到面板
-        assignGeneralData(type, uniqueId);
     }
 
 
@@ -468,6 +468,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
      * @param uniqueId
      */
     function assignGeneralData(type, uniqueId) {
+        //赋值基础数据
         let node = GraphDataSer.neoNodeDataObj[uniqueId];
         for (let i in node) {
             GraphDataSer.nodeLinkSelectedData[type]['info']['general']['data'][i] = node[i];
@@ -483,6 +484,10 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
         }
         //打开相关节点信息面板，并展开右侧面板
         GraphDataSer.overallData['rightBarShow'] = true;
+
+        //清空原来新闻数组数据并重置控制数据
+        GraphDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = false;
+        GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
     }
 
 
@@ -492,20 +497,44 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
      * @param uniqueId
      */
     function addRelatedEventNews(type, uniqueId) {
-        //清空原来新闻数组数据并重置控制数据
-        GraphDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = false;
-        GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
         GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
         GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
 
-        //console.log('source',uniqueId);
+        let allLinks = GraphDataSer.allNodeLinkData['array']['links'];
         //从连接关系中读取所有相关新闻数据填充到数组
-        for (let i in GraphDataSer.neoData['links']) {
+        for (let i in allLinks) {
             //读取该源点为uniqueId的节点
-            //console.log(GraphDataSer.neoData['links'][i])
-            if (GraphDataSer.neoData['links'][i]['source']['unique_id'] == uniqueId) {
-                let eventUniqueId = GraphDataSer.neoData['links'][i]['target']['unique_id']; //目标事件节点unique_id
-                let eventData = GraphDataSer.neoNodeDataObj[eventUniqueId]; //从节点对象中直接读取
+            if (allLinks[i]['source'] == uniqueId) {
+                let eventUniqueId = allLinks[i]['target']; //目标事件节点unique_id
+                let eventData = GraphDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
+                //如果是事件节点则添加，否则不添加
+                if (eventData['label_name'] == 'visit_event') {
+                    GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
+                }
+            }
+        }
+    }
+
+    /**
+     * 出席人添加与之相关个人信息的及新闻数据
+     * @param type
+     * @param uniqueId
+     */
+    function attendeeAddRelativeEventNews(type, uniqueId) {
+        GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
+        GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
+
+        let allLinks = GraphDataSer.allNodeLinkData['array']['links'];
+        //从连接关系中读取所有相关新闻数据填充到数组
+        for (let i in allLinks) {
+            //如果不存在或为空则继续
+            if(!OverallGeneralSer.checkDataNotEmpty(allLinks[i]['attach']['attend'])) continue;
+
+            //读取该源点为uniqueId的节点
+            let attendeeName = GraphDataSer.neoNodeDataObj[uniqueId]['cn_name'];
+            if (allLinks[i]['attach']['attend'].indexOf(attendeeName) > -1) {
+                let eventUniqueId = allLinks[i]['target']; //目标事件节点unique_id
+                let eventData = GraphDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
                 //如果是事件节点则添加，否则不添加
                 if (eventData['label_name'] == 'visit_event') {
                     GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
@@ -587,12 +616,12 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             //如果该节点在目标节点的范围内则进行填充灰色
             //console.log(d2.attach.unique_id)
             if (sumLinkUniqueId.indexOf(d2.attach.unique_id) == -1) {
-                d3.select(this).attr("stroke", "#999");
+                d3.select(this).attr("stroke", "#727272").attr("stroke-width", 1);
 
             }
             //否则进行填充指定的颜色
             else {
-                d3.select(this).attr("stroke", "#007a32");
+                d3.select(this).attr("stroke", "#007a32").attr("stroke-width", 2);
             }
         });
     }
@@ -634,7 +663,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
 
             //对links父节点下的line样式每条线单独进行颜色设置
             d3.selectAll(".links line").each(function (d2, i2) {
-                d3.select(this).attr("stroke", "#999");
+                d3.select(this).attr("stroke", "#727272").attr("stroke-width", 1);
             });
         }
     }
