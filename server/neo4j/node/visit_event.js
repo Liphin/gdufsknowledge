@@ -88,7 +88,13 @@ let getAllVisitEventNode = function (driver) {
             .subscribe({
                 onNext: record => {
                     let result = record.get('result');
-                    result['label_name']='visit_event';
+                    //设置出访或来访事件类型
+                    if (result['type'] == 2) {
+                        result['label_name'] = 'visit_event_out';
+                    } else {
+                        result['label_name'] = 'visit_event_in';
+                    }
+                    result['hover_title']=result['title'];
                     visitEventNodes.push(result);
                 },
                 onCompleted: () => {

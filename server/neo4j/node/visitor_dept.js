@@ -171,6 +171,7 @@ let getAllVisitDeptNode = function (driver) {
                 onNext: record => {
                     let result = record.get('result');
                     result['label_name']='visitor_dept';
+                    result['hover_title']=result['cn_name'];
                     visitDeptNodes.push(result);
                 },
                 onCompleted: () => {

@@ -3,35 +3,33 @@
  */
 var graphModule = angular.module('Angular.graph');
 
-graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphDataSer, NodeLinkSer, NeoSer,
-                                              OverallGeneralSer, OverallDataSer, GraphSer) {
+graphModule.controller('GraphCtrl', function ($location, $routeParams, OverallGeneralSer, OverallDataSer,
+                                              GraphDataSer, GraphSer, GraphNewsDataSer) {
 
     var graph = this;
-    graph.overallData = GraphDataSer.overallData;
-    graph.nodeLinkSelectedData = GraphDataSer.nodeLinkSelectedData;
-    graph.nodeTypeSetting = GraphDataSer.nodeTypeSetting;
+    //初始化知识图谱数据
+    GraphSer.initGraph(graph);
 
-    graph.loader = GraphDataSer.loader;
-    NeoSer.getNeoData();
 
     /**
      * 选择展示出某新闻数据
-     * @see NeoSer.chooseNewsShow
+     * @see GraphSer.chooseNewsShow
      */
     graph.chooseNewsShow = function (uniqueId, type) {
-        NeoSer.chooseNewsShow(uniqueId, type)
+        GraphSer.chooseNewsShow(uniqueId, type);
     };
 
     /**
      * 用户选择普通模式后重置所有节点样式颜色等重置
-     * @see NodeLinkSer.resetAllNodeStyle
+     * @see GraphSer.resetAllNodeStyle
      */
     graph.resetAllNodeStyle = function () {
-        NodeLinkSer.resetAllNodeStyle();
+        GraphSer.resetAllNodeStyle();
     };
 
     /**
      * 返回新闻原网页信息数据
+     * @see GraphSer.getNewsOriginInfo
      */
     graph.getNewsOriginInfo = function (event) {
         GraphSer.getNewsOriginInfo(event)
@@ -42,15 +40,15 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
      * @see GraphSer.chooseNodeMenu
      */
     graph.chooseNodeMenu = function (menuType) {
-        NeoSer.chooseNodeMenu(menuType)
+        GraphSer.chooseNodeMenu(menuType)
     };
 
     /**
      * 搜索对应的节点信息
-     * @see NeoSer.searchTargetNodes
+     * @see GraphSer.searchTargetNodes
      */
     graph.searchTargetNodes = function () {
-        NeoSer.searchTargetNodes();
+        GraphSer.searchTargetNodes();
     };
 
     /**
@@ -59,7 +57,7 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, GraphData
     graph.backToSourceData = function () {
         GraphDataSer.overallData['graphPath']['layer2']['name']=''; //设置第二层级数据源名称为空
         GraphDataSer.overallData['search']['text']=''; //设置搜索内容为空
-        NeoSer.searchTargetNodes();//返回主数据源相当于搜索空内容
+        GraphSer.searchTargetNodes();//返回主数据源相当于搜索空内容
     }
 });
 

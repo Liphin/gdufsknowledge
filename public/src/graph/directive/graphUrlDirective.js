@@ -40,6 +40,15 @@ graphModule.directive('attendee', ['$document', function ($document) {
         templateUrl: 'src/graph/tmpl/type/news/attendee.html'
     };
 }]);
+/**
+ * news数据图谱集合
+ */
+graphModule.directive('newsGraph', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/type/news/news_graph.html'
+    };
+}]);
 
 
 

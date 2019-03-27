@@ -3,45 +3,47 @@
  * d3的相关服务，用于基础接口调用
  */
 
-    //节点间力的作用参数
+//节点间力的作用参数
 let forceProperties = {
-        center: {
-            x: 0.5,
-            y: 0.5
-        },
-        charge: {
-            enabled: true,
-            strength: -30,
-            distanceMin: 1,
-            distanceMax: 2000
-        },
-        collide: {
-            enabled: true,
-            strength: .7,
-            iterations: 1,
-            radius: 5
-        },
-        forceX: {
-            enabled: false,
-            strength: .1,
-            x: .5
-        },
-        forceY: {
-            enabled: false,
-            strength: .1,
-            y: .5
-        },
-        link: {
-            enabled: true,
-            distance: 30,
-            iterations: 1
-        }
-    };
+    center: {
+        x: 0.5,
+        y: 0.5
+    },
+    charge: {
+        enabled: true,
+        strength: -30,
+        distanceMin: 1,
+        distanceMax: 2000
+    },
+    collide: {
+        enabled: true,
+        strength: .7,
+        iterations: 1,
+        radius: 5
+    },
+    forceX: {
+        enabled: true,
+        strength: 0.1,
+        x: 0.5
+    },
+    forceY: {
+        enabled: true,
+        strength: 0.1,
+        y: 0.5
+    },
+    link: {
+        enabled: true,
+        distance: 30,
+        iterations: 0.1
+    }
+};
 
 
 function D3Service() {
 
-    let svg, linkArray, nodeArray, nodes, links, nodesObj, screenDimension, graphSetting, nodeTypeSetting;
+    let svg, linkArray, nodeArray, nodes, links, nodesObj,
+        mouseEnterCallback, mouseLeaveCallback, mouseClickCallback,
+        screenDimension={}, graphSetting, nodeTypeSetting;
 
     /**
      * 基础元素设置
@@ -70,13 +72,24 @@ function D3Service() {
     }
 
     /**
+     * 鼠标移动到节点上、移开节点、点击节点的触发事件
+     * @param _mouseEnterCallback
+     * @param _mouseLeaveCallback
+     * @param _mouseClickCallback
+     */
+    function interaction(_mouseEnterCallback, _mouseLeaveCallback, _mouseClickCallback) {
+        mouseEnterCallback = _mouseEnterCallback;
+        mouseLeaveCallback = _mouseLeaveCallback;
+        mouseClickCallback = _mouseClickCallback;
+        return this;
+    }
+
+    /**
      * 生成图片相关设置
-     * @param _screenDimension
      * @param _graphSetting
      * @param _nodeTypeSetting
      */
-    function setting(_screenDimension, _graphSetting, _nodeTypeSetting) {
-        screenDimension = _screenDimension;
+    function d3Setting(_graphSetting, _nodeTypeSetting) {
         graphSetting = _graphSetting;
         nodeTypeSetting = _nodeTypeSetting;
         return this;
@@ -86,10 +99,14 @@ function D3Service() {
     /**
      * 节点及连接关系初始化操作
      */
-    function nodeLinkInit(nodeClickHandler) {
+    function nodeLinkInit() {
         //清空原来节点和关系连接数据
         linkArray.selectAll("line").data([]).exit().remove();
         nodeArray.selectAll("g").data([]).exit().remove();
+
+        //获取屏幕宽和高度
+        screenDimension['width'] = window.innerWidth;
+        screenDimension['height'] = window.innerHeight;
 
         //添加节点及设置相关的力
         let simulation = d3.forceSimulation()
@@ -106,10 +123,6 @@ function D3Service() {
         // apply new force properties
         function updateForces() {
             //如果angularjs尚未完成Windows的width和height的设置则使用
-            if (screenDimension['width'] == undefined || screenDimension['width'] == '') {
-                screenDimension['width'] = window.innerWidth;
-                screenDimension['height'] = window.innerHeight;
-            }
             simulation.force("center")
                 .x(screenDimension['width'] * forceProperties.center.x)
                 .y(screenDimension['height'] * forceProperties.center.y);
@@ -139,9 +152,8 @@ function D3Service() {
                 .iterations(forceProperties.link.iterations)
                 .links(forceProperties.link.enabled ? links : []);
 
-            // updates ignored until this is run
             // restarts the simulation (important if simulation has already slowed down)
-            simulation.alpha(1).restart();
+            simulation.alpha(1).alphaTarget(0).alphaDecay(0.05).velocityDecay(0.5).restart();
         }
 
 
@@ -150,8 +162,8 @@ function D3Service() {
             .data(links)
             .enter()
             .append("line")
-            .attr("stroke", "#999")
-            .attr("stroke-width", 2);
+            .attr("stroke", "#727272")
+            .attr("stroke-width", 1);
 
         //添加圆形节点及相关设置
         let node = nodeArray
@@ -164,6 +176,17 @@ function D3Service() {
             .attr("id", function (d, i) {
                 return "nodeG" + i;
             });
+
+        //画节点内部的圆，成为环状 #6ac6ff
+        node.append("circle")
+            .attr("id", function (d, i) {
+                return "nodeRing" + i;
+            })
+            .attr("r", function (d) {
+                return nodesObj[d.unique_id]['radius'] + 10
+            })
+            .attr("fill", "#f9eccc")
+            .style("visibility", "hidden");
 
         //画圆形节点
         node.append("circle")
@@ -180,9 +203,10 @@ function D3Service() {
                 return nodeTypeSetting[d['label_name']]['border_color'];
             })
             .attr("type", d => {
-                return d.label_name
+                return d['label_name']
             })
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 2)
+            .attr("class", "nodeCircle");
 
         //添加文本
         node.append("text")
@@ -190,32 +214,34 @@ function D3Service() {
             .attr("fill", "black")
             .style("text-anchor", "middle")
             .style("font-size", function (d, i) {
-                let textLength = d[nodeTypeSetting[d['label_name']]['textKey']].length;//文本长度
                 let radius = nodesObj[d.unique_id]['radius'];//节点半径
-                let tempN = Math.round((radius - 23) / 2 + 12);//临时中间变量
-                if (textLength <= 3) {
-                    return tempN < 12 ? (12 + "px") : (tempN + "px");
+                let tempSize = (radius * 2 - 48) / 4 + 12;
+                let fontSize = tempSize > 16 ? 16 : tempSize;
+                d['fontSize'] = fontSize;
+                return fontSize + "px";
 
-                } else {
-                    return "12px";
-                }
             })
             .text(d => {
-                //若文本字数大于4个则用...代替展示
                 let text = d[nodeTypeSetting[d['label_name']]['textKey']];
-                if (text.length > 3) text = text.substring(0, 3) + "...";
-                return text
+                let radius = nodesObj[d.unique_id]['radius'];//节点半径
+                let fontSize = d['fontSize'];
+                let availableFontNum = Math.round((radius * 2 - 5) / fontSize);
+                if (text.length < availableFontNum) {
+                    return text;
+
+                } else {
+                    availableFontNum < 4 ? availableFontNum = 4 : true;
+                    return text.substring(0, availableFontNum - 1) + "...";
+                }
             });
 
-
         //添加最后一个node节点，用于鼠标放上节点时显示节点名称，并且永远在渲染层的顶端
-        let nodeTextNode = nodeArray.append("g").attr("id", "lastRefNode");
+        let nodeTextNode = nodeArray.append("g").attr("id", "nodeTextNodeRef");
 
-        //添加矩形节点信息信息描述面板
         nodeTextNode.append("rect")
             .attr("id", "nodeRect")
             .attr("fill", "white")
-            .attr("height", 28)
+            .attr("height", 37)
             .attr("stroke", "#585858")
             .attr("stroke-width", 1);
 
@@ -223,79 +249,57 @@ function D3Service() {
         nodeTextNode.append("text")
             .attr("id", "nodeText")
             .attr("fill", "black")
-            .style("font-size", "14px")
-            .style("text-anchor", "middle");
+            .style("font-size", "16px")
+            .style("text-anchor", "middle")
+            .style("font-family", "微软雅黑");
 
-
-        //设置节点点击事件响应
+        //设置节点鼠标放上去时事件响应，显示该节点的标题提示
         node.on("mouseenter", (d, i) => {
 
             //设置节点是否显示text消息体为true，用于节点移动时tickActions判断使用
             d['textShow'] = true;
+            //该节点外边环形亮起
+            nodeArray.select("#nodeRing" + i).style("visibility", "visible");
 
             //显示节点文本的节点，把该节点转换至特定的位置
             nodeTextNode.attr("transform", function () {
                 return "translate(" + d.x + "," + d.y + ")";
             });
 
-            //设置文本上偏移及文本内容
+            //设置文本上偏移及文本内容，先文本后方框才能文字显示在前面
             nodeTextNode.select("text")
-                .attr("y", function () {
-                    //依据节点半径再上偏移13个单位长度即可
-                    return -(nodesObj[d['unique_id']]['radius'] + 14);
-                })
-                .text(function () {
-                    //依据不同类型显示不同文本
-                    if (d['label_name'] == 'visit_event') {
-                        return d['title'];
-
-                    } else {
-                        return d['cn_name'];
-                    }
-                });
+                .attr("y", -(nodesObj[d['unique_id']]['radius'] + 20)) //依据节点半径再上偏移13个单位长度即可)
+                .text(d['hover_title']);
 
             //设置文本背景白色矩形框的上偏移、左偏移和宽度
             nodeTextNode.select("rect")
-                .attr("y", function () {
-                    //依据节点半径再上偏移30个单位长度即可
-                    return -(nodesObj[d['unique_id']]['radius'] + 33);
-                })
-                .attr("x", function () {
-                    //依据不同类型显示不同文本，并根据字数确定左偏移位置
-                    if (d['label_name'] == 'visit_event') {
-                        return -(d['title'].length * 7 + 14);
+                .attr("y", -(nodesObj[d['unique_id']]['radius'] + 43))//依据节点半径再上偏移30个单位长度即可)
+                .attr("x", -(d['hover_title'].length * 8 + 18))
+                .attr("width", d['hover_title'].length * 16 + 34)
 
-                    } else {
-                        return -(d['cn_name'].length * 7 + 14);
-                    }
-                })
-                .attr("width", function () {
-                    //依据不同类型显示不同文本，并根据字数确定宽度
-                    if (d['label_name'] == 'visit_event') {
-                        return d['title'].length * 14 + 28;
-
-                    } else {
-                        return d['cn_name'].length * 14 + 28;
-                    }
-                })
+            //执行鼠标进入该节点时的回调函数操作
+            mouseEnterCallback(d, i);
 
 
         }).on("mouseleave", (d, i) => {
+
             //当鼠标移开是，设置是否显示文本图标为false
             d['textShow'] = false;
+            //该节点外边环形暗下
+            nodeArray.select("#nodeRing" + i).style("visibility", "hidden");
+
             //设置文本节点位置到一个很远的位置即可
             nodeTextNode.attr("transform", function () {
                 return "translate(-5000,-5000)";
-            })
+            });
+
+            //执行鼠标离开该节点时的回调函数操作
+            mouseLeaveCallback(d, i);
+
 
         }).on("click", (d, i) => {
-            //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其灰化
-            if (graphSetting['nodesGray']) {
-                setUnRelativeNodeGray(d, i);
-            }
-
-            //鼠标处理点击节点事件的接口方法
-            nodeClickHandler(d, i);
+            //鼠标点击事件回调函数
+            mouseClickCallback(d, i);
         });
 
 
@@ -338,6 +342,11 @@ function D3Service() {
                 //返回该节点本身运动的位置
                 return "translate(" + d.x + "," + d.y + ")";
             });
+
+            // 设置如果alph低于某个值后，即变化较小时，除去中间束缚力作用
+            if (simulation.alpha() < 0.7) {
+                simulation.force("center", null)
+            }
         }
 
 
@@ -346,7 +355,7 @@ function D3Service() {
          * @param d
          */
         function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            if (!d3.event.active) simulation.alphaTarget(0.07).restart();
             d.fx = d.x;
             d.fy = d.y;
         }
@@ -382,11 +391,34 @@ function D3Service() {
 
 
     /**
+     * 重置显示所有节点颜色
+     */
+    function resetAllNodeStyle(graphSetting, nodeTypeSetting) {
+        //若之前是聚焦灰化模式则进行更改设置，否则不进行更改
+        if (graphSetting['nodesGray']) {
+            graphSetting['nodesGray'] = false;
+            //对nodes父节点下的circle样式每个单独进行颜色设置
+            d3.selectAll(".nodes .nodeCircle").each(function (d2, i2) {
+                d3.select(this).attr("fill", nodeTypeSetting[d2.label_name]['bg']);
+                d3.select(this).attr("stroke", nodeTypeSetting[d2.label_name]['border_color']);
+            });
+
+            //对links父节点下的line样式每条线单独进行颜色设置
+            d3.selectAll(".links line").each(function (d2, i2) {
+                d3.select(this).attr("stroke", "#727272").attr("stroke-width", 1);
+            });
+        }
+    }
+
+
+    /**
      * 设置非目标及其关联的节点未选择状态时设置为灰色
      * @param d 鼠标选中的目标节点的数据
      * @param i 鼠标选中的目标节点的index位置
+     * @param nodeTypeSetting
+     * @param links
      */
-    function setUnRelativeNodeGray(d, i) {
+    function setUnRelativeNodeGray(d, i, nodeTypeSetting, links) {
         //具化该目标节点及其一度相邻节点，虚化其他节点
         let sumNodesUniqueId = [d.unique_id]; //节点信息数组
         let sumLinkUniqueId = []; //链接信息数组
@@ -411,7 +443,7 @@ function D3Service() {
         }
 
         //选择所有节点进行迭代属性设置
-        d3.selectAll(".nodes circle").each(function (d2, i2) {
+        d3.selectAll(".nodes .nodeCircle").each(function (d2, i2) {
             //如果该节点在目标节点的范围内则进行填充灰色
             if (sumNodesUniqueId.indexOf(d2.unique_id) == -1) {
                 d3.select(this).attr("fill", "#c4c4c4");
@@ -424,13 +456,13 @@ function D3Service() {
             }
         });
 
-        //console.log(sumLinkUniqueId);
+
         //选择所有链接进行迭代属性设置
         d3.selectAll(".links line").each(function (d2, i2) {
             //如果该节点在目标节点的范围内则进行填充灰色
             //console.log(d2.attach.unique_id)
             if (sumLinkUniqueId.indexOf(d2.attach.unique_id) == -1) {
-                d3.select(this).attr("stroke", "#999");
+                d3.select(this).attr("stroke", "#727272").attr("stroke-width", 1);
 
             }
             //否则进行填充指定的颜色
@@ -441,33 +473,15 @@ function D3Service() {
     }
 
 
-    /**
-     * 重置显示所有节点颜色
-     */
-    function resetAllNodeStyle() {
-        //若之前是聚焦灰化模式则进行更改设置，否则不进行更改
-        if (graphSetting['nodesGray']) {
-            graphSetting['nodesGray'] = false;
-            //对nodes父节点下的circle样式每个单独进行颜色设置
-            d3.selectAll(".nodes circle").each(function (d2, i2) {
-                d3.select(this).attr("fill", nodeTypeSetting[d2.label_name]['bg']);
-                d3.select(this).attr("stroke", nodeTypeSetting[d2.label_name]['border_color']);
-            });
-
-            //对links父节点下的line样式每条线单独进行颜色设置
-            d3.selectAll(".links line").each(function (d2, i2) {
-                d3.select(this).attr("stroke", "#999");
-            });
-        }
-    }
-
 
     return {
         element: element,
         nodeLinks: nodeLinks,
-        setting: setting,
+        d3Setting: d3Setting,
+        interaction: interaction,
         nodeLinkInit: nodeLinkInit,
         resetAllNodeStyle: resetAllNodeStyle,
+        setUnRelativeNodeGray: setUnRelativeNodeGray, //设置相关节点为灰色
     }
 }
 

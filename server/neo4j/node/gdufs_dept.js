@@ -110,6 +110,7 @@ let getAllGdufsDeptNode = function (driver) {
                 onNext: record => {
                     let result = record.get('result');
                     result['label_name'] = 'gdufs_dept';
+                    result['hover_title']=result['cn_name'];
                     gdufsDeptNodes.push(result);
                 },
                 onCompleted: () => {

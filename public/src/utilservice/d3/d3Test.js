@@ -27,26 +27,51 @@ utilServiceModule.service("D3Test", function (OverallGeneralSer, OverallDataSer)
                     "bg": "#ecb5c9",
                     "border_color": "#da7298",
                     "textKey": "cn_name",
+                    "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
+                        "name": "相关人物",
+                        "icon": "fa fa-user-o",
+                        "type": "relativeAttendee"
+                    }]
                 },
-                "gdufs_teacher": {
-                    "bg": "#f79767",
-                    "border_color": "#f36924",
-                    "textKey": "cn_name",
-                },
-                "visit_event": {
+                "visit_event_in": {
                     "bg": "#57c7e3",
                     "border_color": "#23b3d7",
                     "textKey": "title",
+                    "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
+                        "name": "相关人物",
+                        "icon": "fa fa-user-o",
+                        "type": "relativeAttendee"
+                    }]
                 },
-                "visitor": {
-                    "bg": "#e088a8",
-                    "border_color": "#bb3264",
-                    "textKey": "cn_name",
+                "visit_event_out": {
+                    "bg": "#c3aced",
+                    "border_color": "#9a6ced",
+                    "textKey": "title",
+                    "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
+                        "name": "相关人物",
+                        "icon": "fa fa-user-o",
+                        "type": "relativeAttendee"
+                    }]
                 },
                 "visitor_dept": {
                     "bg": "#f7d5b0",
                     "border_color": "#f3a470",
                     "textKey": "cn_name",
+                    "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
+                        "name": "相关人物",
+                        "icon": "fa fa-user-o",
+                        "type": "relativeAttendee"
+                    }]
+                },
+                "attendee": {
+                    "bg": "#e6e3c0",
+                    "border_color": "#8baea2",
+                    "textKey": "cn_name",
+                    "menu": [{"name": "信息详情", "icon": "fa fa-newspaper-o", "type": "infoDetail"}, {
+                        "name": "相关事件",
+                        "icon": "fa fa-user-o",
+                        "type": "relativeEvent"
+                    }]
                 }
             };
 
@@ -67,24 +92,43 @@ utilServiceModule.service("D3Test", function (OverallGeneralSer, OverallDataSer)
                 }
                 //设置每个节点的radius
                 for (let k in nodesObj) {
-                    nodesObj[k]['radius'] = 22 + Math.round(nodesObj[k]['degree']);
+                    let tempRadius = 22 + Math.round(nodesObj[k]['degree']);
+                    nodesObj[k]['radius'] = (tempRadius > 60 ? 60 : tempRadius); //最大的半径不能大于60
                     nodesObj[k]['distance'] = 50 + Math.round(nodesObj[k]['degree'] * 0.5);
                 }
 
-                new D3Service()
+                D3Service()
                     .element(svg, linkArray, nodeArray)
                     .nodeLinks(nodes, links, nodesObj)
-                    .setting(screenDimension, graphSetting, nodeTypeSetting)
-                    .nodeLinkInit((d, i) => {
-                        //填写鼠标按下该节点后的相关相应操作
-                        console.log(d, i);
-                    });
+                    .d3Setting(graphSetting, nodeTypeSetting)
+                    .interaction(
+                        (d, i) => {
+                            //console.log('enter', d, i);
+                        },
+                        (d, i) => {
+                            //console.log('leave', d, i);
+                        },
+                        (d, i) => {
+
+                            //若热键按住ctrl+点击事件执行click回调
+                            if (OverallDataSer.keyBoard['ctrl']) {
+                                console.log('ctrl click')
+
+                            } else {
+                                //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
+                                if (graphSetting['nodesGray']) {
+                                    D3Service().setUnRelativeNodeGray(d, i, nodeTypeSetting, links);
+                                }
+                            }
+                        }
+                    )
+                    .nodeLinkInit(); //最后才执行此创建步骤
             });
         }, 1000)
     }
 
-    return{
-        targetTest:targetTest,
+    return {
+        targetTest: targetTest,
     }
 
 });
