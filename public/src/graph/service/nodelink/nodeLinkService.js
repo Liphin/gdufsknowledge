@@ -204,7 +204,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
                     availableFontNum < 4 ? availableFontNum = 4 : true;
                     return text.substring(0, availableFontNum - 1) + "...";
                 }
-
             });
 
         //添加最后一个node节点，用于鼠标放上节点时显示节点名称，并且永远在渲染层的顶端
@@ -291,7 +290,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
                     }
                 })
 
-
         }).on("mouseleave", (d, i) => {
             //当鼠标移开是，设置是否显示文本图标为false
             d['textShow'] = false;
@@ -322,7 +320,6 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             //HTML页面中赋值显示出来
             $rootScope.$apply();
         });
-
 
         //设置svg中zoom移动和缩放交互
         d3.zoom().on("zoom", zoomActions)(svg);
@@ -432,6 +429,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
             case 'attendee': {
                 //装载相关新闻数组
                 attendeeAddRelativeEventNews(type, uniqueId);
+                GraphDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置人员信息显示为true，展开个人信息
                 break;
             }
             case 'gdufs_dept': {
@@ -451,7 +449,7 @@ graphModule.factory('NodeLinkSer', function ($sce, $timeout, $rootScope, Overall
                 let url = OverallDataSer.urlData['frontEndHttp']['gdufsNewsOssUrl'] + "html/" + uniqueId + ".html";
                 OverallGeneralSer.httpGetFiles(url, result => {
                     GraphDataSer.nodeLinkSelectedData['visit_event']['info']['detail']['news'] = $sce.trustAsHtml(result);
-                });
+                }, GraphDataSer.loader['nodeDetail']);
                 GraphDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
                 break;
             }

@@ -389,7 +389,6 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
                 break;
             }
         }
-
         // console.log(targetNodeArray);
         // console.log(targetLinkArray);
         parseNeoData({
@@ -399,7 +398,6 @@ graphModule.factory('NeoSer', function ($sce, $rootScope, OverallDataSer, GraphD
 
         //初始化节点渲染到页面svg
         NodeLinkSer.nodeLinkInit();
-
     }
 
 

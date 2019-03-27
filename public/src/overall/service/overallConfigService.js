@@ -17,11 +17,15 @@ overallModule.config(function ($routeProvider, $httpProvider, $sceDelegateProvid
             controller: 'EditCtrl',
             controllerAs: 'edit',
         })
-        .when('/graph/:option', {
+
+        //图数据节点的展示
+        .when('/graph/:options', {
             templateUrl: 'src/graph/tmpl/graph.html',
             controller: 'GraphCtrl',
             controllerAs: 'graph',
         })
+
+        //表格分析
         .when('/analyse/:option', {
             templateUrl: 'src/analyse/tmpl/analyse.html',
             controller: 'AnalyseCtrl',
@@ -32,7 +36,7 @@ overallModule.config(function ($routeProvider, $httpProvider, $sceDelegateProvid
             controller: 'UtilServiceCtrl',
             controllerAs: 'util',
         })
-        .otherwise({redirectTo: '/graph/nodeLink'});
+        .otherwise({redirectTo: '/graph/news'});
 
     //部署拦截器，每次http请求，会经过拦截器方法后再往下传
     $httpProvider.interceptors.push('interceptHttp');

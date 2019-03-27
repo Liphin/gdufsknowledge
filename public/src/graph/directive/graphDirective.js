@@ -3,7 +3,9 @@
  */
 var graphModule = angular.module('Angular.graph');
 
-
+/**
+ * 知识图谱渲染，用于设置鼠标右键出现菜单点击进入子菜单方式
+ */
 graphModule.directive('knowledgeRender', ['GraphDataSer', function (GraphDataSer) {
     return {
         restrict: 'A',
