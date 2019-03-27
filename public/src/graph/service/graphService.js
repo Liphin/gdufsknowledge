@@ -4,22 +4,36 @@
 var graphModule = angular.module('Angular.graph');
 
 graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataSer, $cookies, $location, $http,
-                                          OverallGeneralSer, GraphDataSer, GraphNewsSer, GraphNewsDataSer) {
+                                          OverallGeneralSer, GraphDataSer, GraphNewsSer, GraphNewsDataSer,
+                                          GraphExchangeSer, GraphExchangeDataSer) {
 
     /**
      * 初始化知识图谱数据
      */
     function initGraph(graph) {
+        //设置数据源
+        GraphDataSer.generalData.alactiveGraph = $routeParams['options'];
+
         //根据不同的option类型决定不同的知识图谱数据源
         switch ($routeParams['options']) {
             case 'news': {
                 //循环赋值到graph和GraphDataSer中，每次在页面中直接使用对应模块的数据
                 for (let i in GraphNewsDataSer) {
                     GraphDataSer[i] = GraphNewsDataSer[i];
-                    graph[i] = GraphDataSer[i];
+                    graph[i] = GraphNewsDataSer[i];
                 }
                 //新闻数据类型option，获取相应节点数据
                 GraphNewsSer.getNeoData();
+                break;
+            }
+            case 'exchange': {
+                //循环赋值到graph和GraphDataSer中，每次在页面中直接使用对应模块的数据
+                for (let i in GraphExchangeDataSer) {
+                    GraphDataSer[i] = GraphExchangeDataSer[i];
+                    graph[i] = GraphExchangeDataSer[i];
+                }
+                //交换生类型的option，获取相应节点数据
+                GraphExchangeSer.getNeoData();
                 break;
             }
         }

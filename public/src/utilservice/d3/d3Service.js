@@ -467,7 +467,7 @@ function D3Service() {
             }
             //否则进行填充指定的颜色
             else {
-                d3.select(this).attr("stroke", "#007a32");
+                d3.select(this).attr("stroke", "#007a32").attr("stroke-width", 2);
             }
         });
     }

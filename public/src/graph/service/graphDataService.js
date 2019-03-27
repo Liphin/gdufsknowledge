@@ -7,12 +7,7 @@ graphModule.factory('GraphDataSer', function () {
 
     //基础数据，用于全局设置使用;
     let generalData = {
-        //所有知识图谱设置
-        allGraph: {
-            news: {
-                status: true //默认显示新闻知识图谱数据
-            },
-        }
+        activeGraph: 'news', //默认是新闻知识图谱模块
     };
 
     return {

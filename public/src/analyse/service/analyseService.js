@@ -9,33 +9,45 @@ analyseModule.factory('AnalyseSer', function ($rootScope, OverallDataSer, $cooki
      * 初始化函数操作
      */
     function initData() {
-        getAllGdufsKnowledgeAnalyseData();
+        //获取所有广外外事分析数据
+        getAllGdufsKnowledgeAnalyseData(()=>{
+            //解析外事数据进行数据解析
+            parseResponseData();
+        });
     }
 
     /**
      * 获取所有广外数据进行分析
      */
-    function getAllGdufsKnowledgeAnalyseData() {
+    function getAllGdufsKnowledgeAnalyseData(callback) {
         OverallGeneralSer.httpPostData3('', OverallDataSer.urlData['frontEndHttp']['getAllGdufsKnowledgeMysqlData'], result => {
+            //返回填充外事分析数据
             AnalyseDataSer.knowData = result;
-
-            //初始化后显示外事出访数据分析 “各学院——出访人” 数柱状图
-            chooseAnalyseGraph('visit_general_list', 'gdufs_dept');
-
-            //赋值公派出访数据填充
-            AnalyseDataSer.analyseData['abroad_back_people']['factor']['back_plan']['data'].length = 0;
-            for (let i = 0; i < AnalyseDataSer.knowData['abroad_back_people'].length; i++) {
-                let info = {
-                    'name1': AnalyseDataSer.knowData['abroad_back_people'][i]['name'],
-                    'back_plan1': AnalyseDataSer.knowData['abroad_back_people'][i]['back_plan'],
-                };
-                if (++i < AnalyseDataSer.knowData['abroad_back_people'].length) {
-                    info['name2'] = AnalyseDataSer.knowData['abroad_back_people'][i]['name'];
-                    info['back_plan2'] = AnalyseDataSer.knowData['abroad_back_people'][i]['back_plan'];
-                }
-                AnalyseDataSer.analyseData['abroad_back_people']['factor']['back_plan']['data'].push(info);
-            }
+            //函数回调
+            callback()
         })
+    }
+
+    /**
+     * 解析外事分析及回调函数
+     */
+    function parseResponseData() {
+        //初始化后显示外事出访数据分析 “各学院——出访人” 数柱状图
+        chooseAnalyseGraph('visit_general_list', 'gdufs_dept');
+
+        //赋值公派出访数据填充
+        AnalyseDataSer.analyseData['abroad_back_people']['factor']['back_plan']['data'].length = 0;
+        for (let i = 0; i < AnalyseDataSer.knowData['abroad_back_people'].length; i++) {
+            let info = {
+                'name1': AnalyseDataSer.knowData['abroad_back_people'][i]['name'],
+                'back_plan1': AnalyseDataSer.knowData['abroad_back_people'][i]['back_plan'],
+            };
+            if (++i < AnalyseDataSer.knowData['abroad_back_people'].length) {
+                info['name2'] = AnalyseDataSer.knowData['abroad_back_people'][i]['name'];
+                info['back_plan2'] = AnalyseDataSer.knowData['abroad_back_people'][i]['back_plan'];
+            }
+            AnalyseDataSer.analyseData['abroad_back_people']['factor']['back_plan']['data'].push(info);
+        }
     }
 
 

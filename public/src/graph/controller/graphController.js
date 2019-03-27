@@ -7,6 +7,8 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, OverallGe
                                               GraphDataSer, GraphSer, GraphNewsDataSer) {
 
     var graph = this;
+    //最基本的数据模板
+    graph.generalData = GraphDataSer.generalData;
     //初始化知识图谱数据
     GraphSer.initGraph(graph);
 
@@ -55,8 +57,8 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, OverallGe
      * 返回主数据源
      */
     graph.backToSourceData = function () {
-        GraphDataSer.overallData['graphPath']['layer2']['name']=''; //设置第二层级数据源名称为空
-        GraphDataSer.overallData['search']['text']=''; //设置搜索内容为空
+        GraphDataSer.overallData['graphPath']['layer2']['name'] = ''; //设置第二层级数据源名称为空
+        GraphDataSer.overallData['search']['text'] = ''; //设置搜索内容为空
         GraphSer.searchTargetNodes();//返回主数据源相当于搜索空内容
     }
 });
