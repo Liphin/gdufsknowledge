@@ -5,7 +5,7 @@
 var graphModule = angular.module('Angular.graph');
 
 graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $routeParams, OverallDataSer, OverallGeneralSer,
-                                                  $location, $http, GraphNewsDataSer, GraphNewsSer, AnalyseDataSer, AnalyseSer) {
+                                                  $location, $http, GraphExchangeDataSer, GraphNewsSer, AnalyseDataSer, AnalyseSer) {
 
     /**
      * 获取所有neo4j数据库中的数据
@@ -29,15 +29,15 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      */
     function initExchangeGraph() {
         //重新拷贝一份交换生原始数据，以免数据脏话
-        let exchangeList = angular.copy(AnalyseDataSer.knowData['exchange_student_list']);
-        //转换关系数据库list数据为图数据库d3展示数据
-        parseListToGraph(exchangeList);
-
-        let graphData = parseNeoData(result); //解析返回的数据
+        GraphExchangeDataSer.originalData = angular.copy(AnalyseDataSer.knowData['exchange_student_list']);
+        //转换关系数据库list数据为图数据库d3的 学院——交换学校 展示数据
+        let result = parseListToInstituteExSchoolGraph();
+        //二次包装数据，添加必要的节点设置
+        let graphData = parseNeoData(result);
 
         //拷贝一个副本，当renderData变化后保持不变
-        GraphNewsDataSer.allNodeLinkData.array = angular.copy(GraphNewsDataSer.renderData.array);
-        GraphNewsDataSer.allNodeLinkData.obj = angular.copy(GraphNewsDataSer.renderData.obj);
+        GraphExchangeDataSer.allNodeLinkData.array = angular.copy(GraphExchangeDataSer.renderData.array);
+        GraphExchangeDataSer.allNodeLinkData.obj = angular.copy(GraphExchangeDataSer.renderData.obj);
 
         //初始化节点和关系图数据
         nodeLinkGraphInit(graphData);
@@ -46,56 +46,45 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
 
     /**
      * 转换关系数据库list数据为图数据库d3展示数据
-     * @param data
+     * 数据转换为：“学院——交换大学” 节点及关系
      */
-    function parseListToGraph(data) {
+    function parseListToInstituteExSchoolGraph() {
+        let data = GraphExchangeDataSer.originalData;
+        let nodes = [];
+        let links = [];
+        //遍历每行list数据，解析出 学院——交换大学 节点及关系
         for (let i in data) {
+            if (data[i]['exchange_school'] != '学校待定') {
+                //添加学院节点
+                let instituteUniqueId = uuidv1();
+                nodes.push({
+                    'cn_name':data[i]['institute'],
+                    'hover_title': data[i]['institute'],
+                    'unique_id': instituteUniqueId,
+                    'label_name': 'institute'
+                });
 
+                //添加交换大学节点
+                let exchangeSchoolUniqueId = uuidv1();
+                nodes.push({
+                    'cn_name':data[i]['exchange_school'],
+                    'hover_title': data[i]['exchange_school'],
+                    'unique_id': exchangeSchoolUniqueId,
+                    'label_name': 'exchange_school'
+                });
+
+                //添加 学院--交换大学 关系连接
+                links.push({
+                    'source': instituteUniqueId,
+                    'target': exchangeSchoolUniqueId,
+                    'attach': {'unique_id': uuidv1()}
+                });
+            }
         }
-    }
-
-
-    /**
-     * 节点和关系连接数据初始化
-     */
-    function nodeLinkGraphInit(graphData) {
-        let svg = d3.select(".knowledgeSvg"); //图数据库展示
-        let linkArray = d3.select(".links"); //连接数组
-        let nodeArray = d3.select(".nodes"); //节点数组
-
-        D3Service()
-            .element(svg, linkArray, nodeArray)
-            .nodeLinks(graphData.nodes, graphData.links, graphData.nodesObj)
-            .d3Setting(GraphNewsDataSer.overallData.graphSetting, GraphNewsDataSer.nodeTypeSetting)
-            .interaction(
-                (d, i) => {
-                    GraphNewsDataSer.overallData.nodeHover.status = true;
-                    GraphNewsDataSer.overallData.nodeHover.unique_id = d.unique_id;
-                    GraphNewsDataSer.overallData.nodeHover.type = d.label_name;
-                    //console.log('enter', d, i);
-                },
-                (d, i) => {
-                    GraphNewsDataSer.overallData.nodeHover.status = false;
-                    //console.log('leave', d, i);
-                },
-                (d, i) => {
-                    //存储当前选择的节点相关数据
-                    GraphNewsDataSer.overallData.nodeSelected.unique_id = d.unique_id;
-                    GraphNewsDataSer.overallData.nodeSelected.type = d.label_name;
-
-                    //若热键按住ctrl+点击事件执行click回调
-                    if (OverallDataSer.keyBoard['ctrl']) {
-                        console.log('ctrl click')
-
-                    } else {
-                        //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
-                        if (GraphNewsDataSer.overallData.graphSetting.nodesGray) {
-                            D3Service().setUnRelativeNodeGray(d, i, GraphNewsDataSer.nodeTypeSetting, graphData.links);
-                        }
-                    }
-                }
-            )
-            .nodeLinkInit(); //最后才执行此创建步骤
+        return {
+            nodes: nodes,
+            links: links
+        }
     }
 
 
@@ -126,9 +115,9 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         }
 
         //赋值渲染到页面HTML中的节点数据和nodes对象
-        GraphNewsDataSer.renderData.array.nodes = nodes;
-        GraphNewsDataSer.renderData.array.links = links;
-        GraphNewsDataSer.renderData.obj = nodesObj;
+        GraphExchangeDataSer.renderData.array.nodes = nodes;
+        GraphExchangeDataSer.renderData.array.links = links;
+        GraphExchangeDataSer.renderData.obj = nodesObj;
 
         return {
             nodes: nodes, //所有节点
@@ -139,21 +128,65 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
 
 
     /**
+     * 节点和关系连接数据初始化
+     */
+    function nodeLinkGraphInit(graphData) {
+        let svg = d3.select(".knowledgeSvg"); //图数据库展示
+        let linkArray = d3.select(".links"); //连接数组
+        let nodeArray = d3.select(".nodes"); //节点数组
+
+        D3Service()
+            .element(svg, linkArray, nodeArray)
+            .nodeLinks(graphData.nodes, graphData.links, graphData.nodesObj)
+            .d3Setting(GraphExchangeDataSer.overallData.graphSetting, GraphExchangeDataSer.nodeTypeSetting)
+            .interaction(
+                (d, i) => {
+                    GraphExchangeDataSer.overallData.nodeHover.status = true;
+                    GraphExchangeDataSer.overallData.nodeHover.unique_id = d.unique_id;
+                    GraphExchangeDataSer.overallData.nodeHover.type = d.label_name;
+                    //console.log('enter', d, i);
+                },
+                (d, i) => {
+                    GraphExchangeDataSer.overallData.nodeHover.status = false;
+                    //console.log('leave', d, i);
+                },
+                (d, i) => {
+                    //存储当前选择的节点相关数据
+                    GraphExchangeDataSer.overallData.nodeSelected.unique_id = d.unique_id;
+                    GraphExchangeDataSer.overallData.nodeSelected.type = d.label_name;
+
+                    //若热键按住ctrl+点击事件执行click回调
+                    if (OverallDataSer.keyBoard['ctrl']) {
+                        console.log('ctrl click')
+
+                    } else {
+                        //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
+                        if (GraphExchangeDataSer.overallData.graphSetting.nodesGray) {
+                            D3Service().setUnRelativeNodeGray(d, i, GraphExchangeDataSer.nodeTypeSetting, graphData.links);
+                        }
+                    }
+                }
+            )
+            .nodeLinkInit(); //最后才执行此创建步骤
+    }
+
+
+    /**
      * 根据uniqueId，从OSS中获取对应的新闻数据
      * @param uniqueId
      * @param type
      */
     function chooseNewsShow(uniqueId, type) {
         //保存选择的新闻子节点的openid
-        GraphNewsDataSer.overallData['nodeSelected']['sub_unique_id'] = uniqueId;
+        GraphExchangeDataSer.overallData['nodeSelected']['sub_unique_id'] = uniqueId;
         //重置news数据
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['news'] = "";
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['news'] = "";
         //打开具体新闻页面
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = true;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = true;
         //从OSS中获取对应新闻数据
         let url = OverallDataSer.urlData['frontEndHttp']['gdufsNewsOssUrl'] + "html/" + uniqueId + ".html";
         OverallGeneralSer.httpGetFiles(url, result => {
-            GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['news'] = $sce.trustAsHtml(result);
+            GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['news'] = $sce.trustAsHtml(result);
         })
     }
 
@@ -163,11 +196,11 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      */
     function chooseNodeMenu(menuType) {
         //把该hover的节点数据传给选择数组
-        GraphNewsDataSer.overallData['nodeSelected']['unique_id'] = GraphNewsDataSer.overallData['nodeHover']['unique_id'];
-        GraphNewsDataSer.overallData['nodeSelected']['type'] = GraphNewsDataSer.overallData['nodeHover']['type'];
+        GraphExchangeDataSer.overallData['nodeSelected']['unique_id'] = GraphExchangeDataSer.overallData['nodeHover']['unique_id'];
+        GraphExchangeDataSer.overallData['nodeSelected']['type'] = GraphExchangeDataSer.overallData['nodeHover']['type'];
 
         //获取相应主节点信息，用于展示在header标题中
-        let targetNode = GraphNewsDataSer.renderData['obj'][GraphNewsDataSer.overallData['nodeHover']['unique_id']];
+        let targetNode = GraphExchangeDataSer.renderData['obj'][GraphExchangeDataSer.overallData['nodeHover']['unique_id']];
         let infoText = '';
         switch (targetNode['label_name']) {
             case 'attendee': {
@@ -203,13 +236,13 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
             //查询相关出席人
             case "relativeAttendee": {
                 getRelativeAttendee();
-                GraphNewsDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关人员子节点";
+                GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关人员子节点";
                 break;
             }
             //人物节点的相关事件
             case "relativeEvent": {
                 getRelativeEvent();
-                GraphNewsDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关事件子节点";
+                GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关事件子节点";
                 break;
             }
             default: {
@@ -217,7 +250,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
             }
         }
         //菜单响应按键后，收回菜单
-        GraphNewsDataSer.overallData['nodeMenu']['status'] = false;
+        GraphExchangeDataSer.overallData['nodeMenu']['status'] = false;
     }
 
 
@@ -228,25 +261,25 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      */
     function assignGeneralData(type, uniqueId) {
         //赋值基础数据
-        let node = GraphNewsDataSer.renderData.obj[uniqueId];
+        let node = GraphExchangeDataSer.renderData.obj[uniqueId];
         for (let i in node) {
-            GraphNewsDataSer.nodeLinkSelectedData[type]['info']['general']['data'][i] = node[i];
+            GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['data'][i] = node[i];
         }
         //如果面板之前已经打开了，则无loading，如果之前尚未打开，则有loading
-        if (!GraphNewsDataSer.overallData['rightBarShow']) {
+        if (!GraphExchangeDataSer.overallData['rightBarShow']) {
             //面板展开时，信息尚未显示出来，loading加载
-            GraphNewsDataSer.loader['nodeDetail']['status'] = true;
+            GraphExchangeDataSer.loader['nodeDetail']['status'] = true;
             //1秒后，动画消失，显示内容
             $timeout(function () {
-                GraphNewsDataSer.loader['nodeDetail']['status'] = false;
+                GraphExchangeDataSer.loader['nodeDetail']['status'] = false;
             }, 1000);
         }
         //打开相关节点信息面板，并展开右侧面板
-        GraphNewsDataSer.overallData['rightBarShow'] = true;
+        GraphExchangeDataSer.overallData['rightBarShow'] = true;
 
         //清空原来新闻数组数据并重置控制数据
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = false;
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = false;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
     }
 
 
@@ -256,19 +289,19 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * @param uniqueId
      */
     function addRelatedEventNews(type, uniqueId) {
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
 
-        let allLinks = GraphNewsDataSer.allNodeLinkData['array']['links'];
+        let allLinks = GraphExchangeDataSer.allNodeLinkData['array']['links'];
         //从连接关系中读取所有相关新闻数据填充到数组
         for (let i in allLinks) {
             //读取该源点为uniqueId的节点
             if (allLinks[i]['source'] == uniqueId) {
                 let eventUniqueId = allLinks[i]['target']; //目标事件节点unique_id
-                let eventData = GraphNewsDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
+                let eventData = GraphExchangeDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
                 //如果是事件节点则添加，否则不添加
                 if (eventData['label_name'] == 'visit_event_in' || eventData['label_name'] == 'visit_event_out') {
-                    GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
+                    GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
                 }
             }
         }
@@ -280,23 +313,23 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * @param uniqueId
      */
     function attendeeAddRelativeEventNews(type, uniqueId) {
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
 
-        let allLinks = GraphNewsDataSer.allNodeLinkData['array']['links'];
+        let allLinks = GraphExchangeDataSer.allNodeLinkData['array']['links'];
         //从连接关系中读取所有相关新闻数据填充到数组
         for (let i in allLinks) {
             //如果不存在或为空则继续
             if (!OverallGeneralSer.checkDataNotEmpty(allLinks[i]['attach']['attend'])) continue;
 
             //读取该源点为uniqueId的节点
-            let attendeeName = GraphNewsDataSer.renderData['obj'][uniqueId]['cn_name'];
+            let attendeeName = GraphExchangeDataSer.renderData['obj'][uniqueId]['cn_name'];
             if (allLinks[i]['attach']['attend'].indexOf(attendeeName) > -1) {
                 let eventUniqueId = allLinks[i]['target']; //目标事件节点unique_id
-                let eventData = GraphNewsDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
+                let eventData = GraphExchangeDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
                 //如果是事件节点则添加，否则不添加
                 if (eventData['label_name'] == 'visit_event_in' || eventData['label_name'] == 'visit_event_out') {
-                    GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
+                    GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
                 }
             }
         }
@@ -308,15 +341,15 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      */
     function getNewsInfo() {
         //获取该节点类型和unique_id
-        let uniqueId = GraphNewsDataSer.overallData['nodeSelected']['unique_id'];
-        let type = GraphNewsDataSer.overallData['nodeSelected']['type'];
+        let uniqueId = GraphExchangeDataSer.overallData['nodeSelected']['unique_id'];
+        let type = GraphExchangeDataSer.overallData['nodeSelected']['type'];
 
         //先关闭所有右侧数据展示
-        for (let i in GraphNewsDataSer.nodeLinkSelectedData) {
-            GraphNewsDataSer.nodeLinkSelectedData[i]['status'] = false;
+        for (let i in GraphExchangeDataSer.nodeLinkSelectedData) {
+            GraphExchangeDataSer.nodeLinkSelectedData[i]['status'] = false;
         }
         //单独开启目标数据展示
-        GraphNewsDataSer.nodeLinkSelectedData[type]['status'] = true;
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['status'] = true;
         //赋值基础数据并显示到面板
         assignGeneralData(type, uniqueId);
 
@@ -325,19 +358,19 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
             case 'attendee': {
                 //装载相关新闻数组
                 attendeeAddRelativeEventNews(type, uniqueId);
-                GraphNewsDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置人员信息显示为true，展开个人信息
+                GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置人员信息显示为true，展开个人信息
                 break;
             }
             case 'gdufs_dept': {
                 //装载相关新闻数组
                 addRelatedEventNews(type, uniqueId);
-                GraphNewsDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置部门信息显示为true，展开部门信息
+                GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置部门信息显示为true，展开部门信息
                 break;
             }
             case 'visitor_dept': {
                 //装载相关新闻数组
                 addRelatedEventNews(type, uniqueId);
-                GraphNewsDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置部门信息显示为true，展开部门信息
+                GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置部门信息显示为true，展开部门信息
                 break;
             }
             //来访事件
@@ -366,10 +399,10 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         //直接获取该新闻具体消息体，并显示在右侧面板中
         let url = OverallDataSer.urlData['frontEndHttp']['gdufsNewsOssUrl'] + "html/" + uniqueId + ".html";
         OverallGeneralSer.httpGetFiles(url, result => {
-            GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['news'] = $sce.trustAsHtml(result);
+            GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'] = $sce.trustAsHtml(result);
 
-        }, GraphNewsDataSer.loader['nodeDetail']);
-        GraphNewsDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
+        }, GraphExchangeDataSer.loader['nodeDetail']);
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
     }
 
 
@@ -378,16 +411,16 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * @param event
      */
     function getNewsOriginInfo(event) {
-        let uniqueId = GraphNewsDataSer.overallData['nodeSelected']['unique_id'];
-        let type = GraphNewsDataSer.overallData['nodeSelected']['type'];
-        let subUniqueId = GraphNewsDataSer.overallData['nodeSelected']['sub_unique_id'];
+        let uniqueId = GraphExchangeDataSer.overallData['nodeSelected']['unique_id'];
+        let type = GraphExchangeDataSer.overallData['nodeSelected']['type'];
+        let subUniqueId = GraphExchangeDataSer.overallData['nodeSelected']['sub_unique_id'];
         //如果是事件节点则直接在新页面打开该事件新闻
         if (type == 'visit_event_in' || type == 'visit_event_out') {
-            window.open(GraphNewsDataSer.renderData.obj[uniqueId]['origin_url'], '_blank');
+            window.open(GraphExchangeDataSer.renderData.obj[uniqueId]['origin_url'], '_blank');
         }
         //如果是其他节点则手动打开页面按钮来访问该事件
         else {
-            window.open(GraphNewsDataSer.renderData.obj[subUniqueId]['origin_url'], '_blank');
+            window.open(GraphExchangeDataSer.renderData.obj[subUniqueId]['origin_url'], '_blank');
         }
         //取消消息体传递
         event.stopPropagation();
@@ -398,11 +431,11 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * 查看该出席人节点的所有相关事件信息
      */
     function getRelativeEvent() {
-        let uniqueId = GraphNewsDataSer.overallData['nodeHover']['unique_id'];
-        let type = GraphNewsDataSer.overallData['nodeHover']['type'];
-        let allLinks = angular.copy(GraphNewsDataSer.allNodeLinkData['array']['links']);
+        let uniqueId = GraphExchangeDataSer.overallData['nodeHover']['unique_id'];
+        let type = GraphExchangeDataSer.overallData['nodeHover']['type'];
+        let allLinks = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['links']);
         let targetNodeArray = [], targetLinkArray = [];
-        let attendeeNode = GraphNewsDataSer.renderData['obj'][uniqueId];
+        let attendeeNode = GraphExchangeDataSer.renderData['obj'][uniqueId];
 
         targetNodeArray.push(attendeeNode);//初始化添加出席人节点
         for (let i in allLinks) {
@@ -416,7 +449,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
                 if (attach['attend'].indexOf(attendeeNode['cn_name']) > -1) {
                     //1、由于校内单位相对事件必然为源节点，则添加该事件节点为目标节点
                     let eventUniqueId = link['target'];
-                    targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][link['target']]);
+                    targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['target']]);
 
                     //2、添加出席人-->事件链接
                     targetLinkArray.push({
@@ -445,15 +478,15 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * 获取相关与会人员信息
      */
     function getRelativeAttendee() {
-        let uniqueId = GraphNewsDataSer.overallData['nodeHover']['unique_id'];
-        let type = GraphNewsDataSer.overallData['nodeHover']['type'];
-        let allLinks = angular.copy(GraphNewsDataSer.allNodeLinkData['array']['links']);
+        let uniqueId = GraphExchangeDataSer.overallData['nodeHover']['unique_id'];
+        let type = GraphExchangeDataSer.overallData['nodeHover']['type'];
+        let allLinks = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['links']);
         let targetNodeArray = [], targetLinkArray = [], tempNodeNameObj = {};
 
         //来访或出访事件
         if (type == 'visit_event_in' || type == 'visit_event_out') {
             //部门-->出席人-->事件
-            targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][uniqueId]); //初始化填充事件节点
+            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][uniqueId]); //初始化填充事件节点
             //循环每个链接，查看链接中attach的数据，从中获取外事出席人
             for (let j in allLinks) {
                 let link = allLinks[j];
@@ -470,7 +503,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
                         //若出访人不为空则添加事件<--部门<--出席人的关系
                         if (OverallGeneralSer.checkDataNotEmpty(attendeeData)) {
                             //1、添加该部门节点
-                            targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][link['source']]);
+                            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['source']]);
 
                             //出席人遍历
                             for (let j in attendeeData) {
@@ -513,7 +546,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         //校内组织或外方实体
         else if (type == 'gdufs_dept' || type == 'visitor_dept') {
             //部门-->出席人-->事件
-            targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][uniqueId]); //初始化填充部门节点
+            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][uniqueId]); //初始化填充部门节点
             //循环每个链接，查看链接中attach的数据，从中获取外事出席人
             for (let j in allLinks) {
                 let link = allLinks[j];
@@ -532,7 +565,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
                         if (OverallGeneralSer.checkDataNotEmpty(attendeeData)) {
                             //由于校内单位相对事件必然为源节点，则添加该事件节点为目标节点
                             eventUniqueId = link['target'];
-                            targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][link['target']]);
+                            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['target']]);
 
                             for (let j in attendeeData) {
                                 let attendeeUniqueId = '';//添加出席人的uniqueId
@@ -595,10 +628,10 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * 搜索对应的节点信息
      */
     function searchTargetNodes() {
-        let targetText = GraphNewsDataSer.overallData['search']['text'].trim();
+        let targetText = GraphExchangeDataSer.overallData['search']['text'].trim();
         let targetNodeArray = [], targetLinkArray = [], tempNodeUniqueIdArray = [];
-        let allNodes = angular.copy(GraphNewsDataSer.allNodeLinkData['array']['nodes']);
-        let allLinks = angular.copy(GraphNewsDataSer.allNodeLinkData['array']['links']);
+        let allNodes = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['nodes']);
+        let allLinks = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['links']);
 
         //只有搜索内容不为空时才进行搜索
         if (OverallGeneralSer.checkDataNotEmpty(targetText)) {
@@ -635,10 +668,10 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
                         let targetExist = tempNodeUniqueIdArray.indexOf(link['target']);
                         if (sourceExist > -1 || targetExist > -1) {
                             if (sourceExist > -1 && targetExist <= -1) {
-                                targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][link['target']]);
+                                targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['target']]);
 
                             } else if (sourceExist <= -1 && targetExist > -1) {
-                                targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][link['source']]);
+                                targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['source']]);
                             }
                             targetLinkArray.push({
                                 'source': link['source'],
@@ -689,7 +722,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
             for (let item of eventSet.values()) {
                 //如果之前尚未添加过则添加此节点信息
                 if (tempNodeUniqueIdArray.indexOf(item) <= -1) {
-                    targetNodeArray.push(GraphNewsDataSer.allNodeLinkData['obj'][item])
+                    targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][item])
                 }
             }
 
@@ -711,14 +744,14 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
                 }
             }
             //设置搜索内容的横向标题
-            GraphNewsDataSer.overallData['graphPath']['layer2']['name'] = '搜索节点 “' + targetText + "” 相关内容";
+            GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = '搜索节点 “' + targetText + "” 相关内容";
         }
         //若搜索为空，则返回之前的所有数据重新渲染
         else {
             //分别重新设置数据源为第一数据源
             targetNodeArray = allNodes;
             targetLinkArray = allLinks;
-            GraphNewsDataSer.overallData['graphPath']['layer2']['name'] = ''; //强制设置第二数据源名称为空
+            GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = ''; //强制设置第二数据源名称为空
         }
 
         //console.log(targetNodeArray);

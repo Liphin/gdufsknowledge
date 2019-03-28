@@ -1,0 +1,137 @@
+<!--整体图数据、关系分析数据、新增节点数据等展示-->
+<div>
+    <!--左侧导航栏-->
+    <div>
+        <i ng-if="!graph.overallData['leftBarShow']" class="fa fa-angle-double-right" ng-click="graph.overallData['leftBarShow']=true" style="color: #808080;cursor: pointer;font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; left: 2px"></i>
+        <div ng-show="graph.overallData['leftBarShow']" class="graphLeftBar"  style="position: fixed; left: 0; top: 0; bottom: 0;background: #2a536d">
+            <i ng-if="graph.overallData['leftBarShow']" class="fa fa-angle-double-left" ng-click="graph.overallData['leftBarShow']=false" style="cursor: pointer;color: white; font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; right: 2px"></i>
+
+            <!--外事图片logo-->
+            <div style="position: relative; z-index: 10; margin: 10px;width: 170px">
+                <img style="width: 40px; height: 40px;" src="/assets/img/overall/bg_top.png">
+                <span style="color: white; margin-left: 5px">外事知识图谱</span>
+            </div>
+
+            <!--左侧导航栏菜单页面菜单-->
+            <div style="color: white; width: 100%; height: 45px;margin-top: 40px; padding: 12px 0 0 45px; cursor: pointer; background: #4784ab;" class="leftMenu">知识图谱</div>
+            <div ng-click="switchPath('analyse/relation')" style="color: white; width: 100%; height: 45px;padding: 12px 0 0 45px;cursor: pointer" class="leftMenu">关系分析</div>
+        </div>
+    </div>
+
+
+    <!--图数据展示区域-->
+    <div style="width: 100%;height: 100%">
+        <div style="box-shadow: 0 0 5px grey;position: absolute; top: 0; height: 89px;left: 170px; right: 0; background: white; z-index: 5;padding: 15px 0 0 50px">
+            <!--数据源-->
+            <div style="display: inline-block">
+                <span style="font-size: 16px; color: #0082a2">
+                    <!--主数据源-->
+                    <span ng-click="graph.backToSourceData()" style="text-decoration: underline; cursor: pointer">{{graph.overallData['graphPath']['layer1']['name']}}</span>
+                    <!--查询主数据源中节点及关系数据或主数据源的子节点-->
+                    <span ng-if="graph.overallData['graphPath']['layer2']['name']!=''">
+                        <span class="fa fa-angle-right" style="margin:0 10px"></span>
+                        <span>{{graph.overallData['graphPath']['layer2']['name']}}</span>
+                    </span>
+                </span>
+            </div>
+
+            <!--按类别搜索相关节点信息-->
+            <div style="margin-top: 10px; ">
+                <div style="display: inline-block; position: relative; top: 2px">
+                    <span>校内组织 </span><i class="fa fa-square" style="color: rgb(236,181,201)"></i>
+                    <span style="margin-left: 15px">外方实体 </span><i class="fa fa-square" style="color: rgb(247,213,176)"></i>
+                    <span style="margin-left: 15px">人物 </span><i class="fa fa-square" style="color: rgb(230,227,192)"></i>
+                    <span style="margin-left: 15px">来访</span><i class="fa fa-square" style="color: rgb(87, 199, 227)"></i>
+                    出访<i class="fa fa-square" style="color: rgb(195,172,237)"></i>
+                </div>
+
+                <!--操作模式设置-->
+                <div style="display: inline-block; margin-left: 30px">
+                    <li class="dropdown">
+                        <button style="padding: 3px 12px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">模式&nbsp; <span class="caret"></span></button>
+                        <ul class="dropdown-menu" style="min-width: 120px; cursor: pointer">
+                            <li ng-click="graph.overallData['graphSetting']['nodesGray']=true"><a>聚焦模式<i ng-if="graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>
+                            <li ng-click="graph.resetAllNodeStyle()"><a>普通模式<i ng-if="!graph.overallData['graphSetting']['nodesGray']" class="fa fa-check" style="color: green; margin-left: 10px"></i></a></li>
+                        </ul>
+                    </li>
+                </div>
+
+                <!--搜索-->
+                <div style="display: inline-block">
+                    <input enter-search-node ng-model="graph.overallData['search']['text']" value="graph.overallData['search']['text']" placeholder="输入搜索内容" style=";background: transparent;border: 1px solid #b1b1b1; border-width: 0 0 1px 0; outline: none;padding: 0 12px;margin-left: 40px;"/>
+                    <i ng-click="graph.searchTargetNodes()" class="fa fa-search" style="cursor: pointer;position: relative; left: -20px; color: grey;"></i>
+                    <!--<button ng-click="graph.searchTargetNode()" class="btn btn-info" style="padding: 3px 12px; outline: none">搜索</button>-->
+                </div>
+            </div>
+
+        </div>
+
+        <!--background: #ffffed;-->
+        <div>
+            <svg class="knowledgeSvg" knowledge-render style="width: 100%; height: 100%" >
+                <g class="links"></g>
+                <g class="nodes"></g>
+            </svg>
+        </div>
+
+
+        <!--节点菜单-->
+        <div ng-if="graph.overallData['nodeMenu']['status']" style="width: 120px;display: inline-block; cursor: pointer; border: 1px solid grey;box-shadow: 0 2px 5px grey;
+                z-index: 100;position: absolute; left: {{graph.overallData['nodeMenu']['position']['x']}}px; top:{{graph.overallData['nodeMenu']['position']['y']}}px">
+            <div class="nodeMenu" ng-repeat="value in graph.nodeTypeSetting[graph.overallData['nodeHover']['type']]['menu']"
+                 style="width: 100%; height: 40px;padding: 12px 12px; display: flex"
+                 ng-click="graph.chooseNodeMenu(value['type'])">
+                <i class="{{value['icon']}}" style="width: 25px;"></i>
+                <span style="flex: 1; display: inline-block; text-align: left;position: relative; top: -3px">{{value['name']}}</span>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--右侧数据展示区-->
+    <div>
+        <!--锁定和解锁装置，是否点击节点后释放出来-->
+        <!--<i ng-class="{'fa fa-unlock-alt fa-flip-horizontal':!graph.overallData['lockRightBar'],'fa fa-lock':graph.overallData['lockRightBar']}" ng-click="graph.overallData['lockRightBar']=!graph.overallData['lockRightBar']"-->
+        <!--style="z-index: 10;color: #808080;cursor: pointer;font-size: 25px; position: absolute; top: {{overallData['screen']['height']/2-70}}px; right: 2px"></i>-->
+        <!--<i ng-if="!graph.overallData['rightBarShow']" class="fa fa-angle-double-left" ng-click="graph.overallData['rightBarShow']=true" style="z-index: 10;;color: #808080;cursor: pointer;font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; right: 2px"></i>-->
+        <div ng-show="graph.overallData['rightBarShow']" class="graphRightBar" style="position: fixed; right: 0; top: 0; bottom: 0;z-index: 10;border: 1px solid #e2e2e2; border-width: 0 0 0 1px; box-shadow: 0 -2px 5px #d4d4d4;background: white">
+            <i ng-if="graph.overallData['rightBarShow']" class="fa fa-angle-double-right" ng-click="graph.overallData['rightBarShow']=false;graph.overallData['rightBarInfoShow'] = true; graph.loader['nodeDetail']['status']=false" style="z-index: 10;cursor: pointer;color: #808080; font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; left: 2px"></i>
+
+            <!--信息展示头部，选择某中进行字段信息展示-->
+            <div style="width: 100%; height: 42px; background: #2a536d; display: flex; flex-direction: row; cursor: pointer">
+                <div style="flex: 1; text-align: center; color: white;padding-top: 10px; background: #70a4c7">详情数据</div>
+                <div style="flex: 1; text-align: center; color: white;padding-top: 10px">全局信息</div>
+            </div>
+
+            <!--加载该节点详情数据-->
+            <div ng-if="graph.loader['nodeDetail']['status']" style="text-align: center;position: relative; top:{{overallData['screen']['height']/2-90}}px; z-index:{{zIndexHelper['loading']}};text-align: center;">
+                <div style="vertical-align: middle;display: inline-block">
+                    <div class="loader">
+                        <svg class="circular" viewBox="25 25 50 50">
+                            <circle class="path" cx="50" cy="50" r="17" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="!graph.loader['nodeDetail']['status']" style="width: 100%; overflow-y: auto; position: absolute; bottom: 0; top: 42px; padding-bottom: 20px" class="scrollBar-7">
+                <!--来访、到访事件新闻数据展示-->
+                <visit-event-info ng-if="graph.nodeLinkSelectedData['visit_event_in']['status']||graph.nodeLinkSelectedData['visit_event_out']['status']"
+                                  style="overflow-y: auto;" ></visit-event-info>
+
+                <!--广外部门节点信息展示 -->
+                <gdufs-dept-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['gdufs_dept']['status']"></gdufs-dept-info>
+
+                <!--来访嘉宾所在单位 -->
+                <visitor-dept-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['visitor_dept']['status']"></visitor-dept-info>
+
+                <!--会议参与者/接待嘉宾 -->
+                <attendee style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['attendee']['status']"></attendee>
+            </div>
+        </div>
+    </div>
+
+    <!--Loader动画加载-->
+    <graph-loader></graph-loader>
+</div>

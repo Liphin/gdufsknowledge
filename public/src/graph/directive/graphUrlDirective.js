@@ -3,6 +3,19 @@
  */
 var graphModule = angular.module('Angular.graph');
 
+//***************************Loading加载项*******************************************
+/**
+ * loading加载js动画
+ */
+graphModule.directive('graphLoader', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/helper/loader.html'
+    };
+}]);
+
+
+
 //***************************广外新闻数据*****************************************
 /**
  * 广外部门详情数据
@@ -52,18 +65,13 @@ graphModule.directive('newsGraph', ['$document', function ($document) {
 
 
 
-//***************************Loading加载项*******************************************
-/**
- * loading加载js动画
- */
-graphModule.directive('graphLoader', ['$document', function ($document) {
+//*************************** 交换生数据知识图谱 *******************************************
+graphModule.directive('exchangeGraph', ['$document', function ($document) {
     return {
         restrict: 'E',
-        templateUrl: 'src/graph/tmpl/helper/loader.html'
+        templateUrl: 'src/graph/tmpl/type/exchange/exchange_graph.html'
     };
 }]);
-
-
 
 
 

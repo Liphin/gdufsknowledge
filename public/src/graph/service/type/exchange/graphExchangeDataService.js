@@ -35,6 +35,8 @@ graphModule.factory('GraphExchangeDataSer', function () {
         }
     };
 
+    //该交换学生的原始数据
+    let originalData = '';
 
     //渲染到d3节点上时的活跃数据
     let renderData = {
@@ -42,7 +44,6 @@ graphModule.factory('GraphExchangeDataSer', function () {
         array: {nodes: [], links: []},
     };
 
-    //装载首页所有节点和关系的数据，也是用于搜索的搜索源；进入二级子节点该数据不变；作为保存的数据源
     let allNodeLinkData = {
         obj: {},
         array: {nodes: [], links: []},
@@ -200,7 +201,8 @@ graphModule.factory('GraphExchangeDataSer', function () {
         renderData: renderData,
         nodeTypeSetting: nodeTypeSetting,
         overallData: overallData,
-        allNodeLinkData: allNodeLinkData,
+        originalData: originalData,
+        allNodeLinkData:allNodeLinkData,
         nodeLinkSelectedData: nodeLinkSelectedData,
     }
 });
