@@ -72,6 +72,31 @@ graphModule.directive('exchangeGraph', ['$document', function ($document) {
         templateUrl: 'src/graph/tmpl/type/exchange/exchange_graph.html'
     };
 }]);
-
-
-
+//广外学院
+graphModule.directive('exchangeInstitute', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/type/exchange/exchange_institute.html'
+    };
+}]);
+//学生出国交换的学校
+graphModule.directive('exchangeForeignSchool', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/type/exchange/exchange_foreign_school.html'
+    };
+}]);
+//交流的学生在广外专业
+graphModule.directive('exchangeMajor', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/type/exchange/exchange_major.html'
+    };
+}]);
+//交流的学生
+graphModule.directive('exchangeStudentGraph', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/type/exchange/exchange_student.html'
+    };
+}]);

@@ -93,7 +93,7 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
         //设置每个节点的radius
         for (let k in nodesObj) {
             let tempRadius = 22 + Math.round(nodesObj[k]['degree']);
-            nodesObj[k]['radius'] = (tempRadius > 60 ? 60 : tempRadius); //最大的半径不能大于60
+            nodesObj[k]['radius'] = (tempRadius > 60 ? 60 : tempRadius); //最大的半径不能大于50
             nodesObj[k]['distance'] = 50 + Math.round(nodesObj[k]['degree'] * 0.5);
         }
 
@@ -455,7 +455,6 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
                                 //2、添加出席人节点
                                 targetNodeArray.push({
                                     'cn_name': attendeeData[j]['cn_name'],
-                                    'hover_title': attendeeData[j]['cn_name'],
                                     'unique_id': attendeeUniqueId,
                                     'label_name': 'attendee'
                                 });
@@ -519,7 +518,6 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
                                     //添加出席人节点
                                     targetNodeArray.push({
                                         'cn_name': attendeeData[j]['cn_name'],
-                                        'hover_title': attendeeData[j]['cn_name'],
                                         'unique_id': attendeeUniqueId,
                                         'label_name': 'attendee'
                                     });
@@ -670,7 +668,6 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
                 let uniqueId = uuidv1();
                 targetNodeArray.push({
                     'cn_name': i,
-                    'hover_title': i,
                     'unique_id': uniqueId,
                     'label_name': 'attendee'
                 });
@@ -683,7 +680,7 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
                 }
             }
             //设置搜索内容的横向标题
-            GraphNewsDataSer.overallData['graphPath']['layer2']['name'] = '搜索节点 “' + targetText + "” 相关内容";
+            GraphNewsDataSer.overallData['graphPath']['layer2']['name'] = '搜索信息 “' + targetText + "” 相关内容";
         }
         //若搜索为空，则返回之前的所有数据重新渲染
         else {

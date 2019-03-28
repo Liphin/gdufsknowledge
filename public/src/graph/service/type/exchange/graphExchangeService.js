@@ -18,10 +18,11 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
                 //初始化交换生数据节点图谱
                 initExchangeGraph();
             });
-        }
-        //初始化交换生数据节点图谱
-        initExchangeGraph();
 
+        } else {
+            //初始化交换生数据节点图谱
+            initExchangeGraph();
+        }
     }
 
     /**
@@ -34,11 +35,6 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         let result = parseListToInstituteExSchoolGraph();
         //二次包装数据，添加必要的节点设置
         let graphData = parseNeoData(result);
-
-        //拷贝一个副本，当renderData变化后保持不变
-        GraphExchangeDataSer.allNodeLinkData.array = angular.copy(GraphExchangeDataSer.renderData.array);
-        GraphExchangeDataSer.allNodeLinkData.obj = angular.copy(GraphExchangeDataSer.renderData.obj);
-
         //初始化节点和关系图数据
         nodeLinkGraphInit(graphData);
     }
@@ -52,25 +48,24 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         let data = GraphExchangeDataSer.originalData;
         let nodes = [];
         let links = [];
+        let tempAllNodeObj = {}; //收录所有节点信息的对象
+        let instituteUniqueId, exchangeSchoolUniqueId; //学院和交换大学的unique_id信息
         //遍历每行list数据，解析出 学院——交换大学 节点及关系
         for (let i in data) {
-            if (data[i]['exchange_school'] != '学校待定') {
-                //添加学院节点
-                let instituteUniqueId = uuidv1();
-                nodes.push({
-                    'cn_name':data[i]['institute'],
-                    'hover_title': data[i]['institute'],
-                    'unique_id': instituteUniqueId,
-                    'label_name': 'institute'
+            if (data[i]['exchange_school'] != '学校待定' &&
+                OverallGeneralSer.checkDataNotEmpty(data[i]['institute']) &&
+                OverallGeneralSer.checkDataNotEmpty(data[i]['exchange_school'])) {
+
+                //institute类型：如果尚未添加则添加否则直接获取其unique_id
+                instituteUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['institute'], {
+                    cn_name: data[i]['institute'],
+                    label_name: 'institute'
                 });
 
-                //添加交换大学节点
-                let exchangeSchoolUniqueId = uuidv1();
-                nodes.push({
-                    'cn_name':data[i]['exchange_school'],
-                    'hover_title': data[i]['exchange_school'],
-                    'unique_id': exchangeSchoolUniqueId,
-                    'label_name': 'exchange_school'
+                //exchange_school类型：如果尚未添加则添加否则直接获取其unique_id
+                exchangeSchoolUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['exchange_school'], {
+                    cn_name: data[i]['exchange_school'],
+                    label_name: 'exchange_school'
                 });
 
                 //添加 学院--交换大学 关系连接
@@ -85,6 +80,130 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
             nodes: nodes,
             links: links
         }
+    }
+
+
+    /**
+     * 转换关系数据库list数据为图数据库d3展示数据
+     * 数据转换为：“学院——专业——学生” 节点及关系
+     */
+    function parseListToInstituteMajorStuGraph(targetNode) {
+        let data = GraphExchangeDataSer.originalData;
+        let nodes = [];
+        let links = [];
+        let tempAllNodeObj = {}; //收录所有节点信息的对象
+        let instituteUniqueId, majorUniqueId, studentUniqueId; //学院、专业和学生的uniqueId
+        //遍历每行list数据，解析出 学院——专业——学生 节点及关系
+        for (let i in data) {
+            //查找目标学院的数据以及专业和学生名称都不为空
+            if (data[i]['institute'] == targetNode['cn_name'] &&
+                OverallGeneralSer.checkDataNotEmpty(data[i]['major']) &&
+                OverallGeneralSer.checkDataNotEmpty(data[i]['name'])) {
+
+                //institute类型：如果尚未添加则添加否则直接获取其unique_id
+                instituteUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['institute'], {
+                    cn_name: data[i]['institute'],
+                    label_name: 'institute'
+                });
+
+                //major类型：如果尚未添加则添加否则直接获取其unique_id
+                majorUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['major'], {
+                    cn_name: data[i]['major'],
+                    label_name: 'major'
+                });
+
+                //student类型：如果尚未添加则添加否则直接获取其unique_id
+                studentUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['name'], {
+                    cn_name: data[i]['name'],
+                    label_name: 'student'
+                });
+
+                //添加 学院--专业 关系连接
+                links.push({
+                    'source': instituteUniqueId,
+                    'target': majorUniqueId,
+                    'attach': {'unique_id': uuidv1()}
+                });
+
+                //添加 专业--学生 关系连接
+                links.push({
+                    'source': majorUniqueId,
+                    'target': studentUniqueId,
+                    'attach': {'unique_id': uuidv1()}
+                });
+            }
+        }
+
+        //二次包装数据，添加必要的节点设置
+        let graphData = parseNeoData({
+            nodes: nodes,
+            links: links
+        });
+
+        //初始化节点和关系图数据
+        nodeLinkGraphInit(graphData);
+    }
+
+
+    /**
+     * 转换关系数据库list数据为图数据库d3展示数据
+     * 数据转换为：“外国学校——专业——学生” 节点及关系
+     */
+    function parseListToExSchoolMajorStuGraph(targetNode) {
+        let data = GraphExchangeDataSer.originalData;
+        let nodes = [];
+        let links = [];
+        let tempAllNodeObj = {}; //收录所有节点信息的对象
+        let exSchoolUniqueId, majorUniqueId, studentUniqueId; //交换学校、专业和学生的uniqueId
+        //遍历每行list数据，解析出 外国学校——专业——学生 节点及关系
+        for (let i in data) {
+            //查找目标学院的数据以及专业和学生名称都不为空
+            if (data[i]['exchange_school'] == targetNode['cn_name'] &&
+                OverallGeneralSer.checkDataNotEmpty(data[i]['major']) &&
+                OverallGeneralSer.checkDataNotEmpty(data[i]['name'])) {
+
+                //exchange_school类型：如果尚未添加则添加否则直接获取其unique_id
+                exSchoolUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['exchange_school'], {
+                    cn_name: data[i]['exchange_school'],
+                    label_name: 'exchange_school'
+                });
+
+                //major类型：如果尚未添加则添加否则直接获取其unique_id
+                majorUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['major'], {
+                    cn_name: data[i]['major'],
+                    label_name: 'major'
+                });
+
+                //student类型：如果尚未添加则添加否则直接获取其unique_id
+                studentUniqueId = checkAndAddNodes(nodes, tempAllNodeObj, data[i]['name'], {
+                    cn_name: data[i]['name'],
+                    label_name: 'student'
+                });
+
+                //添加 外国学校--专业 关系连接
+                links.push({
+                    'source': exSchoolUniqueId,
+                    'target': majorUniqueId,
+                    'attach': {'unique_id': uuidv1()}
+                });
+
+                //添加 专业--学生 关系连接
+                links.push({
+                    'source': majorUniqueId,
+                    'target': studentUniqueId,
+                    'attach': {'unique_id': uuidv1()}
+                });
+            }
+        }
+
+        //二次包装数据，添加必要的节点设置
+        let graphData = parseNeoData({
+            nodes: nodes,
+            links: links
+        });
+
+        //初始化节点和关系图数据
+        nodeLinkGraphInit(graphData);
     }
 
 
@@ -109,8 +228,8 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         }
         //设置每个节点的radius
         for (let k in nodesObj) {
-            let tempRadius = 22 + Math.round(nodesObj[k]['degree']);
-            nodesObj[k]['radius'] = (tempRadius > 60 ? 60 : tempRadius); //最大的半径不能大于60
+            let tempRadius = 20 + Math.round(nodesObj[k]['degree'] * 0.5);
+            nodesObj[k]['radius'] = (tempRadius > 50 ? 50 : tempRadius); //最大的半径不能大于50
             nodesObj[k]['distance'] = 50 + Math.round(nodesObj[k]['degree'] * 0.5);
         }
 
@@ -126,68 +245,80 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         }
     }
 
+    /**
+     * 获取页面 svg, linkArray, nodeArray相应的dom元素
+     * 若页面尚未渲染完成，获取为空则隔500毫秒后再次获取
+     * @returns {{svg, linkArray, nodeArray}}
+     */
+    function setIntervalGetPageDom(resolve) {
+        let svg = d3.select(".knowledgeSvg"); //图数据库展示
+        let linkArray = d3.select(".links"); //连接数组
+        let nodeArray = d3.select(".nodes"); //节点数组
+
+        //检查是否有任何一个页面元素为空（可能由于页面渲染尚未完成）
+        if (svg.empty() || linkArray.empty() || nodeArray.empty()) {
+            //设定500毫秒后递归重新获取页面上元素
+            $timeout(function () {
+                setIntervalGetPageDom(resolve);
+            }, 400);
+
+        } else {
+            //返回图谱展示的HTML元素三者的封装
+            resolve({
+                svg: svg,
+                linkArray: linkArray,
+                nodeArray: nodeArray,
+            });
+        }
+    }
 
     /**
      * 节点和关系连接数据初始化
      */
     function nodeLinkGraphInit(graphData) {
-        let svg = d3.select(".knowledgeSvg"); //图数据库展示
-        let linkArray = d3.select(".links"); //连接数组
-        let nodeArray = d3.select(".nodes"); //节点数组
 
-        D3Service()
-            .element(svg, linkArray, nodeArray)
-            .nodeLinks(graphData.nodes, graphData.links, graphData.nodesObj)
-            .d3Setting(GraphExchangeDataSer.overallData.graphSetting, GraphExchangeDataSer.nodeTypeSetting)
-            .interaction(
-                (d, i) => {
-                    GraphExchangeDataSer.overallData.nodeHover.status = true;
-                    GraphExchangeDataSer.overallData.nodeHover.unique_id = d.unique_id;
-                    GraphExchangeDataSer.overallData.nodeHover.type = d.label_name;
-                    //console.log('enter', d, i);
-                },
-                (d, i) => {
-                    GraphExchangeDataSer.overallData.nodeHover.status = false;
-                    //console.log('leave', d, i);
-                },
-                (d, i) => {
-                    //存储当前选择的节点相关数据
-                    GraphExchangeDataSer.overallData.nodeSelected.unique_id = d.unique_id;
-                    GraphExchangeDataSer.overallData.nodeSelected.type = d.label_name;
+        //d3获取相应的svg等数据，若页面加载延迟则$timeout重复获取
+        let domAsync = new Promise(function(resolve, reject) {
+            setIntervalGetPageDom(resolve);
+        });
+        //同步机制
+        domAsync.then(function (domData) {
+            let svg = domData.svg, linkArray = domData.linkArray, nodeArray = domData.nodeArray;
+            //知识图谱初始化
+            D3Service()
+                .element(svg, linkArray, nodeArray)
+                .nodeLinks(graphData.nodes, graphData.links, graphData.nodesObj)
+                .d3Setting(GraphExchangeDataSer.overallData.graphSetting, GraphExchangeDataSer.nodeTypeSetting)
+                .interaction(
+                    (d, i) => {
+                        GraphExchangeDataSer.overallData.nodeHover.status = true;
+                        GraphExchangeDataSer.overallData.nodeHover.unique_id = d.unique_id;
+                        GraphExchangeDataSer.overallData.nodeHover.type = d.label_name;
+                        //console.log('enter', d, i);
+                    },
+                    (d, i) => {
+                        GraphExchangeDataSer.overallData.nodeHover.status = false;
+                        //console.log('leave', d, i);
+                    },
+                    (d, i) => {
+                        //存储当前选择的节点相关数据
+                        GraphExchangeDataSer.overallData.nodeSelected.unique_id = d.unique_id;
+                        GraphExchangeDataSer.overallData.nodeSelected.type = d.label_name;
 
-                    //若热键按住ctrl+点击事件执行click回调
-                    if (OverallDataSer.keyBoard['ctrl']) {
-                        console.log('ctrl click')
+                        //若热键按住ctrl+点击事件执行click回调
+                        if (OverallDataSer.keyBoard['ctrl']) {
+                            console.log('ctrl click')
 
-                    } else {
-                        //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
-                        if (GraphExchangeDataSer.overallData.graphSetting.nodesGray) {
-                            D3Service().setUnRelativeNodeGray(d, i, GraphExchangeDataSer.nodeTypeSetting, graphData.links);
+                        } else {
+                            //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
+                            if (GraphExchangeDataSer.overallData.graphSetting.nodesGray) {
+                                D3Service().setUnRelativeNodeGray(d, i, GraphExchangeDataSer.nodeTypeSetting, graphData.links);
+                            }
                         }
                     }
-                }
-            )
-            .nodeLinkInit(); //最后才执行此创建步骤
-    }
-
-
-    /**
-     * 根据uniqueId，从OSS中获取对应的新闻数据
-     * @param uniqueId
-     * @param type
-     */
-    function chooseNewsShow(uniqueId, type) {
-        //保存选择的新闻子节点的openid
-        GraphExchangeDataSer.overallData['nodeSelected']['sub_unique_id'] = uniqueId;
-        //重置news数据
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['news'] = "";
-        //打开具体新闻页面
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = true;
-        //从OSS中获取对应新闻数据
-        let url = OverallDataSer.urlData['frontEndHttp']['gdufsNewsOssUrl'] + "html/" + uniqueId + ".html";
-        OverallGeneralSer.httpGetFiles(url, result => {
-            GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['news'] = $sce.trustAsHtml(result);
-        })
+                )
+                .nodeLinkInit(); //最后才执行此创建步骤
+        });
     }
 
 
@@ -201,48 +332,52 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
 
         //获取相应主节点信息，用于展示在header标题中
         let targetNode = GraphExchangeDataSer.renderData['obj'][GraphExchangeDataSer.overallData['nodeHover']['unique_id']];
-        let infoText = '';
-        switch (targetNode['label_name']) {
-            case 'attendee': {
-                infoText += '人物 “' + targetNode['cn_name'] + "” ";
-                break;
-            }
-            case 'gdufs_dept': {
-                infoText += '校内组织 “' + targetNode['cn_name'] + "” ";
-                break;
-            }
-            case 'visitor_dept': {
-                infoText += '外方实体 “' + targetNode['cn_name'] + "” ";
-                break;
-            }
-            case 'visit_event_in': {
-                infoText += '事件 “' + targetNode['title'] + "” ";
-                break;
-            }
-            case 'visit_event_out': {
-                infoText += '事件 “' + targetNode['title'] + "” ";
-                break;
-            }
-        }
 
         //根据不同菜单类型执行不同操作
         switch (menuType) {
             //该节点的具体信息
             case "infoDetail": {
                 //调用展示节点信息详情方法
-                getNewsInfo();
+                getGeneralInfo();
                 break;
             }
-            //查询相关出席人
-            case "relativeAttendee": {
-                getRelativeAttendee();
-                GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关人员子节点";
+            //查询相关学生节点
+            case "relativeStudent": {
+                let infoText = ''; //标题中的二级标题信息
+                //广外学院节点类型
+                if (targetNode['label_name'] == 'institute') {
+                    //广外节点类型搜索相应的学生信息
+                    parseListToInstituteMajorStuGraph(targetNode);
+                    infoText += '学院 “' + targetNode['cn_name'] + "” ";
+                }
+                //外国交换学校节点类型
+                else if (targetNode['label_name'] == 'exchange_school') {
+                    //外国院校节点类型搜索相应的学生信息
+                    parseListToExSchoolMajorStuGraph(targetNode);
+                    infoText += '交换学校 “' + targetNode['cn_name'] + "” ";
+                }
+                //设置二级标题内容
+                GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = infoText + "的相关学生节点";
                 break;
             }
-            //人物节点的相关事件
-            case "relativeEvent": {
-                getRelativeEvent();
-                GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = infoText + "相关事件子节点";
+            //查看具体的交换大学信息
+            case 'exchangeSchool': {
+                let infoText = ''; //标题中的二级标题信息
+                //当节点是专业节点时
+                if (targetNode['label_name'] == 'major') {
+                    //通过调用全局搜索方式进行搜索对应的节点相关的信息
+                    selectTargetColumnData(targetNode['label_name'], targetNode['cn_name']);
+                    infoText += '专业 “' + targetNode['cn_name'] + "” ";
+                }
+                //当节点是学生节点时
+                else if (targetNode['label_name'] == 'student') {
+                    //通过调用全局搜索方式进行搜索对应的节点相关信息
+                    //学生信息在列表中是 "name" 列
+                    selectTargetColumnData('name', targetNode['cn_name']);
+                    infoText += '学生 “' + targetNode['cn_name'] + "” ";
+                }
+                //设置二级标题内容
+                GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = infoText + " 的交换大学信息图谱";
                 break;
             }
             default: {
@@ -255,6 +390,26 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
 
 
     /**
+     * 新闻事件数据的处理，获取对应新闻数据信息
+     */
+    function getGeneralInfo() {
+        //获取该节点类型和unique_id
+        let uniqueId = GraphExchangeDataSer.overallData['nodeSelected']['unique_id'];
+        let type = GraphExchangeDataSer.overallData['nodeSelected']['type'];
+
+        //先关闭所有右侧数据展示
+        for (let i in GraphExchangeDataSer.nodeLinkSelectedData) {
+            GraphExchangeDataSer.nodeLinkSelectedData[i]['status'] = false;
+        }
+        //单独开启目标数据展示
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['status'] = true;
+
+        //赋值基础数据并显示到面板
+        assignGeneralData(type, uniqueId);
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置人员信息显示为true，展开个人信息
+    }
+
+    /**
      *
      * @param type
      * @param uniqueId
@@ -265,6 +420,20 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         for (let i in node) {
             GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['data'][i] = node[i];
         }
+        //对于交换学生节点数据进行特殊逻辑设置流程，把与之相关的所有信息都设置进入学生展示节点数据中
+        if (type == 'student') {
+            //遍历原始list数据，获取该学生行的信息
+            for (let j in GraphExchangeDataSer.originalData) {
+                //list中的name对应节点中的
+                if (GraphExchangeDataSer.originalData[j]['name'] == GraphExchangeDataSer.renderData.obj[uniqueId]['cn_name']) {
+                    //查看原始list数据获取该学生所在行的所有数据
+                    for (let k in GraphExchangeDataSer.originalData[j]) {
+                        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['data'][k] = GraphExchangeDataSer.originalData[j][k];
+                    }
+                }
+            }
+        }
+
         //如果面板之前已经打开了，则无loading，如果之前尚未打开，则有loading
         if (!GraphExchangeDataSer.overallData['rightBarShow']) {
             //面板展开时，信息尚未显示出来，loading加载
@@ -278,349 +447,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
         GraphExchangeDataSer.overallData['rightBarShow'] = true;
 
         //清空原来新闻数组数据并重置控制数据
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = false;
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
-    }
-
-
-    /**
-     * 和该人物或部门相关的外事新闻事件搜索出来回填到对应的新闻数组中
-     * @param type
-     * @param uniqueId
-     */
-    function addRelatedEventNews(type, uniqueId) {
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
-
-        let allLinks = GraphExchangeDataSer.allNodeLinkData['array']['links'];
-        //从连接关系中读取所有相关新闻数据填充到数组
-        for (let i in allLinks) {
-            //读取该源点为uniqueId的节点
-            if (allLinks[i]['source'] == uniqueId) {
-                let eventUniqueId = allLinks[i]['target']; //目标事件节点unique_id
-                let eventData = GraphExchangeDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
-                //如果是事件节点则添加，否则不添加
-                if (eventData['label_name'] == 'visit_event_in' || eventData['label_name'] == 'visit_event_out') {
-                    GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
-                }
-            }
-        }
-    }
-
-    /**
-     * 出席人添加与之相关个人信息的及新闻数据
-     * @param type
-     * @param uniqueId
-     */
-    function attendeeAddRelativeEventNews(type, uniqueId) {
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['newsDetail']['status'] = false;
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].length = 0;
-
-        let allLinks = GraphExchangeDataSer.allNodeLinkData['array']['links'];
-        //从连接关系中读取所有相关新闻数据填充到数组
-        for (let i in allLinks) {
-            //如果不存在或为空则继续
-            if (!OverallGeneralSer.checkDataNotEmpty(allLinks[i]['attach']['attend'])) continue;
-
-            //读取该源点为uniqueId的节点
-            let attendeeName = GraphExchangeDataSer.renderData['obj'][uniqueId]['cn_name'];
-            if (allLinks[i]['attach']['attend'].indexOf(attendeeName) > -1) {
-                let eventUniqueId = allLinks[i]['target']; //目标事件节点unique_id
-                let eventData = GraphExchangeDataSer.allNodeLinkData['obj'][eventUniqueId]; //从节点对象中直接读取
-                //如果是事件节点则添加，否则不添加
-                if (eventData['label_name'] == 'visit_event_in' || eventData['label_name'] == 'visit_event_out') {
-                    GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'].push(eventData); //添加进目标新闻数组中
-                }
-            }
-        }
-    }
-
-
-    /**
-     * 新闻事件数据的处理，获取对应新闻数据信息
-     */
-    function getNewsInfo() {
-        //获取该节点类型和unique_id
-        let uniqueId = GraphExchangeDataSer.overallData['nodeSelected']['unique_id'];
-        let type = GraphExchangeDataSer.overallData['nodeSelected']['type'];
-
-        //先关闭所有右侧数据展示
-        for (let i in GraphExchangeDataSer.nodeLinkSelectedData) {
-            GraphExchangeDataSer.nodeLinkSelectedData[i]['status'] = false;
-        }
-        //单独开启目标数据展示
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['status'] = true;
-        //赋值基础数据并显示到面板
-        assignGeneralData(type, uniqueId);
-
-        //根据不同节点类型展示不同消息信息体
-        switch (type) {
-            case 'attendee': {
-                //装载相关新闻数组
-                attendeeAddRelativeEventNews(type, uniqueId);
-                GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置人员信息显示为true，展开个人信息
-                break;
-            }
-            case 'gdufs_dept': {
-                //装载相关新闻数组
-                addRelatedEventNews(type, uniqueId);
-                GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置部门信息显示为true，展开部门信息
-                break;
-            }
-            case 'visitor_dept': {
-                //装载相关新闻数组
-                addRelatedEventNews(type, uniqueId);
-                GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true; //单独设置部门信息显示为true，展开部门信息
-                break;
-            }
-            //来访事件
-            case 'visit_event_in': {
-                showVisitEventNewsInfo(type, uniqueId);
-                break;
-            }
-            //出访事件
-            case 'visit_event_out': {
-                showVisitEventNewsInfo(type, uniqueId);
-                break;
-            }
-            default: {
-                console.log('come to default menu type', type)
-                return;
-            }
-        }
-    }
-
-    /**
-     * 展示来访事件和出访事件的新闻信息
-     * @param type
-     * @param uniqueId
-     */
-    function showVisitEventNewsInfo(type, uniqueId) {
-        //直接获取该新闻具体消息体，并显示在右侧面板中
-        let url = OverallDataSer.urlData['frontEndHttp']['gdufsNewsOssUrl'] + "html/" + uniqueId + ".html";
-        OverallGeneralSer.httpGetFiles(url, result => {
-            GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['news'] = $sce.trustAsHtml(result);
-
-        }, GraphExchangeDataSer.loader['nodeDetail']);
-        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['detail']['status'] = true;
-    }
-
-
-    /**
-     * 返回新闻原网页信息数据
-     * @param event
-     */
-    function getNewsOriginInfo(event) {
-        let uniqueId = GraphExchangeDataSer.overallData['nodeSelected']['unique_id'];
-        let type = GraphExchangeDataSer.overallData['nodeSelected']['type'];
-        let subUniqueId = GraphExchangeDataSer.overallData['nodeSelected']['sub_unique_id'];
-        //如果是事件节点则直接在新页面打开该事件新闻
-        if (type == 'visit_event_in' || type == 'visit_event_out') {
-            window.open(GraphExchangeDataSer.renderData.obj[uniqueId]['origin_url'], '_blank');
-        }
-        //如果是其他节点则手动打开页面按钮来访问该事件
-        else {
-            window.open(GraphExchangeDataSer.renderData.obj[subUniqueId]['origin_url'], '_blank');
-        }
-        //取消消息体传递
-        event.stopPropagation();
-    }
-
-
-    /**
-     * 查看该出席人节点的所有相关事件信息
-     */
-    function getRelativeEvent() {
-        let uniqueId = GraphExchangeDataSer.overallData['nodeHover']['unique_id'];
-        let type = GraphExchangeDataSer.overallData['nodeHover']['type'];
-        let allLinks = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['links']);
-        let targetNodeArray = [], targetLinkArray = [];
-        let attendeeNode = GraphExchangeDataSer.renderData['obj'][uniqueId];
-
-        targetNodeArray.push(attendeeNode);//初始化添加出席人节点
-        for (let i in allLinks) {
-            let link = allLinks[i];
-            let attach = link['attach'];
-            //如果没有附加数据则继续循环
-            if (!OverallGeneralSer.checkDataNotEmpty(attach)) continue;
-
-            try {
-                //如果出席人信息中有该对应的人员的姓名则添加该事件节点到数组中
-                if (attach['attend'].indexOf(attendeeNode['cn_name']) > -1) {
-                    //1、由于校内单位相对事件必然为源节点，则添加该事件节点为目标节点
-                    let eventUniqueId = link['target'];
-                    targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['target']]);
-
-                    //2、添加出席人-->事件链接
-                    targetLinkArray.push({
-                        'source': uniqueId,
-                        'target': eventUniqueId,
-                        'attach': {'unique_id': uuidv1()}
-                    })
-                }
-            } catch (e) {
-                console.log('getRelativeEvent err', e);
-            }
-        }
-
-        //数据封装
-        let graphData = parseNeoData({
-            'nodes': targetNodeArray,
-            'links': targetLinkArray
-        });
-
-        //初始化节点渲染到页面svg
-        nodeLinkGraphInit(graphData);
-    }
-
-
-    /**
-     * 获取相关与会人员信息
-     */
-    function getRelativeAttendee() {
-        let uniqueId = GraphExchangeDataSer.overallData['nodeHover']['unique_id'];
-        let type = GraphExchangeDataSer.overallData['nodeHover']['type'];
-        let allLinks = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['links']);
-        let targetNodeArray = [], targetLinkArray = [], tempNodeNameObj = {};
-
-        //来访或出访事件
-        if (type == 'visit_event_in' || type == 'visit_event_out') {
-            //部门-->出席人-->事件
-            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][uniqueId]); //初始化填充事件节点
-            //循环每个链接，查看链接中attach的数据，从中获取外事出席人
-            for (let j in allLinks) {
-                let link = allLinks[j];
-                let attach = link['attach'];
-                //如果没有附加数据则继续循环
-                if (!OverallGeneralSer.checkDataNotEmpty(attach)) continue;
-
-                try {
-                    //解析出席人数据
-                    let attendeeData = JSON.parse(attach['attend']);
-                    //分别判断该链接的目标是否与该事件节点相同，若相同则证明该链接关系与该节点相连。
-                    //由于visit_event只有入度关系，因此不用判断出度
-                    if (uniqueId == link['target']) {
-                        //若出访人不为空则添加事件<--部门<--出席人的关系
-                        if (OverallGeneralSer.checkDataNotEmpty(attendeeData)) {
-                            //1、添加该部门节点
-                            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['source']]);
-
-                            //出席人遍历
-                            for (let j in attendeeData) {
-                                let attendeeUniqueId = uuidv1(); //新创建该出席人节点的unique_id
-                                //如果中文名称没有，则添加英文名称
-                                if (!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
-                                    attendeeData[j]['cn_name'] = attendeeData[j]['en_name']
-                                }
-                                tempNodeNameObj[attendeeData[j]['cn_name']] = attendeeUniqueId;
-                                //2、添加出席人节点
-                                targetNodeArray.push({
-                                    'cn_name': attendeeData[j]['cn_name'],
-                                    'hover_title': attendeeData[j]['cn_name'],
-                                    'unique_id': attendeeUniqueId,
-                                    'label_name': 'attendee'
-                                });
-
-                                //3、添加部门-->出席人关系
-                                targetLinkArray.push({
-                                    'source': link['source'],
-                                    'target': attendeeUniqueId,
-                                    'attach': {'unique_id': uuidv1()}
-                                });
-
-                                //4、添加出席人-->事件关系
-                                targetLinkArray.push({
-                                    'source': attendeeUniqueId,
-                                    'target': link['target'],
-                                    'attach': {'unique_id': uuidv1()}
-                                });
-                            }
-                        }
-                    }
-
-                } catch (e) {
-                    console.error('search add link err', e, link);
-                }
-            }
-        }
-        //校内组织或外方实体
-        else if (type == 'gdufs_dept' || type == 'visitor_dept') {
-            //部门-->出席人-->事件
-            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][uniqueId]); //初始化填充部门节点
-            //循环每个链接，查看链接中attach的数据，从中获取外事出席人
-            for (let j in allLinks) {
-                let link = allLinks[j];
-                let attach = link['attach'];
-                //如果没有附加数据则继续循环
-                if (!OverallGeneralSer.checkDataNotEmpty(attach)) continue;
-
-                try {
-                    //解析出席人数据
-                    let attendeeData = JSON.parse(attach['attend']);
-                    //分别判断该链接的源是否与该校内单位节点相同，若相同则证明该链接关系与该节点相连。
-                    //由于gdufs_dept只有出度关系，因此不用判断入度
-                    if (uniqueId == link['source']) {
-                        let eventUniqueId = '';
-                        //若出访人不为空则添加出席人-->事件的关系
-                        if (OverallGeneralSer.checkDataNotEmpty(attendeeData)) {
-                            //由于校内单位相对事件必然为源节点，则添加该事件节点为目标节点
-                            eventUniqueId = link['target'];
-                            targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['target']]);
-
-                            for (let j in attendeeData) {
-                                let attendeeUniqueId = '';//添加出席人的uniqueId
-                                //如果中文名称没有，则添加英文名称
-                                if (!OverallGeneralSer.checkDataNotEmpty(attendeeData[j]['cn_name'])) {
-                                    attendeeData[j]['cn_name'] = attendeeData[j]['en_name']
-                                }
-                                //若之前尚未添加以该出席人姓名的为key的节点，则添加
-                                if (!tempNodeNameObj.hasOwnProperty(attendeeData[j]['cn_name'])) {
-                                    attendeeUniqueId = uuidv1();
-                                    tempNodeNameObj[attendeeData[j]['cn_name']] = attendeeUniqueId;
-                                    //添加出席人节点
-                                    targetNodeArray.push({
-                                        'cn_name': attendeeData[j]['cn_name'],
-                                        'hover_title': attendeeData[j]['cn_name'],
-                                        'unique_id': attendeeUniqueId,
-                                        'label_name': 'attendee'
-                                    });
-
-                                    //添加部门-->出席人关系
-                                    targetLinkArray.push({
-                                        'source': uniqueId,
-                                        'target': attendeeUniqueId,
-                                        'attach': {'unique_id': uuidv1()}
-                                    });
-
-                                } else {
-                                    //若之前已添加此出席人，则获取该出席人的unique_id值
-                                    attendeeUniqueId = tempNodeNameObj[attendeeData[j]['cn_name']];
-                                }
-
-                                //添加出席人-->事件关系
-                                targetLinkArray.push({
-                                    'source': attendeeUniqueId,
-                                    'target': eventUniqueId,
-                                    'attach': {'unique_id': uuidv1()}
-                                })
-                            }
-                        }
-                    }
-
-                } catch (e) {
-                    console.error('search add link err', e, link);
-                }
-            }
-        }
-        // console.log(targetNodeArray);
-        // console.log(targetLinkArray);
-        let graphData = parseNeoData({
-            'nodes': targetNodeArray,
-            'links': targetLinkArray
-        });
-
-        //初始化节点渲染到页面svg
-        nodeLinkGraphInit(graphData);
+        GraphExchangeDataSer.nodeLinkSelectedData[type]['info']['general']['status'] = true;
     }
 
 
@@ -629,148 +456,149 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      */
     function searchTargetNodes() {
         let targetText = GraphExchangeDataSer.overallData['search']['text'].trim();
-        let targetNodeArray = [], targetLinkArray = [], tempNodeUniqueIdArray = [];
-        let allNodes = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['nodes']);
-        let allLinks = angular.copy(GraphExchangeDataSer.allNodeLinkData['array']['links']);
+        let nodes = [], links = [], tempAllNodeObj = {};
 
-        //只有搜索内容不为空时才进行搜索
+        //监测目标搜索文本是否为空
         if (OverallGeneralSer.checkDataNotEmpty(targetText)) {
-            //1、搜索部门和事件相关节点
-            for (let i in allNodes) {
-                let node = allNodes[i];
-                try {
-                    if (node['label_name'] == 'visit_event_in' || node['label_name'] == 'visit_event_out') {
-                        //搜索visit_event节点中key_word, title
-                        if (node['key_word'].indexOf(targetText) > -1 || node['title'].indexOf(targetText) > -1) {
-                            targetNodeArray.push(node);
-                            tempNodeUniqueIdArray.push(node['unique_id'])
-                        }
-                    } else {
-                        //搜索gdufs_dept节点中cn_name
-                        //搜索visitor_dept节点中cn_name
-                        if (node['cn_name'].indexOf(targetText) > -1) {
-                            targetNodeArray.push(node);
-                            tempNodeUniqueIdArray.push(node['unique_id'])
-                        }
-                    }
-                } catch (e) {
-                    console.error('search add node err', e, node);
+            for (let i in GraphExchangeDataSer.originalData) {
+                let row = GraphExchangeDataSer.originalData[i];
+                //分别查找 学生|专业|学院|交换学校 相关数据
+                // 学院<--专业<--学生-->交换学校
+                if ((OverallGeneralSer.checkDataNotEmpty(row['name']) && row['name'].indexOf(targetText) > -1) ||
+                    (OverallGeneralSer.checkDataNotEmpty(row['major']) && row['major'].indexOf(targetText) > -1) ||
+                    (OverallGeneralSer.checkDataNotEmpty(row['institute']) && row['institute'].indexOf(targetText) > -1) ||
+                    (OverallGeneralSer.checkDataNotEmpty(row['exchange_school']) && row['exchange_school'].indexOf(targetText) > -1)) {
+
+                    //找到符合数据，并添加至 学院<--专业<--学生-->交换学校 关系图谱
+                    addInstituteMajorStuExSchool(nodes, links, row, tempAllNodeObj);
                 }
             }
+            //分别设置节点和链接数据至渲染数组中
+            let graphData = parseNeoData({
+                'nodes': nodes,
+                'links': links
+            });
+            //初始化节点渲染到页面svg
+            nodeLinkGraphInit(graphData);
 
-            //2、如果前面搜索的部门和事件节点不为空则添加关系链接，否则搜索人物信息
-            if (targetNodeArray.length > 0) {
-                //遍历每个节点的关系
-                for (let j in allLinks) {
-                    let link = allLinks[j];
-                    try {
-                        let sourceExist = tempNodeUniqueIdArray.indexOf(link['source']);
-                        let targetExist = tempNodeUniqueIdArray.indexOf(link['target']);
-                        if (sourceExist > -1 || targetExist > -1) {
-                            if (sourceExist > -1 && targetExist <= -1) {
-                                targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['target']]);
+            //设置搜索内容的横向标题，第二层级数据标签
+            GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = '搜索信息 “' + targetText + "” 相关内容";
 
-                            } else if (sourceExist <= -1 && targetExist > -1) {
-                                targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][link['source']]);
-                            }
-                            targetLinkArray.push({
-                                'source': link['source'],
-                                'target': link['target'],
-                                'attach': link['attach']
-                            })
-                        }
-
-                    } catch (e) {
-                        console.error('search add link err', e, link);
-                    }
-                }
-            }
-
-            //搜索人物信息
-            let teachObj = {}, eventSet = new Set();
-            for (let k in allLinks) {
-                let link = allLinks[k];
-                //搜索attend，若不空则进行json解析，否则继续下一个
-                let attend = link['attach']['attend'];
-                if (!OverallGeneralSer.checkDataNotEmpty(attend)) {
-                    continue;
-                }
-                let tempArray = JSON.parse(attend);
-                try {
-                    //遍历每个link的attach中的attend（出席人员），查看是否有相应的人员
-                    for (let h in tempArray) {
-                        //如果该名称为空则不进行查询，继续下一个节点
-                        if (!OverallGeneralSer.checkDataNotEmpty(tempArray[h]['cn_name'])) continue;
-                        //添加符合该教师名称的数据
-                        if (tempArray[h]['cn_name'].indexOf(targetText) > -1) {
-                            //如果该教师对象已添加该教师名称数据，则直接添加到数组，否则重新初始化
-                            if (teachObj.hasOwnProperty(tempArray[h]['cn_name'])) {
-                                teachObj[tempArray[h]['cn_name']].push(link['target']);
-                            } else {
-                                teachObj[tempArray[h]['cn_name']] = [link['target']]
-                            }
-                            //添加该事件的unique_id到不重复的set数组中
-                            eventSet.add(link['target']);
-                        }
-                    }
-                } catch (e) {
-                    console.error('search people add node err', e, link);
-                }
-            }
-
-            //添加相关的事件节点
-            for (let item of eventSet.values()) {
-                //如果之前尚未添加过则添加此节点信息
-                if (tempNodeUniqueIdArray.indexOf(item) <= -1) {
-                    targetNodeArray.push(GraphExchangeDataSer.allNodeLinkData['obj'][item])
-                }
-            }
-
-            //添加人员节点到节点并与事件节点进行链接
-            for (let i in teachObj) {
-                let uniqueId = uuidv1();
-                targetNodeArray.push({
-                    'cn_name': i,
-                    'hover_title': i,
-                    'unique_id': uniqueId,
-                    'label_name': 'attendee'
-                });
-                for (let j in teachObj[i]) {
-                    targetLinkArray.push({
-                        'source': uniqueId,
-                        'target': teachObj[i][j],
-                        'attach': {'unique_id': uuidv1()}
-                    })
-                }
-            }
-            //设置搜索内容的横向标题
-            GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = '搜索节点 “' + targetText + "” 相关内容";
         }
-        //若搜索为空，则返回之前的所有数据重新渲染
+        //如果搜索内容为空则返回数据源中的所有数据信息
         else {
-            //分别重新设置数据源为第一数据源
-            targetNodeArray = allNodes;
-            targetLinkArray = allLinks;
-            GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = ''; //强制设置第二数据源名称为空
+            //重新初始化交换生相关数据
+            initExchangeGraph();
+            //强制设置第二数据源名称为空，取消第二层级数据标签
+            GraphExchangeDataSer.overallData['graphPath']['layer2']['name'] = '';
+        }
+    }
+
+
+    /**
+     * 获取特定列匹配的列表数据，并封装成节点图
+     */
+    function selectTargetColumnData(columnType, targetText) {
+        //数据初始化
+        let nodes = [], links = [], tempAllNodeObj = {};
+
+        //遍历list列表每行进行查找
+        for (let i in GraphExchangeDataSer.originalData) {
+            let row = GraphExchangeDataSer.originalData[i];
+            //如果对应的列的值符合目标文本则添加全节点及关系链接
+            if (row[columnType] == targetText) {
+                //找到符合数据，并添加至 学院<--专业<--学生-->交换学校 关系图谱
+                addInstituteMajorStuExSchool(nodes, links, row, tempAllNodeObj);
+            }
         }
 
-        //console.log(targetNodeArray);
         //分别设置节点和链接数据至渲染数组中
         let graphData = parseNeoData({
-            'nodes': targetNodeArray,
-            'links': targetLinkArray
+            'nodes': nodes,
+            'links': links
         });
-
         //初始化节点渲染到页面svg
         nodeLinkGraphInit(graphData);
+    }
+
+
+    /**
+     * 添加 学院<--专业<--学生-->交换学校 关系图谱
+     * @param nodes
+     * @param links
+     * @param row
+     * @param tempAllNodeObj
+     */
+    function addInstituteMajorStuExSchool(nodes, links, row, tempAllNodeObj) {
+        //******** 添加节点信息 ********
+        // 学生节点
+        let studentId = checkAndAddNodes(nodes, tempAllNodeObj, row.name.trim(), {
+            cn_name: row.name.trim(),
+            label_name: 'student'
+        });
+        //专业节点
+        let majorId = checkAndAddNodes(nodes, tempAllNodeObj, row.major.trim(), {
+            cn_name: row.major.trim(),
+            label_name: 'major'
+        });
+        //学院节点
+        let instituteId = checkAndAddNodes(nodes, tempAllNodeObj, row.institute.trim(), {
+            cn_name: row.institute.trim(),
+            label_name: 'institute'
+        });
+        //交换学校节点
+        let exchangeSchoolId = checkAndAddNodes(nodes, tempAllNodeObj, row.exchange_school.trim(), {
+            cn_name: row.exchange_school.trim(),
+            label_name: 'exchange_school'
+        });
+
+        //******** 添加关系连接信息 ********
+        // 学生-->专业
+        links.push({
+            'source': studentId,
+            'target': majorId,
+            'attach': {'unique_id': uuidv1()}
+        });
+        // 专业-->学院
+        links.push({
+            'source': majorId,
+            'target': instituteId,
+            'attach': {'unique_id': uuidv1()}
+        });
+        // 学生-->交换大学
+        links.push({
+            'source': studentId,
+            'target': exchangeSchoolId,
+            'attach': {'unique_id': uuidv1()}
+        });
+    }
+
+
+    /**
+     * 检查并添加节点数据
+     */
+    function checkAndAddNodes(nodes, tempAllNodeObj, objSearchName, newNodeData) {
+        let targetUniqueId = ''; //目标unique_id
+        if (!tempAllNodeObj.hasOwnProperty(objSearchName)) {
+            //设置新的unique_id
+            targetUniqueId = uuidv1();
+            //添加新的节点数据
+            newNodeData.unique_id = targetUniqueId;
+            nodes.push(newNodeData);
+            //把该新添加的节点信息填充到节点对象中
+            tempAllNodeObj[objSearchName] = targetUniqueId;
+
+        } else {
+            //从所有节点对象中获取该目标unique_id信息
+            targetUniqueId = tempAllNodeObj[objSearchName];
+        }
+        return targetUniqueId;
     }
 
 
     return {
         getNeoData: getNeoData,
         chooseNodeMenu: chooseNodeMenu,
-        chooseNewsShow: chooseNewsShow,
-        getNewsOriginInfo: getNewsOriginInfo,
         searchTargetNodes: searchTargetNodes,
     }
 });

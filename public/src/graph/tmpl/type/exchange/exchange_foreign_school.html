@@ -1,0 +1,17 @@
+<!--广外学院基本信息描述展开合并控制-->
+<div style="padding: 8px 10px 10px 10px; background: whitesmoke;cursor: pointer"
+     ng-click="graph.nodeLinkSelectedData['exchange_school']['info']['general']['status']=!graph.nodeLinkSelectedData['exchange_school']['info']['general']['status']">
+    <div style="display: inline-block">基本描述</div>
+    <i style="font-size: 24px; position: relative; top: 4px; left: 5px; color: grey"
+       ng-class="{'fa fa-caret-down':graph.nodeLinkSelectedData['exchange_school']['info']['general']['status'], 'fa fa-caret-left':!graph.nodeLinkSelectedData['exchange_school']['info']['general']['status']}"></i>
+</div>
+<!--广外学院基本信息，可编辑状态-->
+<div style="padding: 10px 10px 10px 35px" ng-if="graph.nodeLinkSelectedData['exchange_school']['info']['general']['status']" >
+    <!--中文姓名-->
+    <div>
+        <span>交换学校：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['exchange_school']['info']['general']['data']['cn_name']"/>
+    </div>
+</div>
+
+

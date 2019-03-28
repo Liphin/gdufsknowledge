@@ -1,0 +1,41 @@
+<!--广外学院基本信息描述展开合并控制-->
+<div style="padding: 8px 10px 10px 10px; background: whitesmoke;cursor: pointer"
+     ng-click="graph.nodeLinkSelectedData['student']['info']['general']['status']=!graph.nodeLinkSelectedData['student']['info']['general']['status']">
+    <div style="display: inline-block">基本描述</div>
+    <i style="font-size: 24px; position: relative; top: 4px; left: 5px; color: grey"
+       ng-class="{'fa fa-caret-down':graph.nodeLinkSelectedData['student']['info']['general']['status'], 'fa fa-caret-left':!graph.nodeLinkSelectedData['student']['info']['general']['status']}"></i>
+</div>
+<!--广外学院基本信息，可编辑状态-->
+<div class="infoInput" style="padding: 10px 10px 10px 35px" ng-if="graph.nodeLinkSelectedData['student']['info']['general']['status']" >
+    <!--中文姓名-->
+    <div>
+        <span>姓名：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['student']['info']['general']['data']['cn_name']"/>
+    </div>
+    <div style="margin-top: 10px">
+        <span>专业：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['student']['info']['general']['data']['major']"/>
+    </div>
+    <div style="margin-top: 10px">
+        <span>学院：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['student']['info']['general']['data']['institute']"/>
+    </div>
+    <div style="margin-top: 10px">
+        <span>交换学校：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['student']['info']['general']['data']['exchange_school']"/>
+    </div>
+    <div style="margin-top: 10px">
+        <span>所选科目：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['student']['info']['general']['data']['target_major']"/>
+    </div>
+    <div style="margin-top: 10px">
+        <span>交换期限：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['student']['info']['general']['data']['exchange_period']"/>
+    </div>
+    <div style="margin-top: 10px">
+        <span>项目名称：</span>
+        <input class="inputInfo" ng-model="graph.nodeLinkSelectedData['student']['info']['general']['data']['project_name']"/>
+    </div>
+</div>
+
+

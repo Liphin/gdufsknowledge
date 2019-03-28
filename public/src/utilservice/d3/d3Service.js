@@ -41,15 +41,16 @@ let forceProperties = {
 
 function D3Service() {
 
-    let svg, linkArray, nodeArray, nodes, links, nodesObj,
+    let svg, linkArray, nodeArray, zoomScale, nodes, links, nodesObj,
         mouseEnterCallback, mouseLeaveCallback, mouseClickCallback,
-        screenDimension={}, graphSetting, nodeTypeSetting;
+        screenDimension = {}, graphSetting, nodeTypeSetting;
 
     /**
      * 基础元素设置
      * @param _svg svg画图节点设置
      * @param _linkArray 关系数组设置
      * @param _nodeArray 节点数组设置
+     * @param _zoomScale
      */
     function element(_svg, _linkArray, _nodeArray) {
         svg = _svg;
@@ -267,15 +268,16 @@ function D3Service() {
             });
 
             //设置文本上偏移及文本内容，先文本后方框才能文字显示在前面
+            let text = d[nodeTypeSetting[d['label_name']]['textKey']];
             nodeTextNode.select("text")
                 .attr("y", -(nodesObj[d['unique_id']]['radius'] + 20)) //依据节点半径再上偏移13个单位长度即可)
-                .text(d['hover_title']);
+                .text(text);
 
             //设置文本背景白色矩形框的上偏移、左偏移和宽度
             nodeTextNode.select("rect")
                 .attr("y", -(nodesObj[d['unique_id']]['radius'] + 43))//依据节点半径再上偏移30个单位长度即可)
-                .attr("x", -(d['hover_title'].length * 8 + 18))
-                .attr("width", d['hover_title'].length * 16 + 34)
+                .attr("x", -(text.length * 8 + 18))
+                .attr("width", text.length * 16 + 34)
 
             //执行鼠标进入该节点时的回调函数操作
             mouseEnterCallback(d, i);
@@ -310,6 +312,9 @@ function D3Service() {
             .on("end", dragended));
 
         //设置svg中zoom移动和缩放交互
+        // let zoom = d3.zoom().on("zoom", zoomActions);
+        // svg.call(zoom);
+        // svg.call(zoom.transform, d3.zoomIdentity.translate(0, 0).scale(0.8));
         d3.zoom().on("zoom", zoomActions)(svg);
 
         //设置力导图的tick渲染事件
@@ -471,7 +476,6 @@ function D3Service() {
             }
         });
     }
-
 
 
     return {

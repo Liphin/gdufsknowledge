@@ -12,7 +12,7 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
      */
     function initGraph(graph) {
         //设置数据源
-        GraphDataSer.generalData.alactiveGraph = $routeParams['options'];
+        GraphDataSer.generalData.activeGraph = $routeParams['options'];
 
         //根据不同的option类型决定不同的知识图谱数据源
         switch ($routeParams['options']) {
@@ -41,7 +41,7 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
 
 
     /**
-     * 根据不同节点类型选择展示不同菜单项
+     * 针对新闻数据类型，打开对应的新闻数据在屏幕右侧面板
      */
     function chooseNewsShow(uniqueId, type) {
         switch ($routeParams['options']) {
@@ -83,6 +83,9 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
                 GraphNewsSer.chooseNodeMenu(menuType);
                 break;
             }
+            case 'exchange':{
+                GraphExchangeSer.chooseNodeMenu(menuType)
+            }
         }
     }
 
@@ -92,8 +95,14 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
      */
     function searchTargetNodes() {
         switch ($routeParams['options']) {
+            //新闻实体数据
             case 'news': {
                 GraphNewsSer.searchTargetNodes();
+                break;
+            }
+            //交换生实体数据
+            case 'exchange': {
+                GraphExchangeSer.searchTargetNodes();
                 break;
             }
         }

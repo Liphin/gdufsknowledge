@@ -92,10 +92,7 @@
     <!--右侧数据展示区-->
     <div>
         <!--锁定和解锁装置，是否点击节点后释放出来-->
-        <!--<i ng-class="{'fa fa-unlock-alt fa-flip-horizontal':!graph.overallData['lockRightBar'],'fa fa-lock':graph.overallData['lockRightBar']}" ng-click="graph.overallData['lockRightBar']=!graph.overallData['lockRightBar']"-->
-        <!--style="z-index: 10;color: #808080;cursor: pointer;font-size: 25px; position: absolute; top: {{overallData['screen']['height']/2-70}}px; right: 2px"></i>-->
-        <!--<i ng-if="!graph.overallData['rightBarShow']" class="fa fa-angle-double-left" ng-click="graph.overallData['rightBarShow']=true" style="z-index: 10;;color: #808080;cursor: pointer;font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; right: 2px"></i>-->
-        <div ng-show="graph.overallData['rightBarShow']" class="graphRightBar" style="position: fixed; right: 0; top: 0; bottom: 0;z-index: 10;border: 1px solid #e2e2e2; border-width: 0 0 0 1px; box-shadow: 0 -2px 5px #d4d4d4;background: white">
+        <div ng-show="graph.overallData['rightBarShow']" class="graphRightBar ng-hide" style="position: fixed; right: 0; top: 0; bottom: 0;z-index: 10;border: 1px solid #e2e2e2; border-width: 0 0 0 1px; box-shadow: 0 -2px 5px #d4d4d4;background: white">
             <i ng-if="graph.overallData['rightBarShow']" class="fa fa-angle-double-right" ng-click="graph.overallData['rightBarShow']=false;graph.overallData['rightBarInfoShow'] = true; graph.loader['nodeDetail']['status']=false" style="z-index: 10;cursor: pointer;color: #808080; font-size: 30px; position: absolute; top: {{overallData['screen']['height']/2-30}}px; left: 2px"></i>
 
             <!--信息展示头部，选择某中进行字段信息展示-->
@@ -116,18 +113,21 @@
             </div>
 
             <div ng-if="!graph.loader['nodeDetail']['status']" style="width: 100%; overflow-y: auto; position: absolute; bottom: 0; top: 42px; padding-bottom: 20px" class="scrollBar-7">
-                <!--来访、到访事件新闻数据展示-->
-                <visit-event-info ng-if="graph.nodeLinkSelectedData['visit_event_in']['status']||graph.nodeLinkSelectedData['visit_event_out']['status']"
-                                  style="overflow-y: auto;" ></visit-event-info>
+                <!--交换生所在的学院-->
+                <exchange-institute ng-if="graph.nodeLinkSelectedData['institute']['status']||graph.nodeLinkSelectedData['institute']['status']"
+                                  style="overflow-y: auto;" ></exchange-institute>
 
-                <!--广外部门节点信息展示 -->
-                <gdufs-dept-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['gdufs_dept']['status']"></gdufs-dept-info>
+                <!--交换生出国交换的学校-->
+                <exchange-foreign-school ng-if="graph.nodeLinkSelectedData['exchange_school']['status']||graph.nodeLinkSelectedData['exchange_school']['status']"
+                                    style="overflow-y: auto;" ></exchange-foreign-school>
 
-                <!--来访嘉宾所在单位 -->
-                <visitor-dept-info style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['visitor_dept']['status']"></visitor-dept-info>
+                <!--交换生在广外所学的专业-->
+                <exchange-major ng-if="graph.nodeLinkSelectedData['major']['status']||graph.nodeLinkSelectedData['major']['status']"
+                                    style="overflow-y: auto;" ></exchange-major>
 
-                <!--会议参与者/接待嘉宾 -->
-                <attendee style="overflow-y: auto;" ng-if="graph.nodeLinkSelectedData['attendee']['status']"></attendee>
+                <!--交换生个人信息-->
+                <exchange-student-graph ng-if="graph.nodeLinkSelectedData['student']['status']||graph.nodeLinkSelectedData['student']['status']"
+                                    style="overflow-y: auto;" ></exchange-student-graph>
             </div>
         </div>
     </div>

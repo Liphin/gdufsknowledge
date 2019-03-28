@@ -94,7 +94,6 @@ let getAllVisitEventNode = function (driver) {
                     } else {
                         result['label_name'] = 'visit_event_in';
                     }
-                    result['hover_title']=result['title'];
                     visitEventNodes.push(result);
                 },
                 onCompleted: () => {
