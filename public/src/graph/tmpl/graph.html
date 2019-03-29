@@ -1,5 +1,12 @@
+<!------------------ 各知识图谱模块 ------------------>
 <!--news知识图谱-->
-<news-graph ng-if="graph.generalData.activeGraph=='news'"></news-graph>
+<news-graph ng-if="graph.generalData.activeGraph.type=='news'"></news-graph>
 
 <!--交换生数据知识图谱-->
-<exchange-graph ng-if="graph.generalData.activeGraph=='exchange'"></exchange-graph>
+<exchange-graph ng-if="graph.generalData.activeGraph.type=='exchange'"></exchange-graph>
+
+<!------------------ 各知识图谱通用模块 ------------------>
+<!--Loader动画加载-->
+<graph-loader></graph-loader>
+<!--选择数据源的方法-->
+<all-graph></all-graph>

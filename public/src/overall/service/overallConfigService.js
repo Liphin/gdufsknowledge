@@ -19,7 +19,7 @@ overallModule.config(function ($routeProvider, $httpProvider, $sceDelegateProvid
         })
 
         //图数据节点的展示
-        .when('/graph/:options', {
+        .when('/graph/:year/:type', {
             templateUrl: 'src/graph/tmpl/graph.html',
             controller: 'GraphCtrl',
             controllerAs: 'graph',
@@ -36,7 +36,7 @@ overallModule.config(function ($routeProvider, $httpProvider, $sceDelegateProvid
             controller: 'UtilServiceCtrl',
             controllerAs: 'util',
         })
-        .otherwise({redirectTo: '/graph/news'});
+        .otherwise({redirectTo: '/graph/2018/news'});
 
     //部署拦截器，每次http请求，会经过拦截器方法后再往下传
     $httpProvider.interceptors.push('interceptHttp');

@@ -27,6 +27,13 @@
                 <span style="font-size: 16px; color: #0082a2">
                     <!--主数据源-->
                     <span ng-click="graph.backToSourceData()" style="text-decoration: underline; cursor: pointer">{{graph.overallData['graphPath']['layer1']['name']}}</span>
+                    <!--切换数据源按钮-->
+                    <div style="cursor: pointer;display: inline-block;border-radius: 5px;margin-left: 20px;font-size: 13px; border: 1px solid gainsboro; padding: 3px 12px;margin-top: -10px"
+                         ng-click="graph.generalData.dataSource.status=true"
+                         ng-if="graph.overallData['graphPath']['layer2']['name']==''">
+                        <span class="fa fa-exchange"></span>
+                        <span>更换数据源</span>
+                    </div>
                     <!--查询主数据源中节点及关系数据或主数据源的子节点-->
                     <span ng-if="graph.overallData['graphPath']['layer2']['name']!=''">
                         <span class="fa fa-angle-right" style="margin:0 10px"></span>
@@ -67,7 +74,7 @@
 
         <!--background: #ffffed;-->
         <div>
-            <svg class="knowledgeSvg" knowledge-render style="width: 100%; height: 100%" >
+            <svg class="knowledgeSvgExchange" knowledge-render style="width: 100%; height: 100%" >
                 <g class="links"></g>
                 <g class="nodes"></g>
             </svg>
@@ -130,7 +137,4 @@
             </div>
         </div>
     </div>
-
-    <!--Loader动画加载-->
-    <graph-loader></graph-loader>
 </div>

@@ -184,4 +184,9 @@
     width: 230px;
 }
 
+.selectedDataSource{
+    color: #4da6cc;
+    font-weight: bold;
+}
+
 

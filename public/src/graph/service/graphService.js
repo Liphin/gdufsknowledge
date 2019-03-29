@@ -12,10 +12,10 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
      */
     function initGraph(graph) {
         //设置数据源
-        GraphDataSer.generalData.activeGraph = $routeParams['options'];
+        GraphDataSer.generalData.activeGraph = $routeParams;
 
         //根据不同的option类型决定不同的知识图谱数据源
-        switch ($routeParams['options']) {
+        switch (GraphDataSer.generalData.activeGraph['type']) {
             case 'news': {
                 //循环赋值到graph和GraphDataSer中，每次在页面中直接使用对应模块的数据
                 for (let i in GraphNewsDataSer) {
@@ -44,7 +44,7 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
      * 针对新闻数据类型，打开对应的新闻数据在屏幕右侧面板
      */
     function chooseNewsShow(uniqueId, type) {
-        switch ($routeParams['options']) {
+        switch (GraphDataSer.generalData.activeGraph['type']) {
             case 'news': {
                 GraphNewsSer.chooseNewsShow(uniqueId, type);
                 break;
@@ -65,7 +65,7 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
      * 返问新闻原网页信息数据
      */
     function getNewsOriginInfo(event) {
-        switch ($routeParams['options']) {
+        switch (GraphDataSer.generalData.activeGraph['type']) {
             case 'news': {
                 GraphNewsSer.getNewsOriginInfo(event);
                 break;
@@ -78,7 +78,7 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
      * 选择对应节点的菜单项
      */
     function chooseNodeMenu(menuType) {
-        switch ($routeParams['options']) {
+        switch (GraphDataSer.generalData.activeGraph['type']) {
             case 'news': {
                 GraphNewsSer.chooseNodeMenu(menuType);
                 break;
@@ -94,7 +94,7 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
      * 搜索框输入搜索对应的节点信息
      */
     function searchTargetNodes() {
-        switch ($routeParams['options']) {
+        switch (GraphDataSer.generalData.activeGraph['type']) {
             //新闻实体数据
             case 'news': {
                 GraphNewsSer.searchTargetNodes();
@@ -112,8 +112,11 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
     /**
      * 点击切换数据源
      */
-    function switchDataSource(target) {
-        $location.path(target);
+    function switchDataSource(year, type) {
+        //设置location跳转路径
+        $location.path('graph/' + year + '/' + type);
+        //关闭数据源面板
+        GraphDataSer.generalData.dataSource.status = false;
     }
 
 

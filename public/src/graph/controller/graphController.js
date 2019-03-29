@@ -66,8 +66,8 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, OverallGe
      * 点击切换知识图谱的数据源
      * @see GraphSer.switchDataSource
      */
-    graph.switchDataSource= function () {
-        GraphSer.switchDataSource();
+    graph.switchDataSource= function (year, type) {
+        GraphSer.switchDataSource(year, type);
     };
 
 });

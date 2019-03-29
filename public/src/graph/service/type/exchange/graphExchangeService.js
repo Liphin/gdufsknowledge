@@ -4,7 +4,7 @@
  */
 var graphModule = angular.module('Angular.graph');
 
-graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $routeParams, OverallDataSer, OverallGeneralSer,
+graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, OverallDataSer, OverallGeneralSer,
                                                   $location, $http, GraphExchangeDataSer, GraphNewsSer, AnalyseDataSer, AnalyseSer) {
 
     /**
@@ -254,9 +254,9 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * @returns {{svg, linkArray, nodeArray}}
      */
     function setIntervalGetPageDom(resolve) {
-        let svg = d3.select(".knowledgeSvg"); //图数据库展示
-        let linkArray = d3.select(".links"); //连接数组
-        let nodeArray = d3.select(".nodes"); //节点数组
+        let svg = d3.select(".knowledgeSvgExchange"); //图数据库展示
+        let linkArray = d3.select(".knowledgeSvgExchange .links"); //连接数组
+        let nodeArray = d3.select(".knowledgeSvgExchange .nodes"); //节点数组
 
         //检查是否有任何一个页面元素为空（可能由于页面渲染尚未完成）
         if (svg.empty() || linkArray.empty() || nodeArray.empty()) {

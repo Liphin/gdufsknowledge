@@ -1,33 +1,45 @@
-<div style="z-index: 100;position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.35)">
-    <!--知识图谱数据年份选择-->
-    <div>
-        <span>年份</span>
-        <div style="display: inline-block; padding: 4px 12px;">
-            <select convert-to-number ng-model="graph.generalData.dataSource.year">
-                <option ng-repeat="(key, value) in graph.generalData.dataSource.data" value="{{key}}">
-                    {{key}}年
-                </option>
-            </select>
+<div ng-if="graph.generalData.dataSource.status" style="z-index: 100;position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.35)">
+    <!--外层包裹div，用于全局居中对齐-->
+    <div style="width: 100%; text-align: center; display: inline-block">
+        <!--用于设置数据源面板框-->
+        <div class="scrollBar-7" style="overflow-y: auto;display: inline-block;width: 700px; padding: 30px; background: white; border-radius: 15px;margin-top: 70px; max-height: {{overallData.screen.height-140}}"px>
+            <!--关闭按钮-->
+            <span style="float: right; position: relative; font-size: 30px; color: grey; top: -10px">&times;</span>
+
+            <!--标题：选择知识图谱的数据源-->
+            <div style="font-size: 17px">知识图谱数据源选择</div>
+
+            <!--知识图谱数据年份选择-->
+            <div style="margin-top: 10px">
+                <span>年份</span>
+                <div style="display: inline-block; margin: 0 12px;">
+                    <select style="outline: none;padding: 2px 7px; border-radius: 3px" ng-model="graph.generalData.dataSource.targetYear" convert-to-number>
+                        <option ng-repeat="value in [2018, 2019]" value="{{value}}">
+                            {{value}}年
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <!--所有知识图谱数据-->
+            <table class="table table-hover" style="background: white">
+                <thead>
+                <tr>
+                    <th>数据源名称</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="value in graph.generalData.dataSource.data | filter:{year:graph.generalData.dataSource.targetYear}" >
+                    <td style="font-size: 15px">
+                        <span ng-class="{'selectedDataSource':value['type']==graph.generalData.activeGraph.type}">{{value['name']}}</span>
+                    </td>
+                    <td style="font-size: 15px; cursor: pointer; text-decoration: underline;color: #368aad">
+                        <span ng-click="graph.switchDataSource(value['year'],value['type'])">选择</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-    <!--所有知识图谱数据-->
-    <table class="table table-hover" style="background: white">
-        <thead>
-        <tr>
-            <th>数据源名称</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td ng-repeat="(key, value) in graph.generalData.dataSource.data" >
-
-            </td>
-            <td>
-                <span ng-click="graph.switchDataSource(key)">选择</span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
 
 </div>
