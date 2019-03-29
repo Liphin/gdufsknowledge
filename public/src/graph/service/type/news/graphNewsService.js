@@ -91,7 +91,8 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, Overal
 
                         //若热键按住ctrl+点击事件执行click回调
                         if (OverallDataSer.keyBoard['ctrl']) {
-                            console.log('ctrl click')
+                            //获取新闻信息数据
+                            getNewsInfo();
 
                         } else {
                             //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
