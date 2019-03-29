@@ -4,7 +4,7 @@
         <!--用于设置数据源面板框-->
         <div class="scrollBar-7" style="overflow-y: auto;display: inline-block;width: 700px; padding: 30px; background: white; border-radius: 15px;margin-top: 70px; max-height: {{overallData.screen.height-140}}"px>
             <!--关闭按钮-->
-            <span style="float: right; position: relative; font-size: 30px; color: grey; top: -10px">&times;</span>
+            <span ng-click="graph.generalData.dataSource.status=false" style="cursor: pointer;float: right; position: relative; font-size: 30px; color: grey; top: -10px">&times;</span>
 
             <!--标题：选择知识图谱的数据源-->
             <div style="font-size: 17px">知识图谱数据源选择</div>
