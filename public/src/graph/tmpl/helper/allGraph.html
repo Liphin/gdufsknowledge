@@ -1,0 +1,33 @@
+<div style="z-index: 100;position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.35)">
+    <!--知识图谱数据年份选择-->
+    <div>
+        <span>年份</span>
+        <div style="display: inline-block; padding: 4px 12px;">
+            <select convert-to-number ng-model="graph.generalData.dataSource.year">
+                <option ng-repeat="(key, value) in graph.generalData.dataSource.data" value="{{key}}">
+                    {{key}}年
+                </option>
+            </select>
+        </div>
+    </div>
+    <!--所有知识图谱数据-->
+    <table class="table table-hover" style="background: white">
+        <thead>
+        <tr>
+            <th>数据源名称</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td ng-repeat="(key, value) in graph.generalData.dataSource.data" >
+
+            </td>
+            <td>
+                <span ng-click="graph.switchDataSource(key)">选择</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>

@@ -60,7 +60,16 @@ graphModule.controller('GraphCtrl', function ($location, $routeParams, OverallGe
         GraphDataSer.overallData['graphPath']['layer2']['name'] = ''; //设置第二层级数据源名称为空
         GraphDataSer.overallData['search']['text'] = ''; //设置搜索内容为空
         GraphSer.searchTargetNodes();//返回主数据源相当于搜索空内容
-    }
+    };
+
+    /**
+     * 点击切换知识图谱的数据源
+     * @see GraphSer.switchDataSource
+     */
+    graph.switchDataSource= function () {
+        GraphSer.switchDataSource();
+    };
+
 });
 
 

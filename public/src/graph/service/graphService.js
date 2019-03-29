@@ -83,7 +83,7 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
                 GraphNewsSer.chooseNodeMenu(menuType);
                 break;
             }
-            case 'exchange':{
+            case 'exchange': {
                 GraphExchangeSer.chooseNodeMenu(menuType)
             }
         }
@@ -109,8 +109,17 @@ graphModule.factory('GraphSer', function ($rootScope, $routeParams, OverallDataS
     }
 
 
+    /**
+     * 点击切换数据源
+     */
+    function switchDataSource(target) {
+        $location.path(target);
+    }
+
+
     return {
         initGraph: initGraph,
+        switchDataSource: switchDataSource,
         chooseNewsShow: chooseNewsShow,//菜单选择
         resetAllNodeStyle: resetAllNodeStyle,//重置节点颜色
         chooseNodeMenu: chooseNodeMenu, //选择对应节点的菜单

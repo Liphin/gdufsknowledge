@@ -13,7 +13,15 @@ graphModule.directive('graphLoader', ['$document', function ($document) {
         templateUrl: 'src/graph/tmpl/helper/loader.html'
     };
 }]);
-
+/**
+ * 选择数据源的方法
+ */
+graphModule.directive('allGraph', ['$document', function ($document) {
+    return {
+        restrict: 'E',
+        templateUrl: 'src/graph/tmpl/helper/allGraph.html'
+    };
+}]);
 
 
 //***************************广外新闻数据*****************************************

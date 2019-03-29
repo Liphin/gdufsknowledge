@@ -11,6 +11,9 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
      * 获取所有neo4j数据库中的数据
      */
     function getNeoData() {
+        //设置等待节点数据loading开启
+        GraphNewsDataSer.loader.nodeLinks.status = true;
+
         //后台获取对应的新闻数据
         OverallGeneralSer.httpPostData3({}, OverallDataSer.urlData['frontEndHttp']['getAllNodeAndLinksData'], function (result) {
 
@@ -22,8 +25,35 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
 
             //初始化节点和关系图数据
             nodeLinkGraphInit(graphData);
+        });
+    }
 
-        }, GraphNewsDataSer.loader.nodeDetail);
+
+    /**
+     * 获取页面 svg, linkArray, nodeArray相应的dom元素
+     * 若页面尚未渲染完成，获取为空则隔500毫秒后再次获取
+     * @returns {{svg, linkArray, nodeArray}}
+     */
+    function setIntervalGetPageDom(resolve) {
+        let svg = d3.select(".knowledgeSvg"); //图数据库展示
+        let linkArray = d3.select(".links"); //连接数组
+        let nodeArray = d3.select(".nodes"); //节点数组
+
+        //检查是否有任何一个页面元素为空（可能由于页面渲染尚未完成）
+        if (svg.empty() || linkArray.empty() || nodeArray.empty()) {
+            //设定500毫秒后递归重新获取页面上元素
+            $timeout(function () {
+                setIntervalGetPageDom(resolve);
+            }, 400);
+
+        } else {
+            //返回图谱展示的HTML元素三者的封装
+            resolve({
+                svg: svg,
+                linkArray: linkArray,
+                nodeArray: nodeArray,
+            });
+        }
     }
 
 
@@ -31,43 +61,52 @@ graphModule.factory('GraphNewsSer', function ($sce, $timeout, $rootScope, $route
      * 节点和关系连接数据初始化
      */
     function nodeLinkGraphInit(graphData) {
-        let svg = d3.select(".knowledgeSvg"); //图数据库展示
-        let linkArray = d3.select(".links"); //连接数组
-        let nodeArray = d3.select(".nodes"); //节点数组
+        //d3获取相应的svg等数据，若页面加载延迟则$timeout重复获取
+        let domAsync = new Promise(function(resolve, reject) {
+            setIntervalGetPageDom(resolve);
+        });
+        //同步机制
+        domAsync.then(function (domData) {
+            let svg = domData.svg, linkArray = domData.linkArray, nodeArray = domData.nodeArray;
+            //知识图谱初始化
+            D3Service()
+                .element(svg, linkArray, nodeArray)
+                .nodeLinks(graphData.nodes, graphData.links, graphData.nodesObj)
+                .d3Setting(GraphNewsDataSer.overallData.graphSetting, GraphNewsDataSer.nodeTypeSetting)
+                .interaction(
+                    (d, i) => {
+                        GraphNewsDataSer.overallData.nodeHover.status = true;
+                        GraphNewsDataSer.overallData.nodeHover.unique_id = d.unique_id;
+                        GraphNewsDataSer.overallData.nodeHover.type = d.label_name;
+                        //console.log('enter', d, i);
+                    },
+                    (d, i) => {
+                        GraphNewsDataSer.overallData.nodeHover.status = false;
+                        //console.log('leave', d, i);
+                    },
+                    (d, i) => {
+                        //存储当前选择的节点相关数据
+                        GraphNewsDataSer.overallData.nodeSelected.unique_id = d.unique_id;
+                        GraphNewsDataSer.overallData.nodeSelected.type = d.label_name;
 
-        D3Service()
-            .element(svg, linkArray, nodeArray)
-            .nodeLinks(graphData.nodes, graphData.links, graphData.nodesObj)
-            .d3Setting(GraphNewsDataSer.overallData.graphSetting, GraphNewsDataSer.nodeTypeSetting)
-            .interaction(
-                (d, i) => {
-                    GraphNewsDataSer.overallData.nodeHover.status = true;
-                    GraphNewsDataSer.overallData.nodeHover.unique_id = d.unique_id;
-                    GraphNewsDataSer.overallData.nodeHover.type = d.label_name;
-                    //console.log('enter', d, i);
-                },
-                (d, i) => {
-                    GraphNewsDataSer.overallData.nodeHover.status = false;
-                    //console.log('leave', d, i);
-                },
-                (d, i) => {
-                    //存储当前选择的节点相关数据
-                    GraphNewsDataSer.overallData.nodeSelected.unique_id = d.unique_id;
-                    GraphNewsDataSer.overallData.nodeSelected.type = d.label_name;
+                        //若热键按住ctrl+点击事件执行click回调
+                        if (OverallDataSer.keyBoard['ctrl']) {
+                            console.log('ctrl click')
 
-                    //若热键按住ctrl+点击事件执行click回调
-                    if (OverallDataSer.keyBoard['ctrl']) {
-                        console.log('ctrl click')
-
-                    } else {
-                        //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
-                        if (GraphNewsDataSer.overallData.graphSetting.nodesGray) {
-                            D3Service().setUnRelativeNodeGray(d, i, GraphNewsDataSer.nodeTypeSetting, graphData.links);
+                        } else {
+                            //若开启其他节点灰化设置，且没有按下ctrl热键时，则设置其他节点灰化，只与之相关的节点展示颜色
+                            if (GraphNewsDataSer.overallData.graphSetting.nodesGray) {
+                                D3Service().setUnRelativeNodeGray(d, i, GraphNewsDataSer.nodeTypeSetting, graphData.links);
+                            }
                         }
                     }
-                }
-            )
-            .nodeLinkInit(); //最后才执行此创建步骤
+                )
+                .nodeLinkInit(); //最后才执行此创建步骤
+
+            //设置等待节点数据loading结束
+            GraphNewsDataSer.loader.nodeLinks.status = false;
+            $rootScope.$apply();
+        });
     }
 
 

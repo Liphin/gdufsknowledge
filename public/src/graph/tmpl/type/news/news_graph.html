@@ -23,10 +23,15 @@
     <div style="width: 100%;height: 100%">
         <div style="box-shadow: 0 0 5px grey;position: absolute; top: 0; height: 89px;left: 170px; right: 0; background: white; z-index: 5;padding: 15px 0 0 50px">
             <!--数据源-->
-            <div style="display: inline-block">
+            <div style="display: inline-block" ng-click="graph.switchDataSource()">
                 <span style="font-size: 16px; color: #0082a2">
                     <!--主数据源-->
                     <span ng-click="graph.backToSourceData()" style="text-decoration: underline; cursor: pointer">{{graph.overallData['graphPath']['layer1']['name']}}</span>
+                    <!--切换数据源按钮-->
+                    <div style="display: inline-block;border-radius: 5px;margin-left: 20px;font-size: 13px; border: 1px solid gainsboro; padding: 3px 12px;margin-top: -10px" ng-if="graph.overallData['graphPath']['layer2']['name']==''">
+                        <span class="fa fa-exchange"></span>
+                        <span>更换数据源</span>
+                    </div>
                     <!--查询主数据源中节点及关系数据或主数据源的子节点-->
                     <span ng-if="graph.overallData['graphPath']['layer2']['name']!=''">
                         <span class="fa fa-angle-right" style="margin:0 10px"></span>
@@ -36,7 +41,7 @@
             </div>
 
             <!--按类别搜索相关节点信息-->
-            <div style="margin-top: 10px; ">
+            <div style="margin-top: 7px; ">
                 <div style="display: inline-block; position: relative; top: 2px">
                     <span>校内组织 </span><i class="fa fa-square" style="color: rgb(236,181,201)"></i>
                     <span style="margin-left: 15px">外方实体 </span><i class="fa fa-square" style="color: rgb(247,213,176)"></i>
@@ -130,4 +135,7 @@
 
     <!--Loader动画加载-->
     <graph-loader></graph-loader>
+
+    <!--选择数据源的方法-->
+    <all-graph></all-graph>
 </div>

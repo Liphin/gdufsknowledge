@@ -11,6 +11,9 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
      * 获取所有neo4j数据库中的数据
      */
     function getNeoData() {
+        //设置等待节点数据loading开启
+        GraphExchangeDataSer.loader.nodeLinks.status = true;
+
         //若用于分析的广外外事数据为空则重新获取，否则直接使用即可
         if (!OverallGeneralSer.checkDataNotEmpty(AnalyseDataSer.knowData)) {
             //获取广外知外事数据
@@ -278,7 +281,7 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
     function nodeLinkGraphInit(graphData) {
 
         //d3获取相应的svg等数据，若页面加载延迟则$timeout重复获取
-        let domAsync = new Promise(function(resolve, reject) {
+        let domAsync = new Promise(function (resolve, reject) {
             setIntervalGetPageDom(resolve);
         });
         //同步机制
@@ -318,6 +321,10 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, $r
                     }
                 )
                 .nodeLinkInit(); //最后才执行此创建步骤
+
+            //设置等待节点数据loading结束
+            GraphExchangeDataSer.loader.nodeLinks.status = false;
+            $rootScope.$apply();
         });
     }
 
