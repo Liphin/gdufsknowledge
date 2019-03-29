@@ -471,10 +471,15 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, Ov
                 let row = GraphExchangeDataSer.originalData[i];
                 //分别查找 学生|专业|学院|交换学校 相关数据
                 // 学院<--专业<--学生-->交换学校
-                if ((OverallGeneralSer.checkDataNotEmpty(row['name']) && row['name'].indexOf(targetText) > -1) ||
-                    (OverallGeneralSer.checkDataNotEmpty(row['major']) && row['major'].indexOf(targetText) > -1) ||
-                    (OverallGeneralSer.checkDataNotEmpty(row['institute']) && row['institute'].indexOf(targetText) > -1) ||
-                    (OverallGeneralSer.checkDataNotEmpty(row['exchange_school']) && row['exchange_school'].indexOf(targetText) > -1)) {
+                //check全部字段不为空才显示
+                if ((OverallGeneralSer.checkDataNotEmpty(row['name']) &&
+                    OverallGeneralSer.checkDataNotEmpty(row['major']) &&
+                    OverallGeneralSer.checkDataNotEmpty(row['institute']) &&
+                    OverallGeneralSer.checkDataNotEmpty(row['exchange_school'])) &&
+                    (row['name'].indexOf(targetText) > -1 ||
+                    row['major'].indexOf(targetText) > -1 ||
+                    row['institute'].indexOf(targetText) > -1 ||
+                    row['exchange_school'].indexOf(targetText) > -1)) {
 
                     //找到符合数据，并添加至 学院<--专业<--学生-->交换学校 关系图谱
                     addInstituteMajorStuExSchool(nodes, links, row, tempAllNodeObj);
@@ -514,8 +519,18 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, Ov
             let row = GraphExchangeDataSer.originalData[i];
             //如果对应的列的值符合目标文本则添加全节点及关系链接
             if (row[columnType] == targetText) {
-                //找到符合数据，并添加至 学院<--专业<--学生-->交换学校 关系图谱
-                addInstituteMajorStuExSchool(nodes, links, row, tempAllNodeObj);
+                if ((OverallGeneralSer.checkDataNotEmpty(row['name']) &&
+                    OverallGeneralSer.checkDataNotEmpty(row['major']) &&
+                    OverallGeneralSer.checkDataNotEmpty(row['institute']) &&
+                    OverallGeneralSer.checkDataNotEmpty(row['exchange_school'])) &&
+                    (row['name'].indexOf(targetText) > -1 ||
+                    row['major'].indexOf(targetText) > -1 ||
+                    row['institute'].indexOf(targetText) > -1 ||
+                    row['exchange_school'].indexOf(targetText) > -1)) {
+
+                    //找到符合数据，并添加至 学院<--专业<--学生-->交换学校 关系图谱
+                    addInstituteMajorStuExSchool(nodes, links, row, tempAllNodeObj);
+                }
             }
         }
 
@@ -539,23 +554,23 @@ graphModule.factory('GraphExchangeSer', function ($sce, $timeout, $rootScope, Ov
     function addInstituteMajorStuExSchool(nodes, links, row, tempAllNodeObj) {
         //******** 添加节点信息 ********
         // 学生节点
-        let studentId = checkAndAddNodes(nodes, tempAllNodeObj, row.name.trim(), {
-            cn_name: row.name.trim(),
+        let studentId = checkAndAddNodes(nodes, tempAllNodeObj, row.name, {
+            cn_name: row.name,
             label_name: 'student'
         });
         //专业节点
-        let majorId = checkAndAddNodes(nodes, tempAllNodeObj, row.major.trim(), {
-            cn_name: row.major.trim(),
+        let majorId = checkAndAddNodes(nodes, tempAllNodeObj, row.major, {
+            cn_name: row.major,
             label_name: 'major'
         });
         //学院节点
-        let instituteId = checkAndAddNodes(nodes, tempAllNodeObj, row.institute.trim(), {
-            cn_name: row.institute.trim(),
+        let instituteId = checkAndAddNodes(nodes, tempAllNodeObj, row.institute, {
+            cn_name: row.institute,
             label_name: 'institute'
         });
         //交换学校节点
-        let exchangeSchoolId = checkAndAddNodes(nodes, tempAllNodeObj, row.exchange_school.trim(), {
-            cn_name: row.exchange_school.trim(),
+        let exchangeSchoolId = checkAndAddNodes(nodes, tempAllNodeObj, row.exchange_school, {
+            cn_name: row.exchange_school,
             label_name: 'exchange_school'
         });
 
